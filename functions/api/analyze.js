@@ -54,7 +54,7 @@ function createPrompt(averageScore, totalScore, surveyResultsText) {
   
   // JSON 형식 요청
   prompt += '다음 JSON 형식으로만 응답해주세요. 각 주식 유형별로 한국 3개, 미국 3개씩 총 24개 종목을 추천해주세요:\n';
-  prompt += '{"investmentType": "해당_투자_성향", "confidence": 85, "analysis": {"description": "상세설명", "advantages": "장점", "disadvantages": "단점", "improvements": "개선사항", "portfolio": {"stocks": 40, "bonds": 30, "cash": 15, "reits": 10, "crypto": 5, "reason": "이유", "stockAllocation": {"dividendStocks": 50, "growthStocks": 25, "themeStocks": 15, "valueStocks": 10, "reason": "이유"}}, "recommendedStocks": [24개_종목_배열], "portfolioExample": {"totalAmount": 100000000, "breakdown": [자산별_상세내역]}, "recommendedCrypto": [암호화폐_배열], "actionGuide": {"investmentHorizon": {"primary": "투자기간", "description": "설명"}, "monthly": {"title": "매월", "actions": ["행동1", "행동2", "행동3"]}, "quarterly": {"title": "분기별", "actions": ["행동1", "행동2", "행동3"]}, "semiannual": {"title": "반기별", "actions": ["행동1", "행동2", "행동3"]}, "annual": {"title": "년도별", "actions": ["행동1", "행동2", "행동3"]}}}, "keyFindings": ["발견사항1", "발견사항2", "발견사항3"]}';
+  prompt += '{"investmentType": "해당_투자_성향", "confidence": 85, "analysis": {"description": "상세설명", "advantages": "장점", "disadvantages": "단점", "improvements": "개선사항", "portfolio": {"stocks": 40, "bonds": 30, "cash": 15, "reits": 10, "crypto": 5, "reason": "이유", "stockAllocation": {"dividendStocks": 50, "growthStocks": 25, "themeStocks": 15, "valueStocks": 10, "reason": "이유"}}, "recommendedStocks": {"dividend": [배당주_6개_배열], "growth": [성장주_6개_배열], "theme": [테마주_6개_배열], "value": [가치주_6개_배열]}, "portfolioExample": {"totalAmount": 100000000, "breakdown": [자산별_상세내역]}, "recommendedCrypto": [암호화폐_배열], "actionGuide": {"investmentHorizon": {"primary": "투자기간", "description": "설명"}, "monthly": {"title": "매월", "actions": ["행동1", "행동2", "행동3"]}, "quarterly": {"title": "분기별", "actions": ["행동1", "행동2", "행동3"]}, "semiannual": {"title": "반기별", "actions": ["행동1", "행동2", "행동3"]}, "annual": {"title": "년도별", "actions": ["행동1", "행동2", "행동3"]}}}, "keyFindings": ["발견사항1", "발견사항2", "발견사항3"]}';
   
   return prompt;
 }
@@ -448,208 +448,184 @@ export function onRequestPost(context) {
                 reason: "기본 주식 배분입니다."
               }
             },
-            recommendedStocks: [
-              // 배당주 - 한국 3개
-              {
-                category: "dividend",
-                name: "삼성전자",
-                ticker: "005930",
-                market: "KRX",
-                country: "한국",
-                reason: "안정적인 배당 지급과 대형주 안정성을 제공하는 대표 종목"
-              },
-              {
-                category: "dividend",
-                name: "SK텔레콤",
-                ticker: "017670",
-                market: "KRX",
-                country: "한국", 
-                reason: "통신업계 선두주자로 꾸준한 배당수익률 제공"
-              },
-              {
-                category: "dividend",
-                name: "한국전력",
-                ticker: "015760",
-                market: "KRX",
-                country: "한국",
-                reason: "공기업 특성상 안정적인 배당정책을 유지하는 종목"
-              },
-              // 배당주 - 미국 3개
-              {
-                category: "dividend",
-                name: "Apple",
-                ticker: "AAPL",
-                market: "NASDAQ",
-                country: "미국",
-                reason: "꾸준한 배당 증가와 안정적인 현금 흐름을 보이는 글로벌 기업"
-              },
-              {
-                category: "dividend",
-                name: "Microsoft",
-                ticker: "MSFT",
-                market: "NASDAQ",
-                country: "미국",
-                reason: "지속적인 배당 성장과 견고한 비즈니스 모델을 갖춘 기술주"
-              },
-              {
-                category: "dividend",
-                name: "Coca-Cola",
-                ticker: "KO",
-                market: "NYSE",
-                country: "미국",
-                reason: "50년 이상 배당을 증가시킨 배당 귀족주의 대표 종목"
-              },
-              // 성장주 - 한국 3개
-              {
-                category: "growth",
-                name: "네이버",
-                ticker: "035420",
-                market: "KRX",
-                country: "한국",
-                reason: "국내 IT 대표 기업으로 지속적인 성장 잠재력 보유"
-              },
-              {
-                category: "growth",
-                name: "카카오",
-                ticker: "035720",
-                market: "KRX",
-                country: "한국",
-                reason: "플랫폼 기반 디지털 서비스의 선두주자로 성장성 우수"
-              },
-              {
-                category: "growth",
-                name: "LG에너지솔루션",
-                ticker: "373220",
-                market: "KRX",
-                country: "한국",
-                reason: "전기차 배터리 시장의 글로벌 리더로 높은 성장 전망"
-              },
-              // 성장주 - 미국 3개
-              {
-                category: "growth",
-                name: "Tesla",
-                ticker: "TSLA",
-                market: "NASDAQ",
-                country: "미국",
-                reason: "전기차와 에너지 사업 분야의 혁신적 성장주"
-              },
-              {
-                category: "growth",
-                name: "Amazon",
-                ticker: "AMZN",
-                market: "NASDAQ",
-                country: "미국",
-                reason: "클라우드와 이커머스 분야에서 지속적인 성장 잠재력"
-              },
-              {
-                category: "growth",
-                name: "Nvidia",
-                ticker: "NVDA",
-                market: "NASDAQ",
-                country: "미국",
-                reason: "AI와 반도체 분야의 선두주자로 폭발적 성장 가능성"
-              },
-              // 테마주 - 한국 3개
-              {
-                category: "theme",
-                name: "삼성SDI",
-                ticker: "006400",
-                market: "KRX",
-                country: "한국",
-                reason: "배터리 테마의 대표주자로 친환경 에너지 트렌드 수혜"
-              },
-              {
-                category: "theme",
-                name: "POSCO홀딩스",
-                ticker: "005490",
-                market: "KRX",
-                country: "한국",
-                reason: "2차전지 소재 및 수소 테마의 대표 기업"
-              },
-              {
-                category: "theme",
-                name: "셀트리온",
-                ticker: "068270",
-                market: "KRX",
-                country: "한국",
-                reason: "바이오 헬스케어 테마의 대표주자로 글로벌 진출 확대"
-              },
-              // 테마주 - 미국 3개
-              {
-                category: "theme",
-                name: "Palantir",
-                ticker: "PLTR",
-                market: "NYSE",
-                country: "미국",
-                reason: "빅데이터 분석과 AI 테마의 대표적인 성장주"
-              },
-              {
-                category: "theme",
-                name: "AMD",
-                ticker: "AMD",
-                market: "NASDAQ",
-                country: "미국",
-                reason: "반도체와 AI 칩 테마의 주요 수혜주"
-              },
-              {
-                category: "theme",
-                name: "Beyond Meat",
-                ticker: "BYND",
-                market: "NASDAQ",
-                country: "미국",
-                reason: "대체육 및 친환경 식품 테마의 선두주자"
-              },
-              // 가치주 - 한국 3개
-              {
-                category: "value",
-                name: "현대차",
-                ticker: "005380",
-                market: "KRX",
-                country: "한국",
-                reason: "견고한 펀더멘털 대비 저평가된 전통 제조업 대표 기업"
-              },
-              {
-                category: "value",
-                name: "KB금융",
-                ticker: "105560",
-                market: "KRX",
-                country: "한국",
-                reason: "금리 상승기 수혜와 안정적인 배당을 제공하는 금융주"
-              },
-              {
-                category: "value",
-                name: "POSCO",
-                ticker: "005490",
-                market: "KRX",
-                country: "한국",
-                reason: "철강업계 대표주자로 경기회복 시 큰 수혜 기대"
-              },
-              // 가치주 - 미국 3개
-              {
-                category: "value",
-                name: "Berkshire Hathaway",
-                ticker: "BRK.B",
-                market: "NYSE",
-                country: "미국",
-                reason: "워렌 버핏의 가치투자 철학이 담긴 대표적인 가치주"
-              },
-              {
-                category: "value",
-                name: "JPMorgan Chase",
-                ticker: "JPM",
-                market: "NYSE",
-                country: "미국",
-                reason: "견고한 재무구조와 안정적인 수익성을 갖춘 금융주"
-              },
-              {
-                category: "value",
-                name: "Johnson & Johnson",
-                ticker: "JNJ",
-                market: "NYSE",
-                country: "미국",
-                reason: "헬스케어 분야의 안정적인 수익성과 배당을 제공하는 우량주"
-              }
-            ],
+            recommendedStocks: {
+              dividend: [
+                {
+                  name: "삼성전자",
+                  ticker: "005930",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "안정적인 배당 지급과 대형주 안정성을 제공하는 대표 종목"
+                },
+                {
+                  name: "SK텔레콤",
+                  ticker: "017670",
+                  market: "KRX",
+                  country: "한국", 
+                  reason: "통신업계 선두주자로 꾸준한 배당수익률 제공"
+                },
+                {
+                  name: "한국전력",
+                  ticker: "015760",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "공기업 특성상 안정적인 배당정책을 유지하는 종목"
+                },
+                {
+                  name: "Apple",
+                  ticker: "AAPL",
+                  market: "NASDAQ",
+                  country: "미국",
+                  reason: "꾸준한 배당 증가와 안정적인 현금 흐름을 보이는 글로벌 기업"
+                },
+                {
+                  name: "Microsoft",
+                  ticker: "MSFT",
+                  market: "NASDAQ",
+                  country: "미국",
+                  reason: "지속적인 배당 성장과 견고한 비즈니스 모델을 갖춘 기술주"
+                },
+                {
+                  name: "Coca-Cola",
+                  ticker: "KO",
+                  market: "NYSE",
+                  country: "미국",
+                  reason: "50년 이상 배당을 증가시킨 배당 귀족주의 대표 종목"
+                }
+              ],
+              growth: [
+                {
+                  name: "네이버",
+                  ticker: "035420",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "국내 IT 대표 기업으로 지속적인 성장 잠재력 보유"
+                },
+                {
+                  name: "카카오",
+                  ticker: "035720",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "플랫폼 기반 디지털 서비스의 선두주자로 성장성 우수"
+                },
+                {
+                  name: "LG에너지솔루션",
+                  ticker: "373220",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "전기차 배터리 시장의 글로벌 리더로 높은 성장 전망"
+                },
+                {
+                  name: "Tesla",
+                  ticker: "TSLA",
+                  market: "NASDAQ",
+                  country: "미국",
+                  reason: "전기차와 에너지 사업 분야의 혁신적 성장주"
+                },
+                {
+                  name: "Amazon",
+                  ticker: "AMZN",
+                  market: "NASDAQ",
+                  country: "미국",
+                  reason: "클라우드와 이커머스 분야에서 지속적인 성장 잠재력"
+                },
+                {
+                  name: "Nvidia",
+                  ticker: "NVDA",
+                  market: "NASDAQ",
+                  country: "미국",
+                  reason: "AI와 반도체 분야의 선두주자로 폭발적 성장 가능성"
+                }
+              ],
+              theme: [
+                {
+                  name: "삼성SDI",
+                  ticker: "006400",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "배터리 테마의 대표주자로 친환경 에너지 트렌드 수혜"
+                },
+                {
+                  name: "POSCO홀딩스",
+                  ticker: "005490",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "2차전지 소재 및 수소 테마의 대표 기업"
+                },
+                {
+                  name: "셀트리온",
+                  ticker: "068270",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "바이오 헬스케어 테마의 대표주자로 글로벌 진출 확대"
+                },
+                {
+                  name: "Palantir",
+                  ticker: "PLTR",
+                  market: "NYSE",
+                  country: "미국",
+                  reason: "빅데이터 분석과 AI 테마의 대표적인 성장주"
+                },
+                {
+                  name: "AMD",
+                  ticker: "AMD",
+                  market: "NASDAQ",
+                  country: "미국",
+                  reason: "반도체와 AI 칩 테마의 주요 수혜주"
+                },
+                {
+                  name: "Beyond Meat",
+                  ticker: "BYND",
+                  market: "NASDAQ",
+                  country: "미국",
+                  reason: "대체육 및 친환경 식품 테마의 선두주자"
+                }
+              ],
+              value: [
+                {
+                  name: "현대차",
+                  ticker: "005380",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "견고한 펀더멘털 대비 저평가된 전통 제조업 대표 기업"
+                },
+                {
+                  name: "KB금융",
+                  ticker: "105560",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "금리 상승기 수혜와 안정적인 배당을 제공하는 금융주"
+                },
+                {
+                  name: "POSCO",
+                  ticker: "005490",
+                  market: "KRX",
+                  country: "한국",
+                  reason: "철강업계 대표주자로 경기회복 시 큰 수혜 기대"
+                },
+                {
+                  name: "Berkshire Hathaway",
+                  ticker: "BRK.B",
+                  market: "NYSE",
+                  country: "미국",
+                  reason: "워렌 버핏의 가치투자 철학이 담긴 대표적인 가치주"
+                },
+                {
+                  name: "JPMorgan Chase",
+                  ticker: "JPM",
+                  market: "NYSE",
+                  country: "미국",
+                  reason: "견고한 재무구조와 안정적인 수익성을 갖춘 금융주"
+                },
+                {
+                  name: "Johnson & Johnson",
+                  ticker: "JNJ",
+                  market: "NYSE",
+                  country: "미국",
+                  reason: "헬스케어 분야의 안정적인 수익성과 배당을 제공하는 우량주"
+                }
+              ]
+            },
             recommendedCrypto: [
               {
                 name: "비트코인",
