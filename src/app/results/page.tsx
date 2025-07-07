@@ -272,21 +272,38 @@ export default function ResultsPage() {
   }
 
   useEffect(() => {
+    // 클라이언트 사이드에서만 실행
+    if (typeof window === 'undefined') return
+    
     const analyzeResults = async () => {
       try {
         setIsLoading(true)
         setAnalysisError(null)
         
         // localStorage에서 설문 답변 가져오기
-        const savedAnswers = localStorage.getItem('surveyAnswers')
+        let savedAnswers
+        try {
+          savedAnswers = localStorage.getItem('surveyAnswers')
+        } catch (error) {
+          console.error('localStorage 접근 오류:', error)
+          router.push('/survey')
+          return
+        }
         
         if (!savedAnswers) {
           router.push('/survey')
           return
         }
         
-        const parsedAnswers = JSON.parse(savedAnswers)
-        setAnswers(parsedAnswers)
+        let parsedAnswers
+        try {
+          parsedAnswers = JSON.parse(savedAnswers)
+          setAnswers(parsedAnswers)
+        } catch (error) {
+          console.error('JSON 파싱 오류:', error)
+          router.push('/survey')
+          return
+        }
         
         // GPT API를 통해 분석 요청
         const response = await fetch('/api/analyze', {
@@ -300,7 +317,9 @@ export default function ResultsPage() {
         })
         
         if (!response.ok) {
-          throw new Error('분석 요청 실패')
+          const errorText = await response.text()
+          console.error('API 응답 오류:', response.status, errorText)
+          throw new Error(`분석 요청 실패: ${response.status}`)
         }
         
         const result = await response.json()
@@ -317,14 +336,14 @@ export default function ResultsPage() {
         
       } catch (error) {
         console.error('분석 오류:', error)
-        setAnalysisError('분석 중 오류가 발생했습니다. 다시 시도해주세요.')
+        setAnalysisError(`분석 중 오류가 발생했습니다: ${error instanceof Error ? error.message : '다시 시도해주세요.'}`)
       } finally {
         setIsLoading(false)
       }
     }
 
     analyzeResults()
-  }, [router])
+  }, [])
 
   if (isLoading) {
     return (
