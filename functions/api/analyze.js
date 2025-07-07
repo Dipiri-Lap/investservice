@@ -53,9 +53,19 @@ function createPrompt(averageScore, totalScore, surveyResultsText) {
   prompt += '    각 기간별로 투자 성향에 맞는 구체적이고 실행 가능한 행동 방안을 제시해주세요.\n';
   prompt += '16. 모든 답변은 전문적이고 구체적인 어투로 300~400자 분량으로 작성해주세요.\n\n';
   
+  // 투자 전략 추가 요청
+  prompt += '17. 투자 전략 섹션을 추가로 포함해주세요:\n';
+  prompt += '    - 자산 배분 전략: 목표, 구성, 초보자 설명, 중요 포인트, 주의사항, 행동 가이드, 투자자 유형별 조정 방법\n';
+  prompt += '    - 주식 투자 전략: 종목 선정, 시장 타이밍, 초보자 설명, 중요 포인트, 주의사항, 행동 가이드, 투자자 유형별 조정 방법\n';
+  prompt += '    - 채권 투자 전략: 만기 분산, 신용등급, 초보자 설명, 중요 포인트, 주의사항, 행동 가이드, 투자자 유형별 조정 방법\n';
+  prompt += '    - 대체투자 전략: 부동산 리츠, 원자재, 초보자 설명, 중요 포인트, 주의사항, 행동 가이드, 투자자 유형별 조정 방법\n';
+  prompt += '    - 리스크 관리 전략: 손실 제한, 리밸런싱, 초보자 설명, 중요 포인트, 주의사항, 행동 가이드, 투자자 유형별 조정 방법\n';
+  prompt += '    - 투자 심리 관리: 목표 설정, 감정 통제, 초보자 설명, 중요 포인트, 주의사항, 행동 가이드, 투자자 유형별 조정 방법\n';
+  prompt += '    각 전략별로 해당 투자자 성향에 맞는 구체적이고 실행 가능한 내용을 제시해주세요.\n\n';
+  
   // JSON 형식 요청
   prompt += '다음 JSON 형식으로만 응답해주세요. 각 주식 유형별로 한국 3개, 미국 3개씩 총 24개 종목을 추천해주세요:\n';
-  prompt += '{"investmentType": "해당_투자_성향", "confidence": 85, "analysis": {"description": "상세설명", "advantages": "장점", "disadvantages": "단점", "improvements": "개선사항", "portfolio": {"stocks": 40, "bonds": 30, "cash": 15, "reits": 10, "crypto": 5, "reason": "이유", "stockAllocation": {"dividendStocks": 50, "growthStocks": 25, "themeStocks": 15, "valueStocks": 10, "reason": "이유"}}, "recommendedStocks": {"dividend": [{"name": "종목명", "ticker": "종목코드", "country": "한국", "market": "KRX", "reason": "추천이유"}], "growth": [성장주_6개_배열], "theme": [테마주_6개_배열], "value": [가치주_6개_배열]}, "portfolioExample": {"totalAmount": 100000000, "breakdown": [{"category": "주식", "percentage": 40, "amount": 40000000, "investments": [{"name": "종목명", "shares": "수량", "estimatedValue": "예상가치"}]}, {"category": "채권", "percentage": 30, "amount": 30000000, "investments": [{"name": "채권명", "shares": "수량", "estimatedValue": "예상가치"}]}, {"category": "현금", "percentage": 15, "amount": 15000000, "investments": [{"name": "현금상품명", "shares": "-", "estimatedValue": "예상가치"}]}, {"category": "부동산", "percentage": 10, "amount": 10000000, "investments": [{"name": "부동산상품명", "shares": "수량", "estimatedValue": "예상가치"}]}, {"category": "암호화폐", "percentage": 5, "amount": 5000000, "investments": [{"name": "암호화폐명", "shares": "수량", "estimatedValue": "예상가치"}]}], "notes": ["설명1", "설명2", "설명3"]}, "recommendedCrypto": [{"name": "암호화폐명", "symbol": "심볼", "reason": "추천이유"}], "actionGuide": {"investmentHorizon": {"primary": "투자기간", "description": "설명"}, "monthly": {"title": "매월", "actions": ["행동1", "행동2", "행동3"]}, "quarterly": {"title": "분기별", "actions": ["행동1", "행동2", "행동3"]}, "semiannual": {"title": "반기별", "actions": ["행동1", "행동2", "행동3"]}, "annual": {"title": "년도별", "actions": ["행동1", "행동2", "행동3"]}}}, "keyFindings": ["발견사항1", "발견사항2", "발견사항3"]}';
+  prompt += '{"investmentType": "해당_투자_성향", "confidence": 85, "analysis": {"description": "상세설명", "advantages": "장점", "disadvantages": "단점", "improvements": "개선사항", "portfolio": {"stocks": 40, "bonds": 30, "cash": 15, "reits": 10, "crypto": 5, "reason": "이유", "stockAllocation": {"dividendStocks": 50, "growthStocks": 25, "themeStocks": 15, "valueStocks": 10, "reason": "이유"}}, "recommendedStocks": {"dividend": [{"name": "종목명", "ticker": "종목코드", "country": "한국", "market": "KRX", "reason": "추천이유"}], "growth": [성장주_6개_배열], "theme": [테마주_6개_배열], "value": [가치주_6개_배열]}, "portfolioExample": {"totalAmount": 100000000, "breakdown": [{"category": "주식", "percentage": 40, "amount": 40000000, "investments": [{"name": "종목명", "shares": "수량", "estimatedValue": "예상가치"}]}, {"category": "채권", "percentage": 30, "amount": 30000000, "investments": [{"name": "채권명", "shares": "수량", "estimatedValue": "예상가치"}]}, {"category": "현금", "percentage": 15, "amount": 15000000, "investments": [{"name": "현금상품명", "shares": "-", "estimatedValue": "예상가치"}]}, {"category": "부동산", "percentage": 10, "amount": 10000000, "investments": [{"name": "부동산상품명", "shares": "수량", "estimatedValue": "예상가치"}]}, {"category": "암호화폐", "percentage": 5, "amount": 5000000, "investments": [{"name": "암호화폐명", "shares": "수량", "estimatedValue": "예상가치"}]}], "notes": ["설명1", "설명2", "설명3"]}, "recommendedCrypto": [{"name": "암호화폐명", "symbol": "심볼", "reason": "추천이유"}], "actionGuide": {"investmentHorizon": {"primary": "투자기간", "description": "설명"}, "monthly": {"title": "매월", "actions": ["행동1", "행동2", "행동3"]}, "quarterly": {"title": "분기별", "actions": ["행동1", "행동2", "행동3"]}, "semiannual": {"title": "반기별", "actions": ["행동1", "행동2", "행동3"]}, "annual": {"title": "년도별", "actions": ["행동1", "행동2", "행동3"]}}, "investmentStrategy": {"assetAllocation": {"summary": "초보자 요약", "keyPoints": ["중요 포인트1", "중요 포인트2"], "warnings": ["주의사항1", "주의사항2"], "actionGuide": ["행동 가이드1", "행동 가이드2"], "adjustmentByType": {"conservative": "보수적 조정", "balanced": "균형형 조정", "aggressive": "공격적 조정"}}, "stockInvestment": {"summary": "초보자 요약", "keyPoints": ["중요 포인트1", "중요 포인트2"], "warnings": ["주의사항1", "주의사항2"], "actionGuide": ["행동 가이드1", "행동 가이드2"], "adjustmentByType": {"conservative": "보수적 조정", "balanced": "균형형 조정", "aggressive": "공격적 조정"}}, "bondInvestment": {"summary": "초보자 요약", "keyPoints": ["중요 포인트1", "중요 포인트2"], "warnings": ["주의사항1", "주의사항2"], "actionGuide": ["행동 가이드1", "행동 가이드2"], "adjustmentByType": {"conservative": "보수적 조정", "balanced": "균형형 조정", "aggressive": "공격적 조정"}}, "alternativeInvestment": {"summary": "초보자 요약", "keyPoints": ["중요 포인트1", "중요 포인트2"], "warnings": ["주의사항1", "주의사항2"], "actionGuide": ["행동 가이드1", "행동 가이드2"], "adjustmentByType": {"conservative": "보수적 조정", "balanced": "균형형 조정", "aggressive": "공격적 조정"}}, "riskManagement": {"summary": "초보자 요약", "keyPoints": ["중요 포인트1", "중요 포인트2"], "warnings": ["주의사항1", "주의사항2"], "actionGuide": ["행동 가이드1", "행동 가이드2"], "adjustmentByType": {"conservative": "보수적 조정", "balanced": "균형형 조정", "aggressive": "공격적 조정"}}, "psychologyManagement": {"summary": "초보자 요약", "keyPoints": ["중요 포인트1", "중요 포인트2"], "warnings": ["주의사항1", "주의사항2"], "actionGuide": ["행동 가이드1", "행동 가이드2"], "adjustmentByType": {"conservative": "보수적 조정", "balanced": "균형형 조정", "aggressive": "공격적 조정"}}}}, "keyFindings": ["발견사항1", "발견사항2", "발견사항3"]}';
   
   return prompt;
 }
@@ -309,7 +319,7 @@ export function onRequestPost(context) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: "gpt-4.1",
+            model: "gpt-4.1-mini",
             messages: [
               {
                 role: "system",
@@ -321,7 +331,7 @@ export function onRequestPost(context) {
               }
             ],
             temperature: 0.3,
-            max_tokens: 6000
+            max_tokens: 10000
           })
         }).then(function(openaiResponse) {
           console.log('7. OpenAI API 응답 수신 - 상태:', openaiResponse.status);
@@ -771,6 +781,158 @@ export function onRequestPost(context) {
               annual: {
                 title: "년도별 해야 할 일",
                 actions: ["투자 목표 재설정", "성과 종합 분석", "장기 계획 수립"]
+              }
+            },
+            investmentStrategy: {
+              assetAllocation: {
+                summary: "자산 배분은 위험 분산과 수익 극대화를 위해 다양한 자산군에 분산 투자하는 전략입니다. 주식, 채권, 현금, 부동산 등에 적절히 분산하여 변동성을 줄이고 안정적인 수익을 추구합니다.",
+                keyPoints: [
+                  "분산투자로 위험을 분산시키고 안정적인 수익 창출",
+                  "자산군별 상관관계를 고려한 포트폴리오 구성",
+                  "시장 상황에 따른 유연한 자산 배분 조정",
+                  "장기적 관점에서 꾸준한 리밸런싱 실행"
+                ],
+                warnings: [
+                  "한 자산군에 과도하게 집중하면 위험이 증가합니다",
+                  "너무 자주 배분을 변경하면 거래비용이 증가합니다",
+                  "시장 타이밍을 맞추려고 하면 오히려 손실을 볼 수 있습니다"
+                ],
+                actionGuide: [
+                  "투자 목표와 위험 허용도에 따라 자산 배분 비율 결정",
+                  "분기별로 포트폴리오 리밸런싱 실행",
+                  "경제 상황 변화에 따른 배분 조정 검토",
+                  "세금 효율적인 계좌 활용으로 수익률 극대화"
+                ],
+                adjustmentByType: {
+                  conservative: "보수적 투자자는 채권과 현금 비중을 높이고, 주식 비중을 낮춰 안정성을 우선시합니다.",
+                  balanced: "균형형 투자자는 주식과 채권을 5:5 비율로 유지하며, 정기적인 리밸런싱을 통해 균형을 맞춥니다.",
+                  aggressive: "공격적 투자자는 주식 비중을 높이고, 성장 가능성이 높은 자산에 더 많이 투자합니다."
+                }
+              },
+              stockInvestment: {
+                summary: "주식 투자는 기업의 성장과 수익성을 바탕으로 자본 이득을 추구하는 전략입니다. 가치주와 성장주를 균형 있게 배분하고, 배당 수익과 함께 장기적인 자본 증식을 목표로 합니다.",
+                keyPoints: [
+                  "가치주와 성장주의 균형 있는 포트폴리오 구성",
+                  "배당 수익률 3% 이상 우량주 중심 투자",
+                  "산업별 분산으로 섹터 리스크 관리",
+                  "기업의 펀더멘털 분석을 통한 종목 선정"
+                ],
+                warnings: [
+                  "개별 종목에 과도하게 집중하면 위험이 증가합니다",
+                  "단기 차익을 노린 빈번한 거래는 수익률을 떨어뜨립니다",
+                  "시장 소음에 휘둘리지 말고 장기적 관점을 유지하세요"
+                ],
+                actionGuide: [
+                  "분할 매수/매도로 평균 단가 조정하기",
+                  "경제 사이클과 금리 변동 패턴 파악하기",
+                  "기술적 분석 도구를 활용한 매매 타이밍 결정",
+                  "정기적인 포트폴리오 점검과 종목 교체"
+                ],
+                adjustmentByType: {
+                  conservative: "보수적 투자자는 배당주와 우량 대형주 중심으로 안정적인 수익을 추구합니다.",
+                  balanced: "균형형 투자자는 배당주와 성장주를 적절히 배분하여 안정성과 성장성을 동시에 추구합니다.",
+                  aggressive: "공격적 투자자는 성장주와 테마주 비중을 높여 높은 수익률을 추구합니다."
+                }
+              },
+              bondInvestment: {
+                summary: "채권 투자는 안정적인 이자 수익과 원금 보장을 통해 포트폴리오의 안정성을 확보하는 전략입니다. 만기와 신용등급을 분산하여 금리 위험과 신용 위험을 관리합니다.",
+                keyPoints: [
+                  "만기 분산을 통한 금리 위험 관리",
+                  "신용등급 우량 채권 중심 투자",
+                  "인플레이션 보호 채권 일부 포함",
+                  "정기적인 이자 수익으로 현금 흐름 확보"
+                ],
+                warnings: [
+                  "금리 상승 시 채권 가격이 하락할 수 있습니다",
+                  "신용등급이 낮은 채권은 부도 위험이 있습니다",
+                  "인플레이션 상승 시 실질 수익률이 감소합니다"
+                ],
+                actionGuide: [
+                  "단기, 중기, 장기 채권을 적절히 배분하기",
+                  "국채와 회사채 비율을 위험도에 맞게 조정",
+                  "인플레이션 연동 채권으로 구매력 보호",
+                  "채권 ETF 활용으로 분산 효과 극대화"
+                ],
+                adjustmentByType: {
+                  conservative: "보수적 투자자는 국채와 AAA 등급 회사채 중심으로 안전성을 우선시합니다.",
+                  balanced: "균형형 투자자는 국채와 우량 회사채를 적절히 배분하여 수익성과 안정성을 조화합니다.",
+                  aggressive: "공격적 투자자는 채권 비중을 낮추고, 고수익 채권이나 신흥국 채권 등을 고려합니다."
+                }
+              },
+              alternativeInvestment: {
+                summary: "대체투자는 부동산 리츠, 인프라, 원자재 등 전통적인 주식·채권 외의 자산에 투자하는 전략입니다. 인플레이션 헤지와 포트폴리오 다각화를 통해 안정적인 수익을 추구합니다.",
+                keyPoints: [
+                  "부동산 리츠를 통한 배당 수익과 인플레이션 헤지",
+                  "인프라 펀드로 안정적인 현금 흐름 확보",
+                  "원자재 투자로 인플레이션 보호",
+                  "전체 포트폴리오의 10-20% 내에서 분산 투자"
+                ],
+                warnings: [
+                  "유동성이 낮아 급매 시 손실이 클 수 있습니다",
+                  "복잡한 구조로 인해 이해하기 어려울 수 있습니다",
+                  "높은 수수료와 관리비용이 발생할 수 있습니다"
+                ],
+                actionGuide: [
+                  "리츠 ETF를 통한 부동산 간접 투자",
+                  "금, 은 등 귀금속 ETF로 안전자산 확보",
+                  "인프라 펀드를 통한 장기 안정 수익 추구",
+                  "원자재 ETF로 인플레이션 헤지 효과 확보"
+                ],
+                adjustmentByType: {
+                  conservative: "보수적 투자자는 안정적인 리츠와 인프라 투자를 통해 배당 수익에 집중합니다.",
+                  balanced: "균형형 투자자는 리츠, 인프라, 원자재를 적절히 배분하여 포트폴리오를 다각화합니다.",
+                  aggressive: "공격적 투자자는 사모펀드, 벤처캐피탈 등 고수익 대체투자를 고려합니다."
+                }
+              },
+              riskManagement: {
+                summary: "리스크 관리는 투자 손실을 제한하고 포트폴리오의 안정성을 유지하는 전략입니다. 손실 제한 주문과 정기적인 리밸런싱을 통해 위험을 체계적으로 관리합니다.",
+                keyPoints: [
+                  "손실 제한 주문으로 큰 손실 방지",
+                  "정기적인 포트폴리오 리밸런싱 실행",
+                  "분산 투자 원칙을 통한 위험 분산",
+                  "투자 규모 조절을 통한 위험 관리"
+                ],
+                warnings: [
+                  "너무 엄격한 손절매는 수익 기회를 놓칠 수 있습니다",
+                  "과도한 분산투자는 수익률을 희석시킬 수 있습니다",
+                  "시장 변동성을 완전히 제거할 수는 없습니다"
+                ],
+                actionGuide: [
+                  "7-10% 손실 시 자동 매도 주문 설정",
+                  "분기별 포트폴리오 리밸런싱 실행",
+                  "특정 종목이나 섹터에 20% 이상 집중 금지",
+                  "정기적인 위험 평가와 조정"
+                ],
+                adjustmentByType: {
+                  conservative: "보수적 투자자는 5-7% 손실 제한과 엄격한 분산 투자를 통해 안전성을 확보합니다.",
+                  balanced: "균형형 투자자는 7-10% 손실 제한과 정기적인 리밸런싱으로 적절한 위험 관리를 합니다.",
+                  aggressive: "공격적 투자자는 10-15% 손실 제한을 설정하되, 성장 기회를 놓치지 않도록 유연하게 관리합니다."
+                }
+              },
+              psychologyManagement: {
+                summary: "투자 심리 관리는 감정에 좌우되지 않는 규칙적인 투자를 통해 장기적인 성공을 추구하는 전략입니다. 명확한 목표 설정과 원칙 준수로 투자 심리를 안정적으로 유지합니다.",
+                keyPoints: [
+                  "명확한 투자 목표와 기간 설정",
+                  "감정 통제를 위한 규칙적인 투자 실행",
+                  "검증된 정보 위주의 투자 판단",
+                  "장기적 관점에서 꾸준한 투자 지속"
+                ],
+                warnings: [
+                  "시장 소음에 휘둘려 빈번한 매매를 하지 마세요",
+                  "단기 수익에 욕심내어 위험한 투자를 하지 마세요",
+                  "다른 사람의 투자 성과와 비교하여 조급해하지 마세요"
+                ],
+                actionGuide: [
+                  "투자 일기를 작성하여 감정 상태 기록",
+                  "정해진 규칙에 따라 기계적으로 투자 실행",
+                  "시장 변동 시 원칙을 상기하고 차분하게 대응",
+                  "정기적인 투자 교육과 학습으로 지식 향상"
+                ],
+                adjustmentByType: {
+                  conservative: "보수적 투자자는 안정적인 수익에 만족하고, 변동성에 대한 스트레스를 최소화합니다.",
+                  balanced: "균형형 투자자는 중간 수준의 변동성을 수용하며, 체계적인 계획에 따라 투자를 진행합니다.",
+                  aggressive: "공격적 투자자는 높은 변동성을 수용하되, 감정적 거래를 피하고 장기적 관점을 유지합니다."
+                }
               }
             }
           };

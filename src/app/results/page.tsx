@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { BarChart3, TrendingUp, Shield, Target, AlertCircle, Download, ArrowLeft } from 'lucide-react'
+import { BarChart3, TrendingUp, Shield, Target, AlertCircle, Download, ArrowLeft, DollarSign, Building, Building2, Brain } from 'lucide-react'
 import { InvestmentProfile } from '@/data/surveyQuestions'
 
 import Link from 'next/link'
@@ -1361,6 +1361,584 @@ export default function ResultsPage() {
                     <p><strong>기록 관리:</strong> 모든 투자 활동을 기록하고 정기적으로 성과를 분석하여 개선점을 찾아내세요.</p>
                   </div>
                 </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* 투자 전략 섹션 */}
+          {safeGptAnalysis && safeGptAnalysis.investmentStrategy && (
+            <motion.div
+              id="pdf-investment-strategy"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="bg-white rounded-2xl shadow-lg p-8 mb-12"
+            >
+              <div className="flex items-center space-x-3 mb-8">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-white" />
+                </div>
+                <h2 className="text-3xl font-bold text-gray-800">투자 전략 가이드</h2>
+              </div>
+
+              <div className="space-y-8">
+                {/* 자산 배분 전략 */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.9 }}
+                  className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100"
+                >
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
+                      <DollarSign className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">자산 배분 전략</h3>
+                      <p className="text-sm text-gray-600">포트폴리오 구성과 위험 관리</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mb-6">
+                    <h4 className="font-semibold text-gray-800 mb-3">초보자를 위한 설명</h4>
+                    <p className="text-gray-700 text-sm leading-relaxed mb-4">
+                      {safeGptAnalysis.investmentStrategy.assetAllocation.summary}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        핵심 포인트
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.assetAllocation.keyPoints || []).map((point: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                        주의사항
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.assetAllocation.warnings || []).map((warning: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{warning}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                      실행 가이드
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(safeGptAnalysis.investmentStrategy.assetAllocation.actionGuide || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-gray-700 text-sm">{action}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                      투자자 유형별 조정
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">보수적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.assetAllocation.adjustmentByType.conservative}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">균형형</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.assetAllocation.adjustmentByType.balanced}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">공격적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.assetAllocation.adjustmentByType.aggressive}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 주식 투자 전략 */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 1.0 }}
+                  className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100"
+                >
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center">
+                      <TrendingUp className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">주식 투자 전략</h3>
+                      <p className="text-sm text-gray-600">성장과 배당을 통한 수익 추구</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mb-6">
+                    <h4 className="font-semibold text-gray-800 mb-3">초보자를 위한 설명</h4>
+                    <p className="text-gray-700 text-sm leading-relaxed mb-4">
+                      {safeGptAnalysis.investmentStrategy.stockInvestment.summary}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        핵심 포인트
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.stockInvestment.keyPoints || []).map((point: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                        주의사항
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.stockInvestment.warnings || []).map((warning: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{warning}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                      실행 가이드
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(safeGptAnalysis.investmentStrategy.stockInvestment.actionGuide || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-gray-700 text-sm">{action}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                      투자자 유형별 조정
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">보수적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.stockInvestment.adjustmentByType.conservative}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">균형형</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.stockInvestment.adjustmentByType.balanced}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">공격적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.stockInvestment.adjustmentByType.aggressive}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 채권 투자 전략 */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 1.1 }}
+                  className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-100"
+                >
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-amber-600 to-orange-600 rounded-xl flex items-center justify-center">
+                      <Building className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">채권 투자 전략</h3>
+                      <p className="text-sm text-gray-600">안정적인 수익과 원금 보장</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mb-6">
+                    <h4 className="font-semibold text-gray-800 mb-3">초보자를 위한 설명</h4>
+                    <p className="text-gray-700 text-sm leading-relaxed mb-4">
+                      {safeGptAnalysis.investmentStrategy.bondInvestment.summary}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        핵심 포인트
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.bondInvestment.keyPoints || []).map((point: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                        주의사항
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.bondInvestment.warnings || []).map((warning: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{warning}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                      실행 가이드
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(safeGptAnalysis.investmentStrategy.bondInvestment.actionGuide || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-gray-700 text-sm">{action}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                      투자자 유형별 조정
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">보수적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.bondInvestment.adjustmentByType.conservative}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">균형형</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.bondInvestment.adjustmentByType.balanced}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">공격적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.bondInvestment.adjustmentByType.aggressive}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 대체투자 전략 */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 1.2 }}
+                  className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100"
+                >
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl flex items-center justify-center">
+                      <Building2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">대체투자 전략</h3>
+                      <p className="text-sm text-gray-600">부동산, 인프라, 원자재 투자</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mb-6">
+                    <h4 className="font-semibold text-gray-800 mb-3">초보자를 위한 설명</h4>
+                    <p className="text-gray-700 text-sm leading-relaxed mb-4">
+                      {safeGptAnalysis.investmentStrategy.alternativeInvestment.summary}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        핵심 포인트
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.alternativeInvestment.keyPoints || []).map((point: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                        주의사항
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.alternativeInvestment.warnings || []).map((warning: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{warning}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                      실행 가이드
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(safeGptAnalysis.investmentStrategy.alternativeInvestment.actionGuide || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-gray-700 text-sm">{action}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                      투자자 유형별 조정
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">보수적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.alternativeInvestment.adjustmentByType.conservative}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">균형형</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.alternativeInvestment.adjustmentByType.balanced}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">공격적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.alternativeInvestment.adjustmentByType.aggressive}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 리스크 관리 전략 */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 1.3 }}
+                  className="bg-gradient-to-r from-red-50 to-pink-50 rounded-2xl p-6 border border-red-100"
+                >
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-pink-600 rounded-xl flex items-center justify-center">
+                      <Shield className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">리스크 관리 전략</h3>
+                      <p className="text-sm text-gray-600">손실 제한과 포트폴리오 안정성</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mb-6">
+                    <h4 className="font-semibold text-gray-800 mb-3">초보자를 위한 설명</h4>
+                    <p className="text-gray-700 text-sm leading-relaxed mb-4">
+                      {safeGptAnalysis.investmentStrategy.riskManagement.summary}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        핵심 포인트
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.riskManagement.keyPoints || []).map((point: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                        주의사항
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.riskManagement.warnings || []).map((warning: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{warning}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                      실행 가이드
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(safeGptAnalysis.investmentStrategy.riskManagement.actionGuide || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-gray-700 text-sm">{action}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                      투자자 유형별 조정
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">보수적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.riskManagement.adjustmentByType.conservative}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">균형형</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.riskManagement.adjustmentByType.balanced}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">공격적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.riskManagement.adjustmentByType.aggressive}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* 투자 심리 관리 전략 */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 1.4 }}
+                  className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-2xl p-6 border border-teal-100"
+                >
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-br from-teal-600 to-cyan-600 rounded-xl flex items-center justify-center">
+                      <Brain className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">투자 심리 관리</h3>
+                      <p className="text-sm text-gray-600">감정 통제와 규칙적인 투자</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mb-6">
+                    <h4 className="font-semibold text-gray-800 mb-3">초보자를 위한 설명</h4>
+                    <p className="text-gray-700 text-sm leading-relaxed mb-4">
+                      {safeGptAnalysis.investmentStrategy.psychologyManagement.summary}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        핵심 포인트
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.psychologyManagement.keyPoints || []).map((point: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="bg-white rounded-lg p-6">
+                      <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                        <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                        주의사항
+                      </h4>
+                      <ul className="space-y-2">
+                        {(safeGptAnalysis.investmentStrategy.psychologyManagement.warnings || []).map((warning: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-2">
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm">{warning}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                      실행 가이드
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {(safeGptAnalysis.investmentStrategy.psychologyManagement.actionGuide || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-gray-700 text-sm">{action}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-6 mt-6">
+                    <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
+                      <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+                      투자자 유형별 조정
+                    </h4>
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs font-medium">보수적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.psychologyManagement.adjustmentByType.conservative}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">균형형</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.psychologyManagement.adjustmentByType.balanced}</span>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">공격적</span>
+                        <span className="text-gray-700 text-sm">{safeGptAnalysis.investmentStrategy.psychologyManagement.adjustmentByType.aggressive}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           )}
