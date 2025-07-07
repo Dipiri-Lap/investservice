@@ -7,6 +7,9 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
   
+  // 정적 export 설정
+  output: 'export',
+  
   // 이미지 최적화 비활성화 (사이즈 절약)
   images: {
     unoptimized: true
@@ -19,10 +22,7 @@ const nextConfig = {
   },
   
   // 트레일링 슬래시 설정
-  trailingSlash: true,
-  
-  // 빌드 출력 설정
-  distDir: '.next'
+  trailingSlash: true
 }
 
 module.exports = nextConfig 
