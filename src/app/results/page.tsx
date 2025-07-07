@@ -407,6 +407,25 @@ export default function ResultsPage() {
     )
   }
 
+  // 안전한 기본값 설정
+  const safeGptAnalysis = {
+    ...gptAnalysis,
+    recommendedStocks: gptAnalysis?.recommendedStocks || [],
+    recommendedCrypto: gptAnalysis?.recommendedCrypto || [],
+    portfolioExample: {
+      breakdown: gptAnalysis?.portfolioExample?.breakdown || [],
+      notes: gptAnalysis?.portfolioExample?.notes || [],
+      ...gptAnalysis?.portfolioExample
+    },
+    actionGuide: {
+      monthly: { actions: gptAnalysis?.actionGuide?.monthly?.actions || [] },
+      quarterly: { actions: gptAnalysis?.actionGuide?.quarterly?.actions || [] },
+      semiannual: { actions: gptAnalysis?.actionGuide?.semiannual?.actions || [] },
+      annual: { actions: gptAnalysis?.actionGuide?.annual?.actions || [] },
+      ...gptAnalysis?.actionGuide
+    }
+  }
+
 
 
   const getRiskLevelColor = (level: number) => {
@@ -624,7 +643,7 @@ export default function ResultsPage() {
                   <h2 className="text-3xl font-bold text-gray-800">투자 성향 특징</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {profile.characteristics.map((characteristic, index) => (
+                  {(profile.characteristics || []).map((characteristic, index) => (
                     <motion.div 
                       key={index} 
                       initial={{ opacity: 0, x: -20 }}
@@ -642,7 +661,7 @@ export default function ResultsPage() {
           </div>
 
           {/* AI 분석 결과 - 기본 분석 */}
-          {gptAnalysis && (
+          {safeGptAnalysis && (
             <motion.div
               id="pdf-analysis"
               initial={{ opacity: 0, y: 30 }}
@@ -687,7 +706,7 @@ export default function ResultsPage() {
               {/* 투자 성향 상세 설명 */}
               <div className="bg-white rounded-lg p-6 mb-6">
                 <h3 className="font-semibold text-gray-800 mb-3">투자 성향 상세 설명</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{gptAnalysis.description}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{safeGptAnalysis.description}</p>
               </div>
               
               {/* 장단점 */}
@@ -697,7 +716,7 @@ export default function ResultsPage() {
                     <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
                     투자 강점
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{gptAnalysis.advantages}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed">{safeGptAnalysis.advantages}</p>
                 </div>
                 
                 <div className="bg-white rounded-lg p-6">
@@ -705,7 +724,7 @@ export default function ResultsPage() {
                     <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
                     주의할 점
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{gptAnalysis.disadvantages}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed">{safeGptAnalysis.disadvantages}</p>
                 </div>
               </div>
               
@@ -715,11 +734,11 @@ export default function ResultsPage() {
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                   권장 개선 방향
                 </h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{gptAnalysis.improvements}</p>
+                <p className="text-gray-600 text-sm leading-relaxed">{safeGptAnalysis.improvements}</p>
               </div>
               
               {/* 추천 포트폴리오 */}
-              {gptAnalysis.portfolio && (
+              {safeGptAnalysis.portfolio && (
                 <div className="bg-white rounded-2xl p-8 mb-6 shadow-lg">
                   <h3 className="font-bold text-gray-800 mb-6 text-xl">추천 포트폴리오</h3>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
@@ -731,7 +750,7 @@ export default function ResultsPage() {
                     >
                       <div className="mb-4">
                         <CircularProgress 
-                          value={gptAnalysis.portfolio.stocks} 
+                          value={safeGptAnalysis.portfolio.stocks} 
                           maxValue={100} 
                           color="#3B82F6" 
                           size={80}
@@ -747,7 +766,7 @@ export default function ResultsPage() {
                     >
                       <div className="mb-4">
                         <CircularProgress 
-                          value={gptAnalysis.portfolio.bonds} 
+                          value={safeGptAnalysis.portfolio.bonds} 
                           maxValue={100} 
                           color="#10B981" 
                           size={80}
@@ -763,7 +782,7 @@ export default function ResultsPage() {
                     >
                       <div className="mb-4">
                         <CircularProgress 
-                          value={gptAnalysis.portfolio.cash} 
+                          value={safeGptAnalysis.portfolio.cash} 
                           maxValue={100} 
                           color="#F59E0B" 
                           size={80}
@@ -779,7 +798,7 @@ export default function ResultsPage() {
                     >
                       <div className="mb-4">
                         <CircularProgress 
-                          value={gptAnalysis.portfolio.reits} 
+                          value={safeGptAnalysis.portfolio.reits} 
                           maxValue={100} 
                           color="#8B5CF6" 
                           size={80}
@@ -795,7 +814,7 @@ export default function ResultsPage() {
                     >
                       <div className="mb-4">
                         <CircularProgress 
-                          value={gptAnalysis.portfolio.crypto} 
+                          value={safeGptAnalysis.portfolio.crypto} 
                           maxValue={100} 
                           color="#EF4444" 
                           size={80}
@@ -810,32 +829,32 @@ export default function ResultsPage() {
                     transition={{ duration: 0.5, delay: 0.6 }}
                     className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4"
                   >
-                    <p className="text-gray-700 text-sm leading-relaxed font-medium">{gptAnalysis.portfolio.reason}</p>
+                    <p className="text-gray-700 text-sm leading-relaxed font-medium">{safeGptAnalysis.portfolio.reason}</p>
                   </motion.div>
                 </div>
               )}
               
               {/* 주식 배분 전략 */}
-              {gptAnalysis.portfolio?.stockAllocation && (
+              {safeGptAnalysis.portfolio?.stockAllocation && (
                 <div className="bg-white rounded-lg p-6 mb-6">
                   <h3 className="font-semibold text-gray-800 mb-4">주식 투자 전략</h3>
                   <div className="mb-4">
-                    <p className="text-gray-600 text-sm mb-4">{gptAnalysis.portfolio.stockAllocation.reason}</p>
+                    <p className="text-gray-600 text-sm mb-4">{safeGptAnalysis.portfolio.stockAllocation.reason}</p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="text-center p-3 bg-blue-50 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">{gptAnalysis.portfolio.stockAllocation.dividendStocks}%</div>
+                        <div className="text-2xl font-bold text-blue-600">{safeGptAnalysis.portfolio.stockAllocation.dividendStocks}%</div>
                         <div className="text-sm text-gray-600">배당주</div>
                       </div>
                       <div className="text-center p-3 bg-green-50 rounded-lg">
-                        <div className="text-2xl font-bold text-green-600">{gptAnalysis.portfolio.stockAllocation.growthStocks}%</div>
+                        <div className="text-2xl font-bold text-green-600">{safeGptAnalysis.portfolio.stockAllocation.growthStocks}%</div>
                         <div className="text-sm text-gray-600">성장주</div>
                       </div>
                       <div className="text-center p-3 bg-purple-50 rounded-lg">
-                        <div className="text-2xl font-bold text-purple-600">{gptAnalysis.portfolio.stockAllocation.themeStocks}%</div>
+                        <div className="text-2xl font-bold text-purple-600">{safeGptAnalysis.portfolio.stockAllocation.themeStocks}%</div>
                         <div className="text-sm text-gray-600">테마주</div>
                       </div>
                       <div className="text-center p-3 bg-orange-50 rounded-lg">
-                        <div className="text-2xl font-bold text-orange-600">{gptAnalysis.portfolio.stockAllocation.valueStocks}%</div>
+                        <div className="text-2xl font-bold text-orange-600">{safeGptAnalysis.portfolio.stockAllocation.valueStocks}%</div>
                         <div className="text-sm text-gray-600">가치주</div>
                       </div>
                     </div>
@@ -846,7 +865,7 @@ export default function ResultsPage() {
           )}
 
           {/* 추천 종목 */}
-          {gptAnalysis && (
+          {safeGptAnalysis && (
             <motion.div
               id="pdf-portfolio"
               initial={{ opacity: 0, y: 30 }}
@@ -870,27 +889,27 @@ export default function ResultsPage() {
               </div>
 
               {/* 추천 주식 종목 */}
-              {gptAnalysis.recommendedStocks && (
+              {safeGptAnalysis.recommendedStocks && (
                 <div className="bg-white rounded-lg p-6 mb-6">
                   <h3 className="font-semibold text-gray-800 mb-4">유형별 추천 주식</h3>
                   <div className="space-y-8">
                     {/* 배당주 */}
-                    {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend').length > 0 && (
+                    {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend').length > 0 && (
                       <div>
                         <h4 className="font-medium text-gray-800 mb-4 flex items-center">
                           <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                          배당주 ({gptAnalysis.portfolio?.stockAllocation?.dividendStocks || 0}%)
+                          배당주 ({safeGptAnalysis.portfolio?.stockAllocation?.dividendStocks || 0}%)
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* 한국 배당주 */}
-                          {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '한국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '한국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-red-500 rounded-sm mr-2"></span>
                                 한국
                               </h5>
                               <div className="space-y-3">
-                                {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '한국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '한국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-blue-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -904,14 +923,14 @@ export default function ResultsPage() {
                           )}
                           
                           {/* 미국 배당주 */}
-                          {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '미국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '미국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-blue-600 rounded-sm mr-2"></span>
                                 미국
                               </h5>
                               <div className="space-y-3">
-                                {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '미국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '미국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-blue-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -928,22 +947,22 @@ export default function ResultsPage() {
                     )}
                     
                     {/* 성장주 */}
-                    {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth').length > 0 && (
+                    {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth').length > 0 && (
                       <div>
                         <h4 className="font-medium text-gray-800 mb-4 flex items-center">
                           <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                          성장주 ({gptAnalysis.portfolio?.stockAllocation?.growthStocks || 0}%)
+                          성장주 ({safeGptAnalysis.portfolio?.stockAllocation?.growthStocks || 0}%)
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* 한국 성장주 */}
-                          {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '한국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '한국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-red-500 rounded-sm mr-2"></span>
                                 한국
                               </h5>
                               <div className="space-y-3">
-                                {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '한국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '한국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-green-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -957,14 +976,14 @@ export default function ResultsPage() {
                           )}
                           
                           {/* 미국 성장주 */}
-                          {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '미국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '미국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-blue-600 rounded-sm mr-2"></span>
                                 미국
                               </h5>
                               <div className="space-y-3">
-                                {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '미국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '미국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-green-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -981,22 +1000,22 @@ export default function ResultsPage() {
                     )}
 
                     {/* 테마주 */}
-                    {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme').length > 0 && (
+                    {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme').length > 0 && (
                       <div>
                         <h4 className="font-medium text-gray-800 mb-4 flex items-center">
                           <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
-                          테마주 ({gptAnalysis.portfolio?.stockAllocation?.themeStocks || 0}%)
+                          테마주 ({safeGptAnalysis.portfolio?.stockAllocation?.themeStocks || 0}%)
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* 한국 테마주 */}
-                          {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '한국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '한국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-red-500 rounded-sm mr-2"></span>
                                 한국
                               </h5>
                               <div className="space-y-3">
-                                {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '한국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '한국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-purple-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1010,14 +1029,14 @@ export default function ResultsPage() {
                           )}
                           
                           {/* 미국 테마주 */}
-                          {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '미국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '미국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-blue-600 rounded-sm mr-2"></span>
                                 미국
                               </h5>
                               <div className="space-y-3">
-                                {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '미국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '미국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-purple-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1034,22 +1053,22 @@ export default function ResultsPage() {
                     )}
 
                     {/* 가치주 */}
-                    {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value').length > 0 && (
+                    {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value').length > 0 && (
                       <div>
                         <h4 className="font-medium text-gray-800 mb-4 flex items-center">
                           <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
-                          가치주 ({gptAnalysis.portfolio?.stockAllocation?.valueStocks || 0}%)
+                          가치주 ({safeGptAnalysis.portfolio?.stockAllocation?.valueStocks || 0}%)
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* 한국 가치주 */}
-                          {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '한국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '한국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-red-500 rounded-sm mr-2"></span>
                                 한국
                               </h5>
                               <div className="space-y-3">
-                                {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '한국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '한국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-orange-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1063,14 +1082,14 @@ export default function ResultsPage() {
                           )}
                           
                           {/* 미국 가치주 */}
-                          {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '미국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '미국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-blue-600 rounded-sm mr-2"></span>
                                 미국
                               </h5>
                               <div className="space-y-3">
-                                {gptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '미국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '미국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-orange-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1090,11 +1109,11 @@ export default function ResultsPage() {
               )}
               
               {/* 추천 암호화폐 */}
-              {gptAnalysis.recommendedCrypto && (
+              {safeGptAnalysis.recommendedCrypto && (
                 <div className="bg-white rounded-lg p-6 mb-6">
                   <h3 className="font-semibold text-gray-800 mb-4">추천 암호화폐</h3>
                   <div className="space-y-3">
-                                         {gptAnalysis.recommendedCrypto.map((crypto: any, index: number) => (
+                                         {safeGptAnalysis.recommendedCrypto.map((crypto: any, index: number) => (
                        <div key={index} className="border-l-4 border-orange-500 pl-4">
                          <div className="flex items-center space-x-2 mb-1">
                            <h4 className="font-medium text-gray-800">{crypto.name}</h4>
@@ -1118,7 +1137,7 @@ export default function ResultsPage() {
 
 
             {/* 1억원 포트폴리오 예시 */}
-            {gptAnalysis && gptAnalysis.portfolioExample && (
+            {safeGptAnalysis && safeGptAnalysis.portfolioExample && (
               <motion.div
                 id="pdf-portfolio-example"
                 initial={{ opacity: 0, y: 30 }}
@@ -1147,7 +1166,7 @@ export default function ResultsPage() {
                          </tr>
                        </thead>
                        <tbody className="divide-y divide-gray-200">
-                         {gptAnalysis.portfolioExample.breakdown.map((item: any, index: number) => (
+                         {safeGptAnalysis.portfolioExample.breakdown.map((item: any, index: number) => (
                            <tr key={index} className="hover:bg-gray-50">
                              <td className="px-4 py-4 text-sm font-medium text-gray-800">{item.category}</td>
                              <td className="px-4 py-4 text-center text-sm text-gray-600">{item.percentage}%</td>
@@ -1175,7 +1194,7 @@ export default function ResultsPage() {
                  </div>
 
                 {/* 세부 설명 */}
-                {gptAnalysis.portfolioExample.notes && gptAnalysis.portfolioExample.notes.length > 0 && (
+                {safeGptAnalysis.portfolioExample.notes && safeGptAnalysis.portfolioExample.notes.length > 0 && (
                   <div className="mt-6 bg-white rounded-lg p-6">
                     <h3 className="font-semibold text-gray-800 mb-4 flex items-center">
                       <span className="w-5 h-5 bg-blue-100 rounded mr-2 flex items-center justify-center">
@@ -1184,7 +1203,7 @@ export default function ResultsPage() {
                       세부 설명
                     </h3>
                     <div className="space-y-3">
-                      {gptAnalysis.portfolioExample.notes.map((note: string, index: number) => (
+                      {safeGptAnalysis.portfolioExample.notes.map((note: string, index: number) => (
                         <div key={index} className="flex items-start space-x-3">
                           <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                           <p className="text-gray-600 text-sm leading-relaxed">{note}</p>
@@ -1198,7 +1217,7 @@ export default function ResultsPage() {
           </div>
 
           {/* 기간별 행동지침 */}
-          {gptAnalysis && gptAnalysis.actionGuide && (
+          {safeGptAnalysis && safeGptAnalysis.actionGuide && (
             <motion.div
               id="pdf-action-guide"
               initial={{ opacity: 0, y: 30 }}
@@ -1214,7 +1233,7 @@ export default function ResultsPage() {
               </div>
 
               {/* 투자 기간 분석 */}
-              {gptAnalysis.actionGuide.investmentHorizon && (
+              {safeGptAnalysis.actionGuide.investmentHorizon && (
                 <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 mb-8">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
@@ -1225,11 +1244,11 @@ export default function ResultsPage() {
                   <div className="bg-white rounded-lg p-4">
                     <div className="flex items-center space-x-3 mb-2">
                       <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
-                        {gptAnalysis.actionGuide.investmentHorizon.primary}
+                        {safeGptAnalysis.actionGuide.investmentHorizon.primary}
                       </span>
                     </div>
                     <p className="text-gray-700 leading-relaxed">
-                      {gptAnalysis.actionGuide.investmentHorizon.description}
+                      {safeGptAnalysis.actionGuide.investmentHorizon.description}
                     </p>
                   </div>
                 </div>
@@ -1242,10 +1261,10 @@ export default function ResultsPage() {
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
                       <span className="text-white text-sm font-bold">월</span>
                     </div>
-                    {gptAnalysis.actionGuide.monthly.title}
+                    {safeGptAnalysis.actionGuide.monthly.title}
                   </h3>
                   <div className="space-y-3">
-                    {gptAnalysis.actionGuide.monthly.actions.map((action: string, index: number) => (
+                    {safeGptAnalysis.actionGuide.monthly.actions.map((action: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
                         <p className="text-blue-700 text-sm leading-relaxed">{action}</p>
@@ -1260,10 +1279,10 @@ export default function ResultsPage() {
                     <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center mr-3">
                       <span className="text-white text-sm font-bold">분기</span>
                     </div>
-                    {gptAnalysis.actionGuide.quarterly.title}
+                    {safeGptAnalysis.actionGuide.quarterly.title}
                   </h3>
                   <div className="space-y-3">
-                    {gptAnalysis.actionGuide.quarterly.actions.map((action: string, index: number) => (
+                    {safeGptAnalysis.actionGuide.quarterly.actions.map((action: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
                         <p className="text-green-700 text-sm leading-relaxed">{action}</p>
@@ -1278,10 +1297,10 @@ export default function ResultsPage() {
                     <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
                       <span className="text-white text-sm font-bold">반기</span>
                     </div>
-                    {gptAnalysis.actionGuide.semiannual.title}
+                    {safeGptAnalysis.actionGuide.semiannual.title}
                   </h3>
                   <div className="space-y-3">
-                    {gptAnalysis.actionGuide.semiannual.actions.map((action: string, index: number) => (
+                    {safeGptAnalysis.actionGuide.semiannual.actions.map((action: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
                         <p className="text-purple-700 text-sm leading-relaxed">{action}</p>
@@ -1296,10 +1315,10 @@ export default function ResultsPage() {
                     <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center mr-3">
                       <span className="text-white text-sm font-bold">년</span>
                     </div>
-                    {gptAnalysis.actionGuide.annual.title}
+                    {safeGptAnalysis.actionGuide.annual.title}
                   </h3>
                   <div className="space-y-3">
-                    {gptAnalysis.actionGuide.annual.actions.map((action: string, index: number) => (
+                    {safeGptAnalysis.actionGuide.annual.actions.map((action: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 flex-shrink-0"></div>
                         <p className="text-orange-700 text-sm leading-relaxed">{action}</p>
