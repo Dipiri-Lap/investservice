@@ -248,7 +248,7 @@ export function onRequestPost(context) {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: "gpt-4",
+            model: "gpt-4.1",
             messages: [
               {
                 role: "system",
@@ -260,7 +260,7 @@ export function onRequestPost(context) {
               }
             ],
             temperature: 0.3,
-            max_tokens: 8000
+            max_tokens: 6000
           })
         }).then(function(openaiResponse) {
           console.log('7. OpenAI API 응답 수신 - 상태:', openaiResponse.status);
