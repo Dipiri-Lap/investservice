@@ -39,22 +39,23 @@ function createPrompt(averageScore, totalScore, surveyResultsText) {
   prompt += '   - 공격적 성향: 성장주 40-50%, 테마주 25-35%, 배당주 10-20%, 가치주 10-20%\n';
   prompt += '8. 각 주식 유형별로 한국 3개, 미국 3개씩 총 6개를 추천해주세요 (배당주, 성장주, 테마주, 가치주 각각 국가별 3개씩).\n';
   prompt += '9. 추천 주식 종목은 분석 당일 날짜를 기준으로 검색하여 최신 트렌드를 고려하여 투자 성향에 맞는 다양성을 고려해주세요.\n';
-  prompt += '10. 각 종목에는 국가(한국/미국), 거래소(KRX/NYSE/NASDAQ), 추천 이유를 포함해주세요.\n';
+  prompt += '10. 각 종목에는 반드시 ticker(종목코드), 국가(한국/미국), 거래소(KRX/NYSE/NASDAQ), 추천 이유를 포함해주세요.\n';
   prompt += '11. 분석 당일일 날짜를 토대로 검색하여 주식 트렌드를 반영하여 추천.\n';
   prompt += '12. 투자 성향에 따라 보수적이면 안전한 대형주, 공격적이면 성장주나 테마주를 추천해주세요.\n';
-  prompt += '13. 암호화폐도 투자 성향에 맞게 3-5개를 추천해주세요 (보수적이면 비트코인/이더리움 위주, 공격적이면 알트코인 포함).\n';
-  prompt += '14. 1억원을 기준으로 한 구체적인 포트폴리오 예시를 제공해주세요. 각 자산군별 금액, 추천 종목과 수량을 포함하여 실제 투자 가능한 형태로 작성해주세요.\n';
+  prompt += '13. 암호화폐도 투자 성향에 맞게 3-5개를 추천해주세요 (보수적이면 비트코인/이더리움 위주, 공격적이면 알트코인 포함). 각 암호화폐에는 반드시 symbol(티커)을 포함해주세요.\n';
+  prompt += '14. 1억원을 기준으로 한 구체적인 포트폴리오 예시를 제공해주세요. portfolioExample 구조는 다음과 같이 해주세요:\n';
+  prompt += '    {"totalAmount": 100000000, "breakdown": [{"category": "주식", "percentage": 40, "amount": 40000000, "investments": [{"name": "종목명", "shares": "수량", "estimatedValue": "예상가치"}]}]}\n';
   prompt += '15. 투자 성향에 따른 투자 기간(단기 1년 이하, 중기 1-5년, 장기 5년 이상)을 분석하고, 각 기간별 행동지침을 제공해주세요:\n';
   prompt += '    - 월별: 기존 투자 자산 모니터링, 추가 투자금 확보 방법, 시장 상황 대응\n';
   prompt += '    - 분기별: 포트폴리오 리밸런싱, 수익 실현/손절 기준, 새로운 투자 기회 발굴\n';
   prompt += '    - 반기별: 투자 전략 재검토, 자산 배분 조정, 세금 최적화 방안\n';
   prompt += '    - 년도별: 투자 목표 재설정, 장기 계획 수립, 투자 성과 종합 평가\n';
   prompt += '    각 기간별로 투자 성향에 맞는 구체적이고 실행 가능한 행동 방안을 제시해주세요.\n';
-  prompt += '16. 모든 답변은 전문적이고 구체적인 어투로 200-300자 분량으로 작성해주세요.\n\n';
+  prompt += '16. 모든 답변은 전문적이고 구체적인 어투로 300~400자 분량으로 작성해주세요.\n\n';
   
   // JSON 형식 요청
   prompt += '다음 JSON 형식으로만 응답해주세요. 각 주식 유형별로 한국 3개, 미국 3개씩 총 24개 종목을 추천해주세요:\n';
-  prompt += '{"investmentType": "해당_투자_성향", "confidence": 85, "analysis": {"description": "상세설명", "advantages": "장점", "disadvantages": "단점", "improvements": "개선사항", "portfolio": {"stocks": 40, "bonds": 30, "cash": 15, "reits": 10, "crypto": 5, "reason": "이유", "stockAllocation": {"dividendStocks": 50, "growthStocks": 25, "themeStocks": 15, "valueStocks": 10, "reason": "이유"}}, "recommendedStocks": {"dividend": [배당주_6개_배열], "growth": [성장주_6개_배열], "theme": [테마주_6개_배열], "value": [가치주_6개_배열]}, "portfolioExample": {"totalAmount": 100000000, "breakdown": [자산별_상세내역]}, "recommendedCrypto": [암호화폐_배열], "actionGuide": {"investmentHorizon": {"primary": "투자기간", "description": "설명"}, "monthly": {"title": "매월", "actions": ["행동1", "행동2", "행동3"]}, "quarterly": {"title": "분기별", "actions": ["행동1", "행동2", "행동3"]}, "semiannual": {"title": "반기별", "actions": ["행동1", "행동2", "행동3"]}, "annual": {"title": "년도별", "actions": ["행동1", "행동2", "행동3"]}}}, "keyFindings": ["발견사항1", "발견사항2", "발견사항3"]}';
+  prompt += '{"investmentType": "해당_투자_성향", "confidence": 85, "analysis": {"description": "상세설명", "advantages": "장점", "disadvantages": "단점", "improvements": "개선사항", "portfolio": {"stocks": 40, "bonds": 30, "cash": 15, "reits": 10, "crypto": 5, "reason": "이유", "stockAllocation": {"dividendStocks": 50, "growthStocks": 25, "themeStocks": 15, "valueStocks": 10, "reason": "이유"}}, "recommendedStocks": {"dividend": [{"name": "종목명", "ticker": "종목코드", "country": "한국", "market": "KRX", "reason": "추천이유"}], "growth": [성장주_6개_배열], "theme": [테마주_6개_배열], "value": [가치주_6개_배열]}, "portfolioExample": {"totalAmount": 100000000, "breakdown": [{"category": "주식", "percentage": 40, "amount": 40000000, "investments": [{"name": "종목명", "shares": "수량", "estimatedValue": "예상가치"}]}, {"category": "채권", "percentage": 30, "amount": 30000000, "investments": [{"name": "채권명", "shares": "수량", "estimatedValue": "예상가치"}]}, {"category": "현금", "percentage": 15, "amount": 15000000, "investments": [{"name": "현금상품명", "shares": "-", "estimatedValue": "예상가치"}]}, {"category": "부동산", "percentage": 10, "amount": 10000000, "investments": [{"name": "부동산상품명", "shares": "수량", "estimatedValue": "예상가치"}]}, {"category": "암호화폐", "percentage": 5, "amount": 5000000, "investments": [{"name": "암호화폐명", "shares": "수량", "estimatedValue": "예상가치"}]}], "notes": ["설명1", "설명2", "설명3"]}, "recommendedCrypto": [{"name": "암호화폐명", "symbol": "심볼", "reason": "추천이유"}], "actionGuide": {"investmentHorizon": {"primary": "투자기간", "description": "설명"}, "monthly": {"title": "매월", "actions": ["행동1", "행동2", "행동3"]}, "quarterly": {"title": "분기별", "actions": ["행동1", "행동2", "행동3"]}, "semiannual": {"title": "반기별", "actions": ["행동1", "행동2", "행동3"]}, "annual": {"title": "년도별", "actions": ["행동1", "행동2", "행동3"]}}}, "keyFindings": ["발견사항1", "발견사항2", "발견사항3"]}';
   
   return prompt;
 }

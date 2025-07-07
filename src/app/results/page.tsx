@@ -913,7 +913,7 @@ export default function ResultsPage() {
                                   <div key={index} className="border-l-4 border-blue-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
-                                      <span className="text-sm text-gray-500">({stock.ticker})</span>
+                                      {stock.ticker && <span className="text-sm text-gray-500">({stock.ticker})</span>}
                                     </div>
                                     <p className="text-gray-600 text-sm">{stock.reason}</p>
                                   </div>
@@ -934,7 +934,7 @@ export default function ResultsPage() {
                                   <div key={index} className="border-l-4 border-blue-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
-                                      <span className="text-sm text-gray-500">({stock.ticker})</span>
+                                      {stock.ticker && <span className="text-sm text-gray-500">({stock.ticker})</span>}
                                     </div>
                                     <p className="text-gray-600 text-sm">{stock.reason}</p>
                                   </div>
@@ -966,7 +966,7 @@ export default function ResultsPage() {
                                   <div key={index} className="border-l-4 border-green-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
-                                      <span className="text-sm text-gray-500">({stock.ticker})</span>
+                                      {stock.ticker && <span className="text-sm text-gray-500">({stock.ticker})</span>}
                                     </div>
                                     <p className="text-gray-600 text-sm">{stock.reason}</p>
                                   </div>
@@ -987,7 +987,7 @@ export default function ResultsPage() {
                                   <div key={index} className="border-l-4 border-green-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
-                                      <span className="text-sm text-gray-500">({stock.ticker})</span>
+                                      {stock.ticker && <span className="text-sm text-gray-500">({stock.ticker})</span>}
                                     </div>
                                     <p className="text-gray-600 text-sm">{stock.reason}</p>
                                   </div>
@@ -1019,7 +1019,7 @@ export default function ResultsPage() {
                                   <div key={index} className="border-l-4 border-purple-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
-                                      <span className="text-sm text-gray-500">({stock.ticker})</span>
+                                      {stock.ticker && <span className="text-sm text-gray-500">({stock.ticker})</span>}
                                     </div>
                                     <p className="text-gray-600 text-sm">{stock.reason}</p>
                                   </div>
@@ -1040,7 +1040,7 @@ export default function ResultsPage() {
                                   <div key={index} className="border-l-4 border-purple-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
-                                      <span className="text-sm text-gray-500">({stock.ticker})</span>
+                                      {stock.ticker && <span className="text-sm text-gray-500">({stock.ticker})</span>}
                                     </div>
                                     <p className="text-gray-600 text-sm">{stock.reason}</p>
                                   </div>
@@ -1072,7 +1072,7 @@ export default function ResultsPage() {
                                   <div key={index} className="border-l-4 border-orange-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
-                                      <span className="text-sm text-gray-500">({stock.ticker})</span>
+                                      {stock.ticker && <span className="text-sm text-gray-500">({stock.ticker})</span>}
                                     </div>
                                     <p className="text-gray-600 text-sm">{stock.reason}</p>
                                   </div>
@@ -1093,7 +1093,7 @@ export default function ResultsPage() {
                                   <div key={index} className="border-l-4 border-orange-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
-                                      <span className="text-sm text-gray-500">({stock.ticker})</span>
+                                      {stock.ticker && <span className="text-sm text-gray-500">({stock.ticker})</span>}
                                     </div>
                                     <p className="text-gray-600 text-sm">{stock.reason}</p>
                                   </div>
@@ -1117,7 +1117,7 @@ export default function ResultsPage() {
                       <div key={index} className="border-l-4 border-orange-500 pl-4">
                         <div className="flex items-center space-x-2 mb-1">
                           <h4 className="font-medium text-gray-800">{crypto.name}</h4>
-                          <span className="text-sm text-gray-500">({crypto.symbol})</span>
+                          {crypto.symbol && <span className="text-sm text-gray-500">({crypto.symbol})</span>}
                         </div>
                         <p className="text-gray-600 text-sm">{crypto.reason}</p>
                       </div>
@@ -1168,10 +1168,10 @@ export default function ResultsPage() {
                        <tbody className="divide-y divide-gray-200">
                          {(safeGptAnalysis.portfolioExample.breakdown || []).map((item: any, index: number) => (
                            <tr key={index} className="hover:bg-gray-50">
-                             <td className="px-4 py-4 text-sm font-medium text-gray-800">{item.category}</td>
-                             <td className="px-4 py-4 text-center text-sm text-gray-600">{item.percentage}%</td>
+                             <td className="px-4 py-4 text-sm font-medium text-gray-800">{item.category || '자산군'}</td>
+                             <td className="px-4 py-4 text-center text-sm text-gray-600">{item.percentage || 0}%</td>
                              <td className="px-4 py-4 text-center text-sm text-gray-600">
-                               {item.amount.toLocaleString()}
+                               {(item.amount || 0).toLocaleString()}
                              </td>
                              <td className="px-4 py-4 text-sm text-gray-600">
                                <div className="space-y-1">
