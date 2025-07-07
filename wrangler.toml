@@ -1,0 +1,13 @@
+name = "investservice"
+compatibility_date = "2024-01-01"
+
+[env.production]
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run build"
+publish = "out"
+
+[functions]
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"] 
