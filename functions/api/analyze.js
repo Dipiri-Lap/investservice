@@ -84,7 +84,13 @@ var investmentProfiles = {
     description: '원금 보장을 절대 우선시하는 투자자',
     riskLevel: 1,
     expectedReturn: '1-2%',
-    recommendedAssets: { stocks: 5, bonds: 70, cash: 25, alternatives: 0 }
+    recommendedAssets: { stocks: 5, bonds: 70, cash: 25, alternatives: 0 },
+    characteristics: [
+      '원금 손실에 대한 극도의 거부감',
+      '안정적인 예금과 적금 선호',
+      '변동성이 높은 투자 회피',
+      '보수적이고 신중한 투자 결정'
+    ]
   },
   ultra_conservative: {
     type: 'ultra_conservative', 
@@ -92,15 +98,27 @@ var investmentProfiles = {
     description: '안전성을 최우선으로 하는 투자자',
     riskLevel: 2,
     expectedReturn: '2-3%',
-    recommendedAssets: { stocks: 10, bonds: 65, cash: 20, alternatives: 5 }
+    recommendedAssets: { stocks: 10, bonds: 65, cash: 20, alternatives: 5 },
+    characteristics: [
+      '안전성을 최우선으로 고려',
+      '최소한의 위험만 감수',
+      '예측 가능한 수익 추구',
+      '장기적 안정성 중시'
+    ]
   },
   conservative: {
     type: 'conservative',
     name: '보수형', 
-    description: '안정성을 중시하는 투자자',
+    description: '안전성을 중시하는 투자자',
     riskLevel: 3,
     expectedReturn: '3-5%',
-    recommendedAssets: { stocks: 20, bonds: 60, cash: 15, alternatives: 5 }
+    recommendedAssets: { stocks: 20, bonds: 60, cash: 15, alternatives: 5 },
+    characteristics: [
+      '안정성과 수익성의 조화 추구',
+      '인플레이션 대응 투자 고려',
+      '적절한 분산투자 선호',
+      '점진적인 자산 증식 목표'
+    ]
   },
   moderate_conservative: {
     type: 'moderate_conservative',
@@ -108,7 +126,13 @@ var investmentProfiles = {
     description: '안정성 기반의 적절한 위험 감수 투자자',
     riskLevel: 4,
     expectedReturn: '4-6%', 
-    recommendedAssets: { stocks: 30, bonds: 50, cash: 15, alternatives: 5 }
+    recommendedAssets: { stocks: 30, bonds: 50, cash: 15, alternatives: 5 },
+    characteristics: [
+      '안정성을 기반으로 한 성장 추구',
+      '적절한 위험 수용 능력',
+      '다양한 자산군 분산투자',
+      '중장기적 투자 관점'
+    ]
   },
   balanced: {
     type: 'balanced',
@@ -116,7 +140,13 @@ var investmentProfiles = {
     description: '안정성과 수익성의 균형을 추구하는 투자자',
     riskLevel: 5,
     expectedReturn: '5-7%',
-    recommendedAssets: { stocks: 40, bonds: 40, cash: 15, alternatives: 5 }
+    recommendedAssets: { stocks: 40, bonds: 40, cash: 15, alternatives: 5 },
+    characteristics: [
+      '안정성과 수익성의 균형 추구',
+      '중간 수준의 위험 감수',
+      '포트폴리오 리밸런싱 실행',
+      '시장 변동성에 대한 인내심'
+    ]
   },
   moderate_growth: {
     type: 'moderate_growth',
@@ -124,7 +154,13 @@ var investmentProfiles = {
     description: '성장성을 추구하되 적절한 안정성을 유지하는 투자자',
     riskLevel: 6,
     expectedReturn: '6-8%',
-    recommendedAssets: { stocks: 50, bonds: 30, cash: 15, alternatives: 5 }
+    recommendedAssets: { stocks: 50, bonds: 30, cash: 15, alternatives: 5 },
+    characteristics: [
+      '성장성과 안정성의 조화',
+      '중간 이상의 위험 감수',
+      '성장 가능성이 높은 투자 선호',
+      '장기적 자산 증식 목표'
+    ]
   },
   growth: {
     type: 'growth',
@@ -132,7 +168,13 @@ var investmentProfiles = {
     description: '장기적 자산 성장을 목표로 하는 투자자',
     riskLevel: 7,
     expectedReturn: '7-10%',
-    recommendedAssets: { stocks: 60, bonds: 25, cash: 10, alternatives: 5 }
+    recommendedAssets: { stocks: 60, bonds: 25, cash: 10, alternatives: 5 },
+    characteristics: [
+      '장기적 자산 성장 중시',
+      '상당한 위험 감수 능력',
+      '성장주와 혁신 기업 투자',
+      '시장 변동성에 대한 높은 내성'
+    ]
   },
   aggressive_growth: {
     type: 'aggressive_growth',
@@ -140,7 +182,13 @@ var investmentProfiles = {
     description: '높은 수익을 위해 큰 위험을 감수하는 투자자',
     riskLevel: 8,
     expectedReturn: '8-12%',
-    recommendedAssets: { stocks: 70, bonds: 15, cash: 10, alternatives: 5 }
+    recommendedAssets: { stocks: 70, bonds: 15, cash: 10, alternatives: 5 },
+    characteristics: [
+      '높은 수익률 추구',
+      '큰 위험 감수 의지',
+      '공격적인 투자 전략 선호',
+      '빠른 자산 증식 목표'
+    ]
   },
   speculative_aggressive: {
     type: 'speculative_aggressive',
@@ -148,7 +196,13 @@ var investmentProfiles = {
     description: '투기적 투자도 감수하는 적극적 투자자',
     riskLevel: 9,
     expectedReturn: '10-15%',
-    recommendedAssets: { stocks: 80, bonds: 10, cash: 5, alternatives: 5 }
+    recommendedAssets: { stocks: 80, bonds: 10, cash: 5, alternatives: 5 },
+    characteristics: [
+      '매우 높은 수익률 추구',
+      '투기적 투자 수용',
+      '적극적인 거래 성향',
+      '높은 변동성 감수'
+    ]
   },
   ultra_speculative_aggressive: {
     type: 'ultra_speculative_aggressive',
@@ -156,7 +210,13 @@ var investmentProfiles = {
     description: '최대 수익을 위해 극도의 위험을 감수하는 투자자',
     riskLevel: 10,
     expectedReturn: '15%+',
-    recommendedAssets: { stocks: 85, bonds: 5, cash: 5, alternatives: 5 }
+    recommendedAssets: { stocks: 85, bonds: 5, cash: 5, alternatives: 5 },
+    characteristics: [
+      '최대 수익률 추구',
+      '극도의 위험 감수',
+      '고위험 고수익 투자 선호',
+      '단기 트레이딩 경향'
+    ]
   }
 };
 
