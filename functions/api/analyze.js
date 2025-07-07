@@ -381,6 +381,7 @@ export function onRequestPost(context) {
             riskLevel: baseProfile.riskLevel,
             expectedReturn: baseProfile.expectedReturn,
             recommendedAssets: baseProfile.recommendedAssets,
+            characteristics: baseProfile.characteristics,
             gptAnalysis: analysisResult.analysis,
             confidence: analysisResult.confidence,
             keyFindings: analysisResult.keyFindings
@@ -785,6 +786,7 @@ export function onRequestPost(context) {
               riskLevel: fallbackProfile.riskLevel,
               expectedReturn: fallbackProfile.expectedReturn,
               recommendedAssets: fallbackProfile.recommendedAssets,
+              characteristics: fallbackProfile.characteristics,
               gptAnalysis: fallbackGptAnalysis,
               confidence: 70,
               keyFindings: [
