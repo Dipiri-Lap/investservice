@@ -156,11 +156,410 @@ export function onRequestPost(context) {
         }, 0);
         var averageScore = totalScore / answers.length;
 
-        // GPT에게 보낼 프롬프트 구성 (전체 분석 결과 포함)
-        var prompt = '\n다음은 투자 성향 분석을 위한 25문항 설문 결과입니다. 각 질문과 답변을 종합적으로 분석하여 투자자의 성향을 정확히 판단해주세요.\n\n**평균 점수: ' + averageScore.toFixed(2) + '점 (총 ' + totalScore + '점 / 25문항)**\n\n설문 결과:\n' + surveyResults.map(function(result) {
-          return result.questionNumber + '. [' + result.category + '] ' + result.question + '\n  답변: ' + result.selectedAnswer + ' (점수: ' + result.score + ')';
-        }).join('\n\n') + '\n\n투자 성향 분류 기준 (점수 기반):\n평균 점수 계산: 총 점수 / 25문항\n\n1. 초극보수형 (ultra_ultra_conservative) - 평균 1.0~1.3: 원금 보장을 절대 우선시하며, 어떤 손실도 감수하지 않는 극도로 안전한 투자만 선호\n2. 극보수형 (ultra_conservative) - 평균 1.4~1.6: 안전성을 최우선으로 하며, 최소한의 위험만 감수하여 안정적인 수익을 추구\n3. 보수형 (conservative) - 평균 1.7~2.0: 안정성을 중시하면서도 약간의 위험을 감수하여 인플레이션을 상회하는 수익을 추구\n4. 온건보수형 (moderate_conservative) - 평균 2.1~2.4: 안정성을 기반으로 하되, 적절한 위험을 감수하여 보다 나은 수익을 추구\n5. 균형형 (balanced) - 평균 2.5~2.8: 안정성과 수익성의 균형을 추구하며, 중간 정도의 위험을 감수\n6. 온건성장형 (moderate_growth) - 평균 2.9~3.2: 성장성을 추구하면서도 적절한 안정성을 유지하여 균형잡힌 포트폴리오를 선호\n7. 성장형 (growth) - 평균 3.3~3.6: 장기적 자산 성장을 목표로 하며, 상당한 위험을 감수하여 높은 수익을 추구\n8. 공격성장형 (aggressive_growth) - 평균 3.7~4.0: 높은 수익을 추구하며, 큰 위험을 감수하고 적극적인 투자 전략을 선호\n9. 공격투기형 (speculative_aggressive) - 평균 4.1~4.4: 매우 높은 수익을 추구하며, 투기적 투자도 감수하는 적극적인 성향\n10. 극공격투기형 (ultra_speculative_aggressive) - 평균 4.5~5.0: 최대 수익을 추구하며, 극도로 높은 위험과 투기적 투자를 마다하지 않는 성향\n\n분석 요청사항:\n1. 위에 제시된 평균 점수 ' + averageScore.toFixed(2) + '점을 기준으로 해당하는 점수 구간의 투자 성향을 우선 선택해주세요.\n2. 그 다음 위험 감수 능력, 투자 목적, 투자 경험, 자산 현황, 심리적 특성, 투자 전략을 종합적으로 고려해주세요.\n3. 점수 기준을 반드시 우선으로 하되, 답변 패턴이 극단적으로 다를 경우에만 인접 구간으로 조정 가능합니다.\n4. 각 투자 성향별 특징을 구체적으로 설명하고, 투자 행동과 심리적 특성을 반영해주세요.\n5. 포트폴리오 구성 시 주식, 채권, 현금, 부동산(REITs), 암호화폐 비중을 총 100%로 맞춰주세요.\n6. 주식 투자 부분에 대해서는 투자 성향에 맞는 세부 배분을 제공해주세요 (배당주, 성장주, 테마주, 가치주의 비중을 %로 표시하며, 총합이 100%가 되도록).\n7. 각 주식 유형별로 한국 3개, 미국 3개씩 총 6개를 추천해주세요 (배당주, 성장주, 테마주, 가치주 각각 국가별 3개씩).\n8. 암호화폐도 투자 성향에 맞게 3-5개를 추천해주세요.\n9. 1억원을 기준으로 한 구체적인 포트폴리오 예시를 제공해주세요.\n10. 투자 성향에 따른 투자 기간별 행동지침을 제공해주세요.\n\n다음 JSON 형식으로만 응답해주세요:\n{\n  "investmentType": "ultra_ultra_conservative|ultra_conservative|conservative|moderate_conservative|balanced|moderate_growth|growth|aggressive_growth|speculative_aggressive|ultra_speculative_aggressive",\n  "confidence": 85,\n  "analysis": {\n    "description": "투자 성향의 핵심 특징과 투자 행동 패턴을 500자 내외로 상세히 설명",\n    "advantages": "해당 성향의 투자 강점과 긍정적 측면 (200-300자)",\n    "disadvantages": "투자 시 주의할 점과 보완할 부분 (200-300자)",\n    "improvements": "투자자에게 도움이 될 구체적인 행동 지침 및 전략 개선 제안 (200-300자)",\n    "portfolio": {\n      "stocks": 40,\n      "bonds": 30,\n      "cash": 15,\n      "reits": 10,\n      "crypto": 5,\n      "reason": "포트폴리오 구성 이유와 비중 설명",\n      "stockAllocation": {\n        "dividendStocks": 50,\n        "growthStocks": 25,\n        "themeStocks": 15,\n        "valueStocks": 10,\n        "reason": "주식 내 세부 배분 이유"\n      }\n    },\n    "recommendedStocks": [\n      {\n        "category": "dividend",\n        "name": "배당주 기업명",\n        "ticker": "종목코드",\n        "market": "KRX 또는 NYSE/NASDAQ",\n        "country": "한국 또는 미국",\n        "reason": "추천 이유"\n      }\n    ],\n    "recommendedCrypto": [\n      {\n        "name": "비트코인",\n        "symbol": "BTC",\n        "reason": "추천 이유"\n      }\n    ],\n    "portfolioExample": {\n      "totalAmount": 100000000,\n      "breakdown": [\n        {\n          "category": "주식",\n          "percentage": 40,\n          "amount": 40000000,\n          "investments": [\n            {\n              "name": "종목명",\n              "shares": "수량",\n              "estimatedValue": "예상 금액"\n            }\n          ]\n        }\n      ],\n      "notes": ["구체적인 투자 방법과 주의사항"]\n    },\n    "actionGuide": {\n      "investmentHorizon": {\n        "primary": "장기투자 (5년 이상)",\n        "description": "투자 기간 특징 설명"\n      },\n      "monthly": {\n        "title": "매월 해야 할 일",\n        "actions": ["구체적 행동 1", "구체적 행동 2", "구체적 행동 3"]\n      },\n      "quarterly": {\n        "title": "분기별 해야 할 일",\n        "actions": ["구체적 행동 1", "구체적 행동 2", "구체적 행동 3"]\n      },\n      "semiannual": {\n        "title": "반기별 해야 할 일",\n        "actions": ["구체적 행동 1", "구체적 행동 2", "구체적 행동 3"]\n      },\n      "annual": {\n        "title": "년도별 해야 할 일",\n        "actions": ["구체적 행동 1", "구체적 행동 2", "구체적 행동 3"]\n      }\n    }\n  },\n  "keyFindings": [\n    "주요 발견사항 1",\n    "주요 발견사항 2",\n    "주요 발견사항 3"\n  ]\n}\n';
-
+        // GPT에게 보낼 프롬프트 구성 (route.ts와 동일한 상세한 분석)
+        var prompt = // GPT에게 보낼 프롬프트 구성
+         `
+    다음은 투자 성향 분석을 위한 25문항 설문 결과입니다. 각 질문과 답변을 종합적으로 분석하여 투자자의 성향을 정확히 판단해주세요.
+    
+    **평균 점수: ${averageScore.toFixed(2)}점 (총 ${totalScore}점 / 25문항)**
+    
+    설문 결과:
+    ${surveyResults.map(result => 
+      `${result.questionNumber}. [${result.category}] ${result.question}
+      답변: ${result.selectedAnswer} (점수: ${result.score})`
+    ).join('\n\n')}
+    
+    투자 성향 분류 기준 (점수 기반):
+    평균 점수 계산: 총 점수 / 25문항
+    
+    1. 초극보수형 (ultra_ultra_conservative) - 평균 1.0~1.3: 원금 보장을 절대 우선시하며, 어떤 손실도 감수하지 않는 극도로 안전한 투자만 선호
+    2. 극보수형 (ultra_conservative) - 평균 1.4~1.6: 안전성을 최우선으로 하며, 최소한의 위험만 감수하여 안정적인 수익을 추구
+    3. 보수형 (conservative) - 평균 1.7~2.0: 안정성을 중시하면서도 약간의 위험을 감수하여 인플레이션을 상회하는 수익을 추구
+    4. 온건보수형 (moderate_conservative) - 평균 2.1~2.4: 안정성을 기반으로 하되, 적절한 위험을 감수하여 보다 나은 수익을 추구
+    5. 균형형 (balanced) - 평균 2.5~2.8: 안정성과 수익성의 균형을 추구하며, 중간 정도의 위험을 감수
+    6. 온건성장형 (moderate_growth) - 평균 2.9~3.2: 성장성을 추구하면서도 적절한 안정성을 유지하여 균형잡힌 포트폴리오를 선호
+    7. 성장형 (growth) - 평균 3.3~3.6: 장기적 자산 성장을 목표로 하며, 상당한 위험을 감수하여 높은 수익을 추구
+    8. 공격성장형 (aggressive_growth) - 평균 3.7~4.0: 높은 수익을 추구하며, 큰 위험을 감수하고 적극적인 투자 전략을 선호
+    9. 공격투기형 (speculative_aggressive) - 평균 4.1~4.4: 매우 높은 수익을 추구하며, 투기적 투자도 감수하는 적극적인 성향
+    10. 극공격투기형 (ultra_speculative_aggressive) - 평균 4.5~5.0: 최대 수익을 추구하며, 극도로 높은 위험과 투기적 투자를 마다하지 않는 성향
+    
+    분석 요청사항:
+    1. 위에 제시된 평균 점수 ${averageScore.toFixed(2)}점을 기준으로 해당하는 점수 구간의 투자 성향을 우선 선택해주세요.
+    2. 그 다음 위험 감수 능력, 투자 목적, 투자 경험, 자산 현황, 심리적 특성, 투자 전략을 종합적으로 고려해주세요.
+    3. 점수 기준을 반드시 우선으로 하되, 답변 패턴이 극단적으로 다를 경우에만 인접 구간으로 조정 가능합니다.
+    4. 각 투자 성향별 특징을 구체적으로 설명하고, 투자 행동과 심리적 특성을 반영해주세요.
+    5. 투자 성향 상세 설명(description)에는 점수나 평균 점수와 같은 수치 정보는 포함하지 말고, 순수하게 투자 성향의 특징과 행동 패턴만 설명해주세요.
+    6. 포트폴리오 구성 시 주식, 채권, 현금, 부동산(REITs), 암호화폐 비중을 총 100%로 맞춰주세요.
+    7. 주식 투자 부분에 대해서는 투자 성향에 맞는 세부 배분을 제공해주세요 (배당주, 성장주, 테마주, 가치주의 비중을 %로 표시하며, 총합이 100%가 되도록). 
+       - 보수적 성향: 배당주 50-70%, 가치주 20-30%, 성장주 10-20%, 테마주 0-10%
+       - 균형 성향: 배당주 30-40%, 가치주 25-35%, 성장주 20-30%, 테마주 10-20%
+       - 공격적 성향: 성장주 40-50%, 테마주 25-35%, 배당주 10-20%, 가치주 10-20%
+    8. 각 주식 유형별로 한국 3개, 미국 3개씩 총 6개를 추천해주세요 (배당주, 성장주, 테마주, 가치주 각각 국가별 3개씩).
+    9. 추천 주식 종목은 분석 당일 날짜를 기준으로 검색하여 최신 트렌드를 고려하여 투자 성향에 맞는 다양성을 고려해주세요.
+    10. 각 종목에는 국가(한국/미국), 거래소(KRX/NYSE/NASDAQ), 추천 이유를 포함해주세요.
+    11. 분석 당일일 날짜를 토대로 검색하여 주식 트렌드를 반영하여 추천.
+    12. 투자 성향에 따라 보수적이면 안전한 대형주, 공격적이면 성장주나 테마주를 추천해주세요.
+    13. 암호화폐도 투자 성향에 맞게 3-5개를 추천해주세요 (보수적이면 비트코인/이더리움 위주, 공격적이면 알트코인 포함).
+    14. 1억원을 기준으로 한 구체적인 포트폴리오 예시를 제공해주세요. 각 자산군별 금액, 추천 종목과 수량을 포함하여 실제 투자 가능한 형태로 작성해주세요.
+    15. 투자 성향에 따른 투자 기간(단기 1년 이하, 중기 1-5년, 장기 5년 이상)을 분석하고, 각 기간별 행동지침을 제공해주세요:
+        - 월별: 기존 투자 자산 모니터링, 추가 투자금 확보 방법, 시장 상황 대응
+        - 분기별: 포트폴리오 리밸런싱, 수익 실현/손절 기준, 새로운 투자 기회 발굴
+        - 반기별: 투자 전략 재검토, 자산 배분 조정, 세금 최적화 방안
+        - 년도별: 투자 목표 재설정, 장기 계획 수립, 투자 성과 종합 평가
+        각 기간별로 투자 성향에 맞는 구체적이고 실행 가능한 행동 방안을 제시해주세요.
+    16. 모든 답변은 전문적이고 구체적인 어투로 200-300자 분량으로 작성해주세요.
+    
+    다음 JSON 형식으로만 응답해주세요:
+    {
+      "investmentType": "ultra_ultra_conservative|ultra_conservative|conservative|moderate_conservative|balanced|moderate_growth|growth|aggressive_growth|speculative_aggressive|ultra_speculative_aggressive",
+      "confidence": 85,
+      "analysis": {
+        "description": "투자 성향의 핵심 특징, 투자 행동 패턴, 심리적 특성, 투자 목표, 위험 감내도, 의사결정 과정, 시장 변동에 대한 반응, 선호하는 투자 방식, 투자 경험 수준, 학습 의지 등을 포함하여 500자 내외로 매우 상세하고 구체적으로 설명",
+        "advantages": "해당 성향의 투자 강점과 긍정적 측면 (200-300자)",
+        "disadvantages": "투자 시 주의할 점과 보완할 부분 (200-300자)",
+        "improvements": "투자자에게 도움이 될 구체적인 행동 지침 및 전략 개선 제안 (200-300자)",
+        "portfolio": {
+          "stocks": 40,
+          "bonds": 30,
+          "cash": 15,
+          "reits": 10,
+          "crypto": 5,
+          "reason": "포트폴리오 구성 이유와 비중 설명 (200-300자)",
+          "stockAllocation": {
+            "dividendStocks": 50,
+            "growthStocks": 25,
+            "themeStocks": 15,
+            "valueStocks": 10,
+            "reason": "투자 성향에 맞는 주식 내 세부 배분 이유와 각 유형별 비중 설명 (100-150자)"
+          }
+        },
+        "recommendedStocks": [
+          {
+            "category": "dividend",
+            "name": "배당주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "dividend",
+            "name": "배당주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "dividend",
+            "name": "배당주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "dividend",
+            "name": "배당주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "dividend",
+            "name": "배당주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "dividend",
+            "name": "배당주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "growth",
+            "name": "성장주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "성장성, 기술력 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "growth",
+            "name": "성장주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "성장성, 기술력 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "growth",
+            "name": "성장주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "성장성, 기술력 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "growth",
+            "name": "성장주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "성장성, 기술력 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "growth",
+            "name": "성장주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "성장성, 기술력 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "growth",
+            "name": "성장주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "성장성, 기술력 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "theme",
+            "name": "테마주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "테마, 트렌드 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "theme",
+            "name": "테마주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "테마, 트렌드 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "theme",
+            "name": "테마주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "테마, 트렌드 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "theme",
+            "name": "테마주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "테마, 트렌드 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "theme",
+            "name": "테마주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "테마, 트렌드 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "theme",
+            "name": "테마주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "테마, 트렌드 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "value",
+            "name": "가치주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "value",
+            "name": "가치주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "value",
+            "name": "가치주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "value",
+            "name": "가치주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "value",
+            "name": "가치주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"
+          },
+          {
+            "category": "value",
+            "name": "가치주 기업명",
+            "ticker": "종목코드",
+            "market": "KRX 또는 NYSE/NASDAQ",
+            "country": "한국 또는 미국",
+            "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"
+          }
+        ],
+        "portfolioExample": {
+          "totalAmount": 100000000,
+          "breakdown": [
+            {
+              "category": "주식",
+              "percentage": 40,
+              "amount": 40000000,
+              "investments": [
+                {
+                  "name": "종목명 (코드)",
+                  "shares": "수량",
+                  "estimatedValue": "예상 금액"
+                }
+              ]
+            },
+            {
+              "category": "채권",
+              "percentage": 30,
+              "amount": 30000000,
+              "investments": [
+                {
+                  "name": "채권명 또는 ETF명",
+                  "shares": "수량",
+                  "estimatedValue": "예상 금액"
+                }
+              ]
+            },
+            {
+              "category": "현금",
+              "percentage": 15,
+              "amount": 15000000,
+              "investments": [
+                {
+                  "name": "예비 현금 보유",
+                  "shares": "-",
+                  "estimatedValue": "15,000,000원"
+                }
+              ]
+            },
+            {
+              "category": "부동산",
+              "percentage": 10,
+              "amount": 10000000,
+              "investments": [
+                {
+                  "name": "리츠 ETF명",
+                  "shares": "수량",
+                  "estimatedValue": "예상 금액"
+                }
+              ]
+            },
+            {
+              "category": "암호화폐",
+              "percentage": 5,
+              "amount": 5000000,
+              "investments": [
+                {
+                  "name": "비트코인 (BTC)",
+                  "shares": "수량",
+                  "estimatedValue": "예상 금액"
+                }
+              ]
+            }
+          ],
+          "notes": [
+            "각 자산군별 구체적인 투자 방법과 주의사항",
+            "리밸런싱 주기 및 방법",
+            "세금 고려사항"
+          ]
+        },
+        "recommendedCrypto": [
+          {
+            "name": "비트코인",
+            "symbol": "BTC",
+            "reason": "각 암호화폐별 특징 및 투자 고려 이유 (100-150자)"
+          },
+          {
+            "name": "이더리움",
+            "symbol": "ETH",
+            "reason": "각 암호화폐별 특징 및 투자 고려 이유 (100-150자)"
+          },
+          {
+            "name": "바이낸스 코인",
+            "symbol": "BNB",
+            "reason": "각 암호화폐별 특징 및 투자 고려 이유 (100-150자)"
+          }
+        ],
+        "actionGuide": {
+          "investmentHorizon": {
+            "primary": "장기투자 (5년 이상)",
+            "description": "투자 성향에 맞는 주요 투자 기간과 특징 설명 (100-150자)"
+          },
+          "monthly": {
+            "title": "매월 해야 할 일",
+            "actions": [
+              "기존 투자 자산 성과 모니터링 및 기록 (구체적 방법)",
+              "추가 투자금 확보 전략 (적금, 여유자금 활용 등)",
+              "시장 상황 대응 방안 (투자 성향별 맞춤 대응법)"
+            ]
+          },
+          "quarterly": {
+            "title": "분기별 해야 할 일 (3개월)",
+            "actions": [
+              "포트폴리오 리밸런싱 실행 (구체적 기준과 방법)",
+              "수익 실현 및 손절 기준 적용 (투자 성향별 기준)",
+              "새로운 투자 기회 발굴 및 분석 (어떤 분야, 어떤 방식)"
+            ]
+          },
+          "semiannual": {
+            "title": "반기별 해야 할 일 (6개월)",
+            "actions": [
+              "투자 전략 전면 재검토 (목표 대비 성과 분석)",
+              "자산 배분 비율 조정 (시장 변화 반영)",
+              "세금 최적화 및 절세 방안 실행 (구체적 방법)"
+            ]
+          },
+          "annual": {
+            "title": "년도별 해야 할 일 (1년)",
+            "actions": [
+              "투자 목표 및 전략 전면 재설정 (다음 해 계획)",
+              "투자 성과 종합 분석 및 개선 방안 도출",
+              "장기 투자 계획 수립 및 자산 증식 로드맵 설정"
+            ]
+          }
+        }
+      },
+      "keyFindings": [
+        "주요 발견사항 1",
+        "주요 발견사항 2",
+        "주요 발견사항 3"
+      ]
+    }
+    `
         // OpenAI API 호출
         fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -290,28 +689,232 @@ export function onRequestPost(context) {
               }
             },
             recommendedStocks: [
+              // 배당주 - 한국 3개
               {
                 category: "dividend",
                 name: "삼성전자",
                 ticker: "005930",
                 market: "KRX",
                 country: "한국",
-                reason: "안정적인 배당 지급 기업"
+                reason: "안정적인 배당 지급과 대형주 안정성을 제공하는 대표 종목"
               },
               {
-                category: "growth",
+                category: "dividend",
+                name: "SK텔레콤",
+                ticker: "017670",
+                market: "KRX",
+                country: "한국", 
+                reason: "통신업계 선두주자로 꾸준한 배당수익률 제공"
+              },
+              {
+                category: "dividend",
+                name: "한국전력",
+                ticker: "015760",
+                market: "KRX",
+                country: "한국",
+                reason: "공기업 특성상 안정적인 배당정책을 유지하는 종목"
+              },
+              // 배당주 - 미국 3개
+              {
+                category: "dividend",
                 name: "Apple",
                 ticker: "AAPL",
                 market: "NASDAQ",
                 country: "미국",
-                reason: "지속적인 성장 기업"
+                reason: "꾸준한 배당 증가와 안정적인 현금 흐름을 보이는 글로벌 기업"
+              },
+              {
+                category: "dividend",
+                name: "Microsoft",
+                ticker: "MSFT",
+                market: "NASDAQ",
+                country: "미국",
+                reason: "지속적인 배당 성장과 견고한 비즈니스 모델을 갖춘 기술주"
+              },
+              {
+                category: "dividend",
+                name: "Coca-Cola",
+                ticker: "KO",
+                market: "NYSE",
+                country: "미국",
+                reason: "50년 이상 배당을 증가시킨 배당 귀족주의 대표 종목"
+              },
+              // 성장주 - 한국 3개
+              {
+                category: "growth",
+                name: "네이버",
+                ticker: "035420",
+                market: "KRX",
+                country: "한국",
+                reason: "국내 IT 대표 기업으로 지속적인 성장 잠재력 보유"
+              },
+              {
+                category: "growth",
+                name: "카카오",
+                ticker: "035720",
+                market: "KRX",
+                country: "한국",
+                reason: "플랫폼 기반 디지털 서비스의 선두주자로 성장성 우수"
+              },
+              {
+                category: "growth",
+                name: "LG에너지솔루션",
+                ticker: "373220",
+                market: "KRX",
+                country: "한국",
+                reason: "전기차 배터리 시장의 글로벌 리더로 높은 성장 전망"
+              },
+              // 성장주 - 미국 3개
+              {
+                category: "growth",
+                name: "Tesla",
+                ticker: "TSLA",
+                market: "NASDAQ",
+                country: "미국",
+                reason: "전기차와 에너지 사업 분야의 혁신적 성장주"
+              },
+              {
+                category: "growth",
+                name: "Amazon",
+                ticker: "AMZN",
+                market: "NASDAQ",
+                country: "미국",
+                reason: "클라우드와 이커머스 분야에서 지속적인 성장 잠재력"
+              },
+              {
+                category: "growth",
+                name: "Nvidia",
+                ticker: "NVDA",
+                market: "NASDAQ",
+                country: "미국",
+                reason: "AI와 반도체 분야의 선두주자로 폭발적 성장 가능성"
+              },
+              // 테마주 - 한국 3개
+              {
+                category: "theme",
+                name: "삼성SDI",
+                ticker: "006400",
+                market: "KRX",
+                country: "한국",
+                reason: "배터리 테마의 대표주자로 친환경 에너지 트렌드 수혜"
+              },
+              {
+                category: "theme",
+                name: "POSCO홀딩스",
+                ticker: "005490",
+                market: "KRX",
+                country: "한국",
+                reason: "2차전지 소재 및 수소 테마의 대표 기업"
+              },
+              {
+                category: "theme",
+                name: "셀트리온",
+                ticker: "068270",
+                market: "KRX",
+                country: "한국",
+                reason: "바이오 헬스케어 테마의 대표주자로 글로벌 진출 확대"
+              },
+              // 테마주 - 미국 3개
+              {
+                category: "theme",
+                name: "Palantir",
+                ticker: "PLTR",
+                market: "NYSE",
+                country: "미국",
+                reason: "빅데이터 분석과 AI 테마의 대표적인 성장주"
+              },
+              {
+                category: "theme",
+                name: "AMD",
+                ticker: "AMD",
+                market: "NASDAQ",
+                country: "미국",
+                reason: "반도체와 AI 칩 테마의 주요 수혜주"
+              },
+              {
+                category: "theme",
+                name: "Beyond Meat",
+                ticker: "BYND",
+                market: "NASDAQ",
+                country: "미국",
+                reason: "대체육 및 친환경 식품 테마의 선두주자"
+              },
+              // 가치주 - 한국 3개
+              {
+                category: "value",
+                name: "현대차",
+                ticker: "005380",
+                market: "KRX",
+                country: "한국",
+                reason: "견고한 펀더멘털 대비 저평가된 전통 제조업 대표 기업"
+              },
+              {
+                category: "value",
+                name: "KB금융",
+                ticker: "105560",
+                market: "KRX",
+                country: "한국",
+                reason: "금리 상승기 수혜와 안정적인 배당을 제공하는 금융주"
+              },
+              {
+                category: "value",
+                name: "POSCO",
+                ticker: "005490",
+                market: "KRX",
+                country: "한국",
+                reason: "철강업계 대표주자로 경기회복 시 큰 수혜 기대"
+              },
+              // 가치주 - 미국 3개
+              {
+                category: "value",
+                name: "Berkshire Hathaway",
+                ticker: "BRK.B",
+                market: "NYSE",
+                country: "미국",
+                reason: "워렌 버핏의 가치투자 철학이 담긴 대표적인 가치주"
+              },
+              {
+                category: "value",
+                name: "JPMorgan Chase",
+                ticker: "JPM",
+                market: "NYSE",
+                country: "미국",
+                reason: "견고한 재무구조와 안정적인 수익성을 갖춘 금융주"
+              },
+              {
+                category: "value",
+                name: "Johnson & Johnson",
+                ticker: "JNJ",
+                market: "NYSE",
+                country: "미국",
+                reason: "헬스케어 분야의 안정적인 수익성과 배당을 제공하는 우량주"
               }
             ],
             recommendedCrypto: [
               {
                 name: "비트코인",
                 symbol: "BTC",
-                reason: "대표적인 암호화폐"
+                reason: "가장 안정적이고 대표적인 암호화폐로 디지털 금의 역할"
+              },
+              {
+                name: "이더리움",
+                symbol: "ETH",
+                reason: "스마트 컨트랙트 플랫폼의 선두주자로 DeFi 생태계의 핵심"
+              },
+              {
+                name: "바이낸스 코인",
+                symbol: "BNB",
+                reason: "세계 최대 암호화폐 거래소 토큰으로 실용성이 높음"
+              },
+              {
+                name: "솔라나",
+                symbol: "SOL",
+                reason: "빠른 거래속도와 낮은 수수료로 차세대 블록체인 플랫폼 주목"
+              },
+              {
+                name: "카르다노",
+                symbol: "ADA",
+                reason: "지속가능한 블록체인을 추구하는 친환경 암호화폐"
               }
             ],
             portfolioExample: {
@@ -323,9 +926,19 @@ export function onRequestPost(context) {
                   amount: fallbackProfile.recommendedAssets.stocks * 1000000,
                   investments: [
                     {
-                      name: "대표 종목",
-                      shares: "적정 수량",
-                      estimatedValue: "예상 금액"
+                      name: "삼성전자 (005930)",
+                      shares: "30주",
+                      estimatedValue: "2,100,000원"
+                    },
+                    {
+                      name: "Apple (AAPL)",
+                      shares: "10주",
+                      estimatedValue: "1,900,000원"
+                    },
+                    {
+                      name: "국내 대형주 ETF",
+                      shares: "200좌",
+                      estimatedValue: "2,000,000원"
                     }
                   ]
                 },
@@ -335,9 +948,14 @@ export function onRequestPost(context) {
                   amount: fallbackProfile.recommendedAssets.bonds * 1000000,
                   investments: [
                     {
-                      name: "채권 ETF",
-                      shares: "적정 수량",
-                      estimatedValue: "예상 금액"
+                      name: "국고채 10년 ETF",
+                      shares: "600좌",
+                      estimatedValue: "6,000,000원"
+                    },
+                    {
+                      name: "회사채 ETF",
+                      shares: "400좌",
+                      estimatedValue: "4,000,000원"
                     }
                   ]
                 },
@@ -347,14 +965,53 @@ export function onRequestPost(context) {
                   amount: fallbackProfile.recommendedAssets.cash * 1000000,
                   investments: [
                     {
+                      name: "고금리 적금",
+                      shares: "-",
+                      estimatedValue: "1,500,000원"
+                    },
+                    {
                       name: "예비 현금",
                       shares: "-",
-                      estimatedValue: fallbackProfile.recommendedAssets.cash * 1000000 + "원"
+                      estimatedValue: "500,000원"
+                    }
+                  ]
+                },
+                {
+                  category: "부동산",
+                  percentage: fallbackProfile.recommendedAssets.alternatives,
+                  amount: fallbackProfile.recommendedAssets.alternatives * 1000000,
+                  investments: [
+                    {
+                      name: "리츠 ETF",
+                      shares: "50좌",
+                      estimatedValue: "500,000원"
+                    }
+                  ]
+                },
+                {
+                  category: "암호화폐",
+                  percentage: 5,
+                  amount: 500000,
+                  investments: [
+                    {
+                      name: "비트코인 (BTC)",
+                      shares: "0.01 BTC",
+                      estimatedValue: "300,000원"
+                    },
+                    {
+                      name: "이더리움 (ETH)",
+                      shares: "0.1 ETH",
+                      estimatedValue: "200,000원"
                     }
                   ]
                 }
               ],
-              notes: ["기본 포트폴리오 구성입니다.", "더 정확한 분석을 위해서는 AI 분석 서비스를 이용해주세요."]
+              notes: [
+                "분산투자를 통한 리스크 관리가 핵심입니다",
+                "3개월마다 포트폴리오 리밸런싱을 권장합니다",
+                "세금 효율적인 투자를 위해 ISA, 연금저축 등을 활용하세요",
+                "시장 변동성에 따라 자산 배분 비율을 조정할 수 있습니다"
+              ]
             },
             actionGuide: {
               investmentHorizon: {
