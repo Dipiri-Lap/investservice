@@ -16,7 +16,13 @@ const nextConfig = {
   webpack: (config) => {
     config.cache = false
     return config
-  }
+  },
+  
+  // 트레일링 슬래시 설정
+  trailingSlash: true,
+  
+  // 빌드 출력 설정
+  distDir: '.next'
 }
 
 module.exports = nextConfig 
