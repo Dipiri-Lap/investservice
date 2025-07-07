@@ -225,6 +225,21 @@ export function onRequestPost(context) {
         // GPT에게 보낼 프롬프트 구성 (route.ts와 동일한 상세한 분석)
         var prompt = createPrompt(averageScore, totalScore, surveyResultsText);
 
+        // 상세 디버깅 로그 추가
+        console.log('=== GPT 분석 디버그 시작 ===');
+        console.log('1. API 키 확인:', env.OPENAI_API_KEY ? 'API 키 있음 (' + env.OPENAI_API_KEY.substring(0, 10) + '...)' : 'API 키 없음');
+        console.log('2. 평균 점수:', averageScore.toFixed(2));
+        console.log('3. 총 점수:', totalScore);
+        console.log('4. 프롬프트 길이:', prompt.length);
+        console.log('5. 설문 결과 개수:', surveyResults.length);
+
+        if (!env.OPENAI_API_KEY) {
+          console.error('❌ OPENAI_API_KEY 환경 변수가 설정되지 않았습니다!');
+          throw new Error('OPENAI_API_KEY 환경 변수가 설정되지 않았습니다.');
+        }
+
+        console.log('6. OpenAI API 호출 시작...');
+        
         // OpenAI API 호출
         fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -248,29 +263,44 @@ export function onRequestPost(context) {
             max_tokens: 8000
           })
         }).then(function(openaiResponse) {
+          console.log('7. OpenAI API 응답 수신 - 상태:', openaiResponse.status);
+          
           if (!openaiResponse.ok) {
+            console.error('❌ OpenAI API 오류 - 상태 코드:', openaiResponse.status);
             throw new Error('OpenAI API 오류: ' + openaiResponse.status);
           }
           
+          console.log('8. OpenAI API 응답 JSON 파싱 시작...');
           return openaiResponse.json();
         }).then(function(openaiData) {
+          console.log('9. OpenAI API 데이터 구조:', {
+            choices: openaiData.choices ? openaiData.choices.length : 0,
+            hasMessage: openaiData.choices && openaiData.choices[0] && openaiData.choices[0].message ? true : false,
+            usage: openaiData.usage || null
+          });
+          
           var gptResponse = openaiData.choices[0] && openaiData.choices[0].message && openaiData.choices[0].message.content;
           
           if (!gptResponse) {
+            console.error('❌ GPT API 응답이 없습니다:', openaiData);
             throw new Error('GPT API 응답이 없습니다.');
           }
+
+          console.log('10. GPT 응답 길이:', gptResponse.length);
+          console.log('11. GPT 응답 첫 100자:', gptResponse.substring(0, 100));
 
           // JSON 파싱
           var analysisResult;
           try {
             analysisResult = JSON.parse(gptResponse);
-            console.log('GPT 분석 결과:', { 
+            console.log('✅ GPT 분석 성공!', { 
               investmentType: analysisResult.investmentType, 
               averageScore: averageScore.toFixed(2),
               totalScore: totalScore 
             });
           } catch (parseError) {
-            console.error('GPT 응답 파싱 에러:', gptResponse);
+            console.error('❌ GPT 응답 파싱 에러:', parseError.message);
+            console.error('파싱 실패한 응답:', gptResponse);
             throw new Error('GPT 응답을 파싱할 수 없습니다.');
           }
 
@@ -304,7 +334,12 @@ export function onRequestPost(context) {
           }));
 
         }).catch(function(error) {
-          console.error('OpenAI API 오류:', error);
+          console.error('=== OpenAI API 오류 발생 ===');
+          console.error('❌ 에러 타입:', error.name);
+          console.error('❌ 에러 메시지:', error.message);
+          console.error('❌ 에러 스택:', error.stack);
+          console.error('❌ API 키 상태:', env.OPENAI_API_KEY ? 'API 키 존재' : 'API 키 없음');
+          console.error('❌ 환경 변수 전체:', Object.keys(env));
           
           // 에러 발생 시 기본 분석으로 폴백
           var fallbackProfile;
@@ -702,6 +737,8 @@ export function onRequestPost(context) {
             }
           };
 
+          console.log('⚠️ Fallback 분석 사용 - 선택된 프로필:', fallbackProfile.type);
+          
           resolve(new Response(JSON.stringify({
             success: true,
             profile: {
@@ -720,7 +757,15 @@ export function onRequestPost(context) {
               ]
             },
             rawAnswers: answers,
-            fallback: true
+            fallback: true,
+            fallbackReason: error.message || 'OpenAI API 오류',
+            debugInfo: {
+              averageScore: averageScore.toFixed(2),
+              totalScore: totalScore,
+              hasApiKey: env.OPENAI_API_KEY ? true : false,
+              errorType: error.name || 'Unknown',
+              timestamp: new Date().toISOString()
+            }
           }), {
             headers: corsHeaders
           }));
