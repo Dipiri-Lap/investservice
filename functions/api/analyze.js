@@ -99,7 +99,7 @@ var investmentProfiles = {
   }
 };
 
-function onRequestPost(context) {
+export function onRequestPost(context) {
   var request = context.request;
   var env = context.env;
   
@@ -319,9 +319,4 @@ function onRequestPost(context) {
   });
 }
 
-// Export the function
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { onRequestPost: onRequestPost };
-} else {
-  this.onRequestPost = onRequestPost;
-} 
+ 
