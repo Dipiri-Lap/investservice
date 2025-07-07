@@ -1113,15 +1113,15 @@ export default function ResultsPage() {
                 <div className="bg-white rounded-lg p-6 mb-6">
                   <h3 className="font-semibold text-gray-800 mb-4">추천 암호화폐</h3>
                   <div className="space-y-3">
-                                         {safeGptAnalysis.recommendedCrypto.map((crypto: any, index: number) => (
-                       <div key={index} className="border-l-4 border-orange-500 pl-4">
-                         <div className="flex items-center space-x-2 mb-1">
-                           <h4 className="font-medium text-gray-800">{crypto.name}</h4>
-                           <span className="text-sm text-gray-500">({crypto.symbol})</span>
-                         </div>
-                         <p className="text-gray-600 text-sm">{crypto.reason}</p>
-                       </div>
-                     ))}
+                                                             {(safeGptAnalysis.recommendedCrypto || []).map((crypto: any, index: number) => (
+                      <div key={index} className="border-l-4 border-orange-500 pl-4">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <h4 className="font-medium text-gray-800">{crypto.name}</h4>
+                          <span className="text-sm text-gray-500">({crypto.symbol})</span>
+                        </div>
+                        <p className="text-gray-600 text-sm">{crypto.reason}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
@@ -1166,7 +1166,7 @@ export default function ResultsPage() {
                          </tr>
                        </thead>
                        <tbody className="divide-y divide-gray-200">
-                         {safeGptAnalysis.portfolioExample.breakdown.map((item: any, index: number) => (
+                         {(safeGptAnalysis.portfolioExample.breakdown || []).map((item: any, index: number) => (
                            <tr key={index} className="hover:bg-gray-50">
                              <td className="px-4 py-4 text-sm font-medium text-gray-800">{item.category}</td>
                              <td className="px-4 py-4 text-center text-sm text-gray-600">{item.percentage}%</td>
@@ -1175,7 +1175,7 @@ export default function ResultsPage() {
                              </td>
                              <td className="px-4 py-4 text-sm text-gray-600">
                                <div className="space-y-1">
-                                 {item.investments.map((investment: any, investIndex: number) => (
+                                 {(item.investments || []).map((investment: any, investIndex: number) => (
                                    <div key={investIndex} className="flex items-center space-x-2">
                                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
                                      <span>
@@ -1203,7 +1203,7 @@ export default function ResultsPage() {
                       세부 설명
                     </h3>
                     <div className="space-y-3">
-                      {safeGptAnalysis.portfolioExample.notes.map((note: string, index: number) => (
+                      {(safeGptAnalysis.portfolioExample.notes || []).map((note: string, index: number) => (
                         <div key={index} className="flex items-start space-x-3">
                           <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                           <p className="text-gray-600 text-sm leading-relaxed">{note}</p>
@@ -1264,7 +1264,7 @@ export default function ResultsPage() {
                     {safeGptAnalysis.actionGuide.monthly.title}
                   </h3>
                   <div className="space-y-3">
-                    {safeGptAnalysis.actionGuide.monthly.actions.map((action: string, index: number) => (
+                    {(safeGptAnalysis.actionGuide.monthly.actions || []).map((action: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
                         <p className="text-blue-700 text-sm leading-relaxed">{action}</p>
@@ -1282,7 +1282,7 @@ export default function ResultsPage() {
                     {safeGptAnalysis.actionGuide.quarterly.title}
                   </h3>
                   <div className="space-y-3">
-                    {safeGptAnalysis.actionGuide.quarterly.actions.map((action: string, index: number) => (
+                    {(safeGptAnalysis.actionGuide.quarterly.actions || []).map((action: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
                         <p className="text-green-700 text-sm leading-relaxed">{action}</p>
@@ -1300,7 +1300,7 @@ export default function ResultsPage() {
                     {safeGptAnalysis.actionGuide.semiannual.title}
                   </h3>
                   <div className="space-y-3">
-                    {safeGptAnalysis.actionGuide.semiannual.actions.map((action: string, index: number) => (
+                    {(safeGptAnalysis.actionGuide.semiannual.actions || []).map((action: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
                         <p className="text-purple-700 text-sm leading-relaxed">{action}</p>
@@ -1318,7 +1318,7 @@ export default function ResultsPage() {
                     {safeGptAnalysis.actionGuide.annual.title}
                   </h3>
                   <div className="space-y-3">
-                    {safeGptAnalysis.actionGuide.annual.actions.map((action: string, index: number) => (
+                    {(safeGptAnalysis.actionGuide.annual.actions || []).map((action: string, index: number) => (
                       <div key={index} className="flex items-start space-x-2">
                         <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 flex-shrink-0"></div>
                         <p className="text-orange-700 text-sm leading-relaxed">{action}</p>
