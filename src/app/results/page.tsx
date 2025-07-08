@@ -275,10 +275,65 @@ export default function ResultsPage() {
     // 클라이언트 사이드에서만 실행
     if (typeof window === 'undefined') return
     
+    // 네트워크 연결 상태 확인
+    const checkNetworkConnection = async () => {
+      if ('navigator' in window && 'onLine' in navigator) {
+        if (!navigator.onLine) {
+          setAnalysisError('인터넷 연결을 확인해주세요.')
+          setIsLoading(false)
+          return false
+        }
+      }
+      return true
+    }
+    
+    // 재시도 로직이 포함된 API 요청 함수
+    const fetchWithRetry = async (url: string, options: RequestInit, maxRetries = 3): Promise<Response> => {
+      let lastError: Error = new Error('알 수 없는 네트워크 오류가 발생했습니다.')
+      
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+          console.log(`🔄 API 요청 시도 ${attempt}/${maxRetries}`)
+          
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 60000) // 60초 타임아웃
+          
+          const response = await fetch(url, {
+            ...options,
+            signal: controller.signal,
+          })
+          
+          clearTimeout(timeoutId)
+          
+          if (response.ok) {
+            console.log(`✅ API 요청 성공 (시도 ${attempt}/${maxRetries})`)
+            return response
+          } else {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+          }
+        } catch (error: any) {
+          lastError = error
+          console.error(`❌ API 요청 실패 (시도 ${attempt}/${maxRetries}):`, error.message)
+          
+          if (attempt < maxRetries) {
+            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000) // 지수 백오프 (최대 5초)
+            console.log(`⏳ ${delay}ms 후 재시도...`)
+            await new Promise(resolve => setTimeout(resolve, delay))
+          }
+        }
+      }
+      
+      throw lastError
+    }
+    
     const analyzeResults = async () => {
       try {
         setIsLoading(true)
         setAnalysisError(null)
+        
+        // 네트워크 연결 확인
+        const isConnected = await checkNetworkConnection()
+        if (!isConnected) return
         
         // localStorage에서 설문 답변 가져오기
         let savedAnswers
@@ -305,26 +360,30 @@ export default function ResultsPage() {
           return
         }
         
-        // GPT API를 통해 분석 요청
-        const response = await fetch('/api/analyze', {
+        console.log('🚀 GPT 분석 시작...')
+        console.log('📱 네트워크 정보:', {
+          userAgent: navigator.userAgent,
+          connection: (navigator as any).connection?.effectiveType || 'unknown',
+          onLine: navigator.onLine
+        })
+        
+        // 재시도 로직이 포함된 GPT API 요청
+        const response = await fetchWithRetry('/api/analyze', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
           },
           body: JSON.stringify({
             answers: parsedAnswers
           })
         })
         
-        if (!response.ok) {
-          const errorText = await response.text()
-          console.error('API 응답 오류:', response.status, errorText)
-          throw new Error(`분석 요청 실패: ${response.status}`)
-        }
-        
         const result = await response.json()
         
         if (result.success) {
+          console.log('✅ GPT 분석 완료:', result.profile.type)
           setProfile(result.profile)
           setGptAnalysis(result.profile.gptAnalysis)
           setConfidence(result.profile.confidence)
@@ -334,9 +393,21 @@ export default function ResultsPage() {
           throw new Error(result.error || '분석 중 오류가 발생했습니다.')
         }
         
-      } catch (error) {
-        console.error('분석 오류:', error)
-        setAnalysisError(`분석 중 오류가 발생했습니다: ${error instanceof Error ? error.message : '다시 시도해주세요.'}`)
+      } catch (error: any) {
+        console.error('❌ 분석 오류:', error)
+        let errorMessage = '분석 중 오류가 발생했습니다.'
+        
+        if (error.name === 'AbortError') {
+          errorMessage = '요청 시간이 초과되었습니다. 네트워크 연결을 확인하고 다시 시도해주세요.'
+        } else if (error.message.includes('fetch')) {
+          errorMessage = '네트워크 연결 오류입니다. 모바일 데이터 또는 와이파이 연결을 확인해주세요.'
+        } else if (error.message.includes('Failed to fetch')) {
+          errorMessage = '서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
+        } else {
+          errorMessage = `${error.message || '알 수 없는 오류가 발생했습니다.'}`
+        }
+        
+        setAnalysisError(errorMessage)
       } finally {
         setIsLoading(false)
       }

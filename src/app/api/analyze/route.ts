@@ -7,13 +7,26 @@ const openai = new OpenAI({
 })
 
 export async function POST(request: NextRequest) {
+  // CORS 헤더 설정 (모바일 브라우저 호환성)
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Cache-Control, Pragma',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
+  }
+
   try {
     const { answers } = await request.json()
 
     if (!answers || !Array.isArray(answers) || answers.length !== 25) {
       return NextResponse.json(
         { error: '유효하지 않은 답변 데이터입니다.' },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: corsHeaders
+        }
       )
     }
 
@@ -439,22 +452,29 @@ ${surveyResults.map(result =>
 }
 `
 
-    // GPT API 호출
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4.1",
-      messages: [
-        {
-          role: "system",
-          content: "당신은 투자 전문가이자 금융 상담사입니다. 설문 결과의 평균 점수를 정확히 계산하고, 제시된 점수 구간에 따라 투자 성향을 분류해야 합니다. 반드시 점수 기준을 우선으로 하여 정확한 분석을 제공하고, 요청된 JSON 형식으로만 응답하세요. 투자 성향 상세 설명(description)에는 점수나 수치 정보는 포함하지 말고, 순수하게 투자 성향의 특징과 행동 패턴만 500자 내외로 상세하게 설명해주세요."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.3,
-      max_tokens: 6000
-    })
+    console.log('🚀 OpenAI API 호출 시작...')
+    
+    // GPT API 호출 (타임아웃 포함)
+    const completion = await Promise.race([
+      openai.chat.completions.create({
+        model: "gpt-4.1",
+        messages: [
+          {
+            role: "system",
+            content: "당신은 투자 전문가이자 금융 상담사입니다. 설문 결과의 평균 점수를 정확히 계산하고, 제시된 점수 구간에 따라 투자 성향을 분류해야 합니다. 반드시 점수 기준을 우선으로 하여 정확한 분석을 제공하고, 요청된 JSON 형식으로만 응답하세요. 투자 성향 상세 설명(description)에는 점수나 수치 정보는 포함하지 말고, 순수하게 투자 성향의 특징과 행동 패턴만 500자 내외로 상세하게 설명해주세요."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.3,
+        max_tokens: 6000
+      }),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('OpenAI API 요청 시간 초과 (90초)')), 90000)
+      )
+    ]) as any
 
     const gptResponse = completion.choices[0]?.message?.content
     if (!gptResponse) {
@@ -495,10 +515,14 @@ ${surveyResults.map(result =>
       keyFindings: analysisResult.keyFindings
     }
 
+    console.log('✅ GPT 분석 완료!')
+    
     return NextResponse.json({
       success: true,
       profile: enhancedProfile,
       rawAnswers: answers
+    }, {
+      headers: corsHeaders
     })
 
   } catch (error) {
@@ -535,6 +559,8 @@ ${surveyResults.map(result =>
         fallbackProfile = investmentProfiles.ultra_speculative_aggressive
       }
 
+      console.log('⚠️ 폴백 분석 사용')
+      
       return NextResponse.json({
         success: true,
         profile: {
@@ -652,12 +678,30 @@ ${surveyResults.map(result =>
         },
         rawAnswers: answers,
         fallback: true
+      }, {
+        headers: corsHeaders
       })
     } catch (fallbackError) {
+      console.error('❌ 폴백 분석도 실패:', fallbackError)
       return NextResponse.json(
         { error: '분석 중 오류가 발생했습니다.' },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: corsHeaders
+        }
       )
     }
   }
+}
+
+// OPTIONS 요청 처리 (CORS preflight)
+export async function OPTIONS(request: NextRequest) {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Cache-Control, Pragma',
+    },
+  })
 } 

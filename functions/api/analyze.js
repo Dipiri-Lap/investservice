@@ -235,12 +235,16 @@ export function onRequestPost(context) {
   var request = context.request;
   var env = context.env;
   
-  // CORS 헤더 설정
+  // CORS 헤더 설정 (모바일 환경 최적화)
   var corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Content-Type': 'application/json'
+    'Access-Control-Allow-Headers': 'Content-Type, Cache-Control, Pragma',
+    'Access-Control-Max-Age': '86400',
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   };
   
   return new Promise(function(resolve, reject) {
@@ -311,12 +315,20 @@ export function onRequestPost(context) {
 
         console.log('6. OpenAI API 호출 시작...');
         
-        // OpenAI API 호출
+        // 모바일 네트워크 환경을 고려한 타임아웃 설정
+        var controller = new AbortController();
+        var timeoutId = setTimeout(function() {
+          controller.abort();
+        }, 90000); // 90초 타임아웃
+        
+        // OpenAI API 호출 (모바일 최적화)
         fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + env.OPENAI_API_KEY,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'User-Agent': 'SmartInvest/1.0 (Mobile-Optimized)',
+            'Connection': 'keep-alive'
           },
           body: JSON.stringify({
             model: "gpt-4.1",
@@ -332,8 +344,10 @@ export function onRequestPost(context) {
             ],
             temperature: 0.3,
             max_tokens: 10000
-          })
+          }),
+          signal: controller.signal
         }).then(function(openaiResponse) {
+          clearTimeout(timeoutId); // 타임아웃 클리어
           console.log('7. OpenAI API 응답 수신 - 상태:', openaiResponse.status);
           
           if (!openaiResponse.ok) {
@@ -406,12 +420,20 @@ export function onRequestPost(context) {
           }));
 
         }).catch(function(error) {
+          clearTimeout(timeoutId); // 타임아웃 클리어
           console.error('=== OpenAI API 오류 발생 ===');
           console.error('❌ 에러 타입:', error.name);
           console.error('❌ 에러 메시지:', error.message);
           console.error('❌ 에러 스택:', error.stack);
           console.error('❌ API 키 상태:', env.OPENAI_API_KEY ? 'API 키 존재' : 'API 키 없음');
           console.error('❌ 환경 변수 전체:', Object.keys(env));
+          
+          // 모바일 네트워크 관련 에러 처리
+          if (error.name === 'AbortError') {
+            console.error('⏰ 요청 타임아웃 (90초 초과)');
+          } else if (error.message && error.message.includes('fetch')) {
+            console.error('🌐 네트워크 연결 오류 (모바일 데이터/와이파이 확인 필요)');
+          }
           
           // 에러 발생 시 기본 분석으로 폴백
           var fallbackProfile;
