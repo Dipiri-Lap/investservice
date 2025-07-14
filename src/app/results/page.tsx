@@ -89,7 +89,7 @@ const CircularProgress = ({ value, maxValue = 10, color = '#3B82F6', size = 120 
 
 export default function ResultsPage() {
   const [profile, setProfile] = useState<InvestmentProfile | null>(null)
-  const [answers, setAnswers] = useState<number[]>([])
+  const [surveyData, setSurveyData] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
   const [gptAnalysis, setGptAnalysis] = useState<any>(null)
@@ -275,6 +275,32 @@ export default function ResultsPage() {
     // 클라이언트 사이드에서만 실행
     if (typeof window === 'undefined') return
     
+    // 초기 데이터 로드
+    const loadInitialData = () => {
+      try {
+        // localStorage에서 새로운 2단계 설문 데이터 가져오기
+        const savedSurveyData = localStorage.getItem('surveyData')
+        const savedProfile = localStorage.getItem('investmentProfile')
+        
+        if (!savedSurveyData || !savedProfile) {
+          router.push('/survey')
+          return null
+        }
+
+        const surveyDataParsed = JSON.parse(savedSurveyData)
+        const profileData = JSON.parse(savedProfile)
+        
+        setSurveyData(surveyDataParsed)
+        setProfile(profileData)
+        
+        return surveyDataParsed
+      } catch (error) {
+        console.error('데이터 로드 오류:', error)
+        router.push('/survey')
+        return null
+      }
+    }
+    
     // 네트워크 연결 상태 확인
     const checkNetworkConnection = async () => {
       if ('navigator' in window && 'onLine' in navigator) {
@@ -326,7 +352,7 @@ export default function ResultsPage() {
       throw lastError
     }
     
-    const analyzeResults = async () => {
+    const analyzeResults = async (surveyDataParam?: any) => {
       try {
         setIsLoading(true)
         setAnalysisError(null)
@@ -335,39 +361,46 @@ export default function ResultsPage() {
         const isConnected = await checkNetworkConnection()
         if (!isConnected) return
         
-        // localStorage에서 설문 답변 가져오기
-        let savedAnswers
-        try {
-          savedAnswers = localStorage.getItem('surveyAnswers')
-        } catch (error) {
-          console.error('localStorage 접근 오류:', error)
-          router.push('/survey')
-          return
+        // 전달받은 데이터 사용하거나 localStorage에서 가져오기
+        let currentSurveyData = surveyDataParam
+        if (!currentSurveyData) {
+          let savedSurveyData
+          try {
+            savedSurveyData = localStorage.getItem('surveyData')
+          } catch (error) {
+            console.error('localStorage 접근 오류:', error)
+            router.push('/survey')
+            return
+          }
+          
+          if (!savedSurveyData) {
+            router.push('/survey')
+            return
+          }
+          
+          try {
+            currentSurveyData = JSON.parse(savedSurveyData)
+            setSurveyData(currentSurveyData)
+          } catch (error) {
+            console.error('JSON 파싱 오류:', error)
+            router.push('/survey')
+            return
+          }
         }
         
-        if (!savedAnswers) {
-          router.push('/survey')
-          return
-        }
-        
-        let parsedAnswers
-        try {
-          parsedAnswers = JSON.parse(savedAnswers)
-          setAnswers(parsedAnswers)
-        } catch (error) {
-          console.error('JSON 파싱 오류:', error)
-          router.push('/survey')
-          return
-        }
-        
-        console.log('🚀 GPT 분석 시작...')
+        console.log('🚀 GPT 분석 시작 (2단계 설문)...')
         console.log('📱 네트워크 정보:', {
           userAgent: navigator.userAgent,
           connection: (navigator as any).connection?.effectiveType || 'unknown',
           onLine: navigator.onLine
         })
+        console.log('📊 설문 데이터:', {
+          selectedGroup: currentSurveyData.selectedGroup,
+          groupAnswersLength: currentSurveyData.groupAnswers?.length,
+          detailAnswersLength: currentSurveyData.detailAnswers?.length
+        })
         
-        // 재시도 로직이 포함된 GPT API 요청
+        // 재시도 로직이 포함된 GPT API 요청 (새로운 데이터 구조)
         const response = await fetchWithRetry('/api/analyze', {
           method: 'POST',
           headers: {
@@ -376,7 +409,9 @@ export default function ResultsPage() {
             'Pragma': 'no-cache',
           },
           body: JSON.stringify({
-            answers: parsedAnswers
+            groupAnswers: currentSurveyData.groupAnswers,
+            detailAnswers: currentSurveyData.detailAnswers,
+            selectedGroup: currentSurveyData.selectedGroup
           })
         })
         
@@ -413,7 +448,11 @@ export default function ResultsPage() {
       }
     }
 
-    analyzeResults()
+    // 초기 데이터 로드 및 분석 시작
+    const initialData = loadInitialData()
+    if (initialData) {
+      analyzeResults(initialData)
+    }
   }, [])
 
   if (isLoading) {

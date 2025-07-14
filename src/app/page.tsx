@@ -12,7 +12,7 @@ export default function Home() {
     {
       icon: BarChart3,
       title: '정확한 투자 성향 분석',
-      description: '25문항의 과학적 설문을 통해 당신의 투자 성향을 정확히 분석합니다.',
+      description: '2단계 맞춤형 설문을 통해 당신의 투자 성향을 정확히 분석합니다.',
       color: 'text-blue-600'
     },
     {
@@ -63,7 +63,7 @@ export default function Home() {
               당신만의 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">스마트한</span> 투자 전략
             </h2>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              25문항 설문을 통해 투자 성향을 분석하고, AI가 추천하는 맞춤형 포트폴리오로 성공적인 투자를 시작하세요.
+              2단계 맞춤형 설문을 통해 투자 성향을 분석하고, AI가 추천하는 맞춤형 포트폴리오로 성공적인 투자를 시작하세요.
             </p>
           </motion.div>
 
@@ -142,7 +142,7 @@ export default function Home() {
                 <span className="text-white font-bold text-xl">1</span>
               </div>
               <h4 className="text-xl font-semibold text-gray-800 mb-4">설문 참여</h4>
-              <p className="text-gray-600">25문항의 투자 성향 설문에 솔직하게 답변해 주세요.</p>
+                              <p className="text-gray-600">2단계 투자 성향 설문에 솔직하게 답변해 주세요.</p>
             </motion.div>
 
             <motion.div

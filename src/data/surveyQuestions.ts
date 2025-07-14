@@ -1,320 +1,346 @@
-export interface SurveyQuestion {
+// 1단계: 성향군 구분 질문
+export interface GroupQuestion {
   id: number;
   question: string;
-  options: {
-    text: string;
-    score: number;
-  }[];
-  category: 'risk_tolerance' | 'investment_purpose' | 'investment_experience' | 'asset_liquidity' | 'psychology_behavior' | 'investment_strategy';
+  group: 'stability' | 'profit' | 'aggressive';
 }
 
-export const surveyQuestions: SurveyQuestion[] = [
+// 2단계: 세부 성향 질문  
+export interface DetailQuestion {
+  id: number;
+  question: string;
+  type: 'conservative' | 'stability_focused' | 'dividend_focused' | 'balanced' | 'growth_oriented' | 'value_focused' | 'esg_focused' | 'aggressive' | 'innovation_focused' | 'short_term_profit_focused';
+}
+
+// 공통 옵션 (5점 척도)
+export const commonOptions = [
+  { text: "매우 그렇다", score: 5 },
+  { text: "그렇다", score: 4 },
+  { text: "보통", score: 3 },
+  { text: "아니다", score: 2 },
+  { text: "매우 아니다", score: 1 }
+];
+
+// 1단계: 성향군 구분 질문 (9문제)
+export const groupQuestions: GroupQuestion[] = [
+  // 안정추구형 성향군 (1~3번)
   {
-    "id": 1,
-    "question": "투자 자산이 갑자기 20% 하락했을 때 어떻게 하시겠습니까?",
-    "category": "risk_tolerance",
-    "options": [
-      { "text": "즉시 전부 매도한다", "score": 1 },
-      { "text": "상당 부분 매도한다", "score": 2 },
-      { "text": "일부 매도하거나 관망한다", "score": 3 },
-      { "text": "아무 행동도 하지 않는다", "score": 4 },
-      { "text": "추가 매수를 적극적으로 고려한다", "score": 5 }
-    ]
+    id: 1,
+    question: "투자 시 원금 손실은 절대 감수할 수 없다.",
+    group: "stability"
   },
   {
-    "id": 2,
-    "question": "손실을 어느 정도까지 감내할 수 있나요?",
-    "category": "risk_tolerance",
-    "options": [
-      { "text": "3% 이하", "score": 1 },
-      { "text": "3~7%", "score": 2 },
-      { "text": "7~12%", "score": 3 },
-      { "text": "12~20%", "score": 4 },
-      { "text": "20% 이상", "score": 5 }
-    ]
+    id: 2,
+    question: "높은 수익률보다는 꾸준하고 안정적인 수익을 얻는 것이 훨씬 중요하다.",
+    group: "stability"
   },
   {
-    "id": 3,
-    "question": "변동성이 큰 암호화폐에 투자하는 것을 어떻게 생각하시나요?",
-    "category": "risk_tolerance",
-    "options": [
-      { "text": "절대 투자하지 않는다", "score": 1 },
-      { "text": "거의 투자하지 않는다", "score": 2 },
-      { "text": "신중히 투자한다", "score": 3 },
-      { "text": "적당히 투자한다", "score": 4 },
-      { "text": "적극적으로 투자한다", "score": 5 }
-    ]
+    id: 3,
+    question: "투자자산 대부분을 예금이나 채권 등 안전자산에 투자하고 싶다.",
+    group: "stability"
+  },
+  
+  // 수익추구형 성향군 (4~6번)
+  {
+    id: 4,
+    question: "투자할 때 기업의 성장 가능성이나 장기적 가치 상승을 가장 중요하게 생각한다.",
+    group: "profit"
   },
   {
-    "id": 4,
-    "question": "높은 예상 수익률을 위해 큰 위험도 감수할 의향이 있나요?",
-    "category": "risk_tolerance",
-    "options": [
-      { "text": "전혀 없다", "score": 1 },
-      { "text": "거의 없다", "score": 2 },
-      { "text": "보통이다", "score": 3 },
-      { "text": "약간 있다", "score": 4 },
-      { "text": "매우 많다", "score": 5 }
-    ]
+    id: 5,
+    question: "저평가된 가치주나, 펀더멘탈이 탄탄한 기업을 찾아 투자한다.",
+    group: "profit"
   },
   {
-    "id": 5,
-    "question": "시장 변동성 확대 시 단기 매매 빈도는?",
-    "category": "risk_tolerance",
-    "options": [
-      { "text": "매우 자주", "score": 1 },
-      { "text": "자주", "score": 2 },
-      { "text": "보통", "score": 3 },
-      { "text": "드물게", "score": 4 },
-      { "text": "전혀 안 한다", "score": 5 }
-    ]
+    id: 6,
+    question: "친환경, 사회적 책임(ESG) 등 사회적 가치가 높은 기업에 투자하고 싶다.",
+    group: "profit"
+  },
+  
+  // 적극적/투기형 성향군 (7~9번)
+  {
+    id: 7,
+    question: "높은 투자 수익을 위해 상당한 위험과 가격 변동성을 적극 감수할 수 있다.",
+    group: "aggressive"
   },
   {
-    "id": 6,
-    "question": "주된 투자 목적은 무엇인가요?",
-    "category": "investment_purpose",
-    "options": [
-      { "text": "단기 차익 실현", "score": 1 },
-      { "text": "단기 수익 + 위험 회피", "score": 2 },
-      { "text": "중장기 자산 성장", "score": 3 },
-      { "text": "안정적인 배당/임대수익", "score": 4 },
-      { "text": "자산 보존 및 위험 최소화", "score": 5 }
-    ]
+    id: 8,
+    question: "시장의 단기적인 변동을 이용해 자주 거래하는 것이 좋다.",
+    group: "aggressive"
   },
   {
-    "id": 7,
-    "question": "투자 계획 기간은 어떻게 되나요?",
-    "category": "investment_purpose",
-    "options": [
-      { "text": "6개월 미만", "score": 1 },
-      { "text": "6개월~1년", "score": 2 },
-      { "text": "1~3년", "score": 3 },
-      { "text": "3~5년", "score": 4 },
-      { "text": "5년 이상", "score": 5 }
-    ]
-  },
-  {
-    "id": 8,
-    "question": "새로운 투자 기회가 있을 때 주로 어떻게 접근하시나요?",
-    "category": "investment_purpose",
-    "options": [
-      { "text": "전혀 관심을 두지 않는다", "score": 1 },
-      { "text": "주의 깊게 살펴보지만 쉽게 투자하지 않는다", "score": 2 },
-      { "text": "필요하면 적당히 조사 후 투자한다", "score": 3 },
-      { "text": "적극적으로 정보 수집 후 투자한다", "score": 4 },
-      { "text": "빠르게 투자 결정을 내리고 적극 참여한다", "score": 5 }
-    ]
-  },
-  {
-    "id": 9,
-    "question": "투자 경험은 어느 정도인가요?",
-    "category": "investment_experience",
-    "options": [
-      { "text": "전혀 없다", "score": 1 },
-      { "text": "6개월 미만", "score": 2 },
-      { "text": "6개월~1년", "score": 3 },
-      { "text": "1~3년", "score": 4 },
-      { "text": "3년 이상", "score": 5 }
-    ]
-  },
-  {
-    "id": 10,
-    "question": "가장 많이 투자한 자산 유형은?",
-    "category": "investment_experience",
-    "options": [
-      { "text": "예금, 적금", "score": 1 },
-      { "text": "채권, 펀드", "score": 2 },
-      { "text": "주식, ETF", "score": 3 },
-      { "text": "부동산(직접 또는 펀드)", "score": 4 },
-      { "text": "암호화폐", "score": 5 }
-    ]
-  },
-  {
-    "id": 11,
-    "question": "투자 정보를 접하는 빈도는?",
-    "category": "investment_experience",
-    "options": [
-      { "text": "거의 안 본다", "score": 1 },
-      { "text": "가끔 본다", "score": 2 },
-      { "text": "주 1~2회 본다", "score": 3 },
-      { "text": "자주 본다", "score": 4 },
-      { "text": "매일 본다", "score": 5 }
-    ]
-  },
-  {
-    "id": 12,
-    "question": "투자 관련 지식 수준은?",
-    "category": "investment_experience",
-    "options": [
-      { "text": "거의 없다", "score": 1 },
-      { "text": "기초 지식만 있다", "score": 2 },
-      { "text": "기본 개념을 이해한다", "score": 3 },
-      { "text": "심화 지식을 갖추었다", "score": 4 },
-      { "text": "전문가 수준이다", "score": 5 }
-    ]
-  },
-  {
-    "id": 13,
-    "question": "투자 가능한 총 자산 규모는?",
-    "category": "asset_liquidity",
-    "options": [
-      { "text": "1천만 원 미만", "score": 1 },
-      { "text": "1천만~3천만 원", "score": 2 },
-      { "text": "3천만~5천만 원", "score": 3 },
-      { "text": "5천만~1억 원", "score": 4 },
-      { "text": "1억 원 이상", "score": 5 }
-    ]
-  },
-  {
-    "id": 14,
-    "question": "비상금(유동자산) 보유 수준은?",
-    "category": "asset_liquidity",
-    "options": [
-      { "text": "전혀 없다", "score": 1 },
-      { "text": "생활비 1개월 이하", "score": 2 },
-      { "text": "생활비 1~3개월", "score": 3 },
-      { "text": "생활비 3~6개월", "score": 4 },
-      { "text": "생활비 6개월 이상", "score": 5 }
-    ]
-  },
-  {
-    "id": 15,
-    "question": "월별 투자 가능한 금액은?",
-    "category": "asset_liquidity",
-    "options": [
-      { "text": "10만 원 미만", "score": 1 },
-      { "text": "10~30만 원", "score": 2 },
-      { "text": "30~50만 원", "score": 3 },
-      { "text": "50~100만 원", "score": 4 },
-      { "text": "100만 원 이상", "score": 5 }
-    ]
-  },
-  {
-    "id": 16,
-    "question": "투자 자산 중 유동성이 중요한 비중은?",
-    "category": "asset_liquidity",
-    "options": [
-      { "text": "거의 없다", "score": 1 },
-      { "text": "10% 이하", "score": 2 },
-      { "text": "10~30%", "score": 3 },
-      { "text": "30~50%", "score": 4 },
-      { "text": "50% 이상", "score": 5 }
-    ]
-  },
-  {
-    "id": 17,
-    "question": "투자 손실 시 감정 조절 수준은?",
-    "category": "psychology_behavior",
-    "options": [
-      { "text": "거의 못 한다", "score": 1 },
-      { "text": "가끔 흔들린다", "score": 2 },
-      { "text": "보통이다", "score": 3 },
-      { "text": "대체로 잘 한다", "score": 4 },
-      { "text": "항상 냉철하다", "score": 5 }
-    ]
-  },
-  {
-    "id": 18,
-    "question": "투자 결정을 내릴 때 주변 사람들의 의견이나 미디어 영향을 얼마나 받나요?",
-    "category": "psychology_behavior",
-    "options": [
-      { "text": "매우 크게 영향을 받는다", "score": 1 },
-      { "text": "다소 영향을 받는다", "score": 2 },
-      { "text": "보통 정도 영향을 받는다", "score": 3 },
-      { "text": "거의 영향을 받지 않는다", "score": 4 },
-      { "text": "전혀 영향을 받지 않는다", "score": 5 }
-    ]
-  },
-  {
-    "id": 19,
-    "question": "투자 결정을 할 때 가장 신뢰하는 정보원은 무엇인가요?",
-    "category": "psychology_behavior",
-    "options": [
-      { "text": "주변 지인 및 가족", "score": 1 },
-      { "text": "뉴스 및 방송 매체", "score": 2 },
-      { "text": "전문가 및 애널리스트 의견", "score": 3 },
-      { "text": "독립적인 투자 리서치 자료", "score": 4 },
-      { "text": "스스로 조사하고 분석한 자료", "score": 5 }
-    ]
-  },
-  {
-    "id": 20,
-    "question": "설정한 투자 목표를 달성했을 때, 다음 행동은 무엇인가요?",
-    "category": "psychology_behavior",
-    "options": [
-      { "text": "투자 활동을 중단하고 자산을 현금화한다", "score": 1 },
-      { "text": "일부 자산을 정리하고 안정적인 자산으로 전환한다", "score": 2 },
-      { "text": "기존 포트폴리오를 유지한다", "score": 3 },
-      { "text": "새로운 투자 목표를 설정하고 추가 투자한다", "score": 4 },
-      { "text": "더 높은 위험의 투자로 포트폴리오를 적극 재구성한다", "score": 5 }
-    ]
-  },
-  {
-    "id": 21,
-    "question": "손실 후 재투자 의사 결정 기간은?",
-    "category": "psychology_behavior",
-    "options": [
-      { "text": "즉시", "score": 1 },
-      { "text": "1~3일", "score": 2 },
-      { "text": "1주일", "score": 3 },
-      { "text": "1개월", "score": 4 },
-      { "text": "3개월 이상", "score": 5 }
-    ]
-  },
-  {
-    "id": 22,
-    "question": "선호하는 투자 상품은?",
-    "category": "investment_strategy",
-    "options": [
-      { "text": "예금, 적금, 채권", "score": 1 },
-      { "text": "펀드, ETF", "score": 2 },
-      { "text": "주식", "score": 3 },
-      { "text": "부동산(직접 또는 펀드)", "score": 4 },
-      { "text": "암호화폐 및 기타 대체 투자(금 등)", "score": 5 }
-    ]
-  },
-  {
-    "id": 23,
-    "question": "자산 배분 시 특정 산업이나 지역에 집중하는 편인가요?",
-    "category": "investment_strategy",
-    "options": [
-      { "text": "전혀 집중 안함", "score": 1 },
-      { "text": "약간 집중함", "score": 2 },
-      { "text": "보통", "score": 3 },
-      { "text": "집중함", "score": 4 },
-      { "text": "매우 집중함", "score": 5 }
-    ]
-  },
-  {
-    "id": 24,
-    "question": "직접 투자와 간접 투자 선호도는?",
-    "category": "investment_strategy",
-    "options": [
-      { "text": "직접 투자만 한다", "score": 1 },
-      { "text": "직접 투자 위주다", "score": 2 },
-      { "text": "직접, 간접 투자 혼합한다", "score": 3 },
-      { "text": "간접 투자 위주다", "score": 4 },
-      { "text": "간접 투자만 한다", "score": 5 }
-    ]
-  },
-  {
-    "id": 25,
-    "question": "투자 결정을 내릴 때 가장 중요하게 고려하는 요소는 무엇인가요?",
-    "category": "investment_strategy",
-    "options": [
-      { "text": "단기 수익률", "score": 1 },
-      { "text": "안정성과 위험 관리", "score": 2 },
-      { "text": "장기 성장 가능성", "score": 3 },
-      { "text": "배당 및 현금 흐름", "score": 4 },
-      { "text": "시장 트렌드와 혁신성", "score": 5 }
-    ]
+    id: 9,
+    question: "신기술이나 신산업 등 혁신적인 분야에 대한 투자에 매우 관심이 많다.",
+    group: "aggressive"
   }
-]
-;
+];
+
+// 2단계: 세부 성향 질문 (각 성향별 4문제)
+export const detailQuestions: DetailQuestion[] = [
+  // 안정추구형 성향군 - 보수형 (4문제)
+  {
+    id: 10,
+    question: "투자자금의 원금이 조금이라도 줄어드는 것은 절대 용납할 수 없다.",
+    type: "conservative"
+  },
+  {
+    id: 11,
+    question: "투자는 주로 예금과 원금 보장형 금융상품으로만 해야 마음이 편하다.",
+    type: "conservative"
+  },
+  {
+    id: 12,
+    question: "시장 변동이 클 때 극도의 불안감을 느끼고 빠르게 투자금을 안전 자산으로 옮긴다.",
+    type: "conservative"
+  },
+  {
+    id: 13,
+    question: "원금 손실 가능성이 있는 상품은 아예 고려조차 하지 않는다.",
+    type: "conservative"
+  },
+  
+  // 안정추구형 성향군 - 안정추구형 (4문제)
+  {
+    id: 14,
+    question: "채권과 같이 일정하고 꾸준한 이자 수익을 주는 투자상품을 선호한다.",
+    type: "stability_focused"
+  },
+  {
+    id: 15,
+    question: "수익률이 낮더라도 변동성이 낮고 안정적인 자산을 선호한다.",
+    type: "stability_focused"
+  },
+  {
+    id: 16,
+    question: "자산의 대부분을 채권 또는 우량한 회사채 중심으로 투자하는 것이 좋다고 생각한다.",
+    type: "stability_focused"
+  },
+  {
+    id: 17,
+    question: "손실이 발생하면 추가 투자 없이 바로 자산 비중을 줄인다.",
+    type: "stability_focused"
+  },
+  
+  // 안정추구형 성향군 - 배당중시형 (4문제)
+  {
+    id: 18,
+    question: "꾸준히 배당을 주는 우량기업에 투자하는 것이 가장 중요하다.",
+    type: "dividend_focused"
+  },
+  {
+    id: 19,
+    question: "자산의 상당 부분을 고배당 주식이나 배당 ETF 등에 투자하고 싶다.",
+    type: "dividend_focused"
+  },
+  {
+    id: 20,
+    question: "시세차익보다는 정기적인 배당수익 확보가 투자목표이다.",
+    type: "dividend_focused"
+  },
+  {
+    id: 21,
+    question: "배당률이 높은 기업이나 펀드를 선택할 때 마음이 가장 편하다.",
+    type: "dividend_focused"
+  },
+  
+  // 안정추구형 성향군 - 균형형 (4문제)
+  {
+    id: 22,
+    question: "주식과 채권, 현금성 자산을 적절히 분산 투자하는 것이 가장 효과적이라고 생각한다.",
+    type: "balanced"
+  },
+  {
+    id: 23,
+    question: "안정성과 수익성 사이에서 균형을 맞추는 것이 최우선이다.",
+    type: "balanced"
+  },
+  {
+    id: 24,
+    question: "투자 기간은 중기(3~5년) 정도로 설정하는 것이 가장 적절하다.",
+    type: "balanced"
+  },
+  {
+    id: 25,
+    question: "시장 변동이 있어도 기존의 투자 전략을 크게 바꾸지 않고 유지한다.",
+    type: "balanced"
+  },
+  
+  // 수익추구형 성향군 - 성장지향형 (4문제)
+  {
+    id: 26,
+    question: "단기적인 손실을 보더라도 장기적으로 성장할 가능성이 큰 기업에 투자하고 싶다.",
+    type: "growth_oriented"
+  },
+  {
+    id: 27,
+    question: "향후 5년 이상 지속적으로 성장할 것으로 기대되는 주식에 투자한다.",
+    type: "growth_oriented"
+  },
+  {
+    id: 28,
+    question: "성장 잠재력이 높은 신흥 시장이나 업종에 투자하는 것이 좋다고 생각한다.",
+    type: "growth_oriented"
+  },
+  {
+    id: 29,
+    question: "기업의 미래 가치와 성장성을 평가하는 데 가장 많은 시간을 투자한다.",
+    type: "growth_oriented"
+  },
+  
+  // 수익추구형 성향군 - 가치중시형 (4문제)
+  {
+    id: 30,
+    question: "기업의 재무제표, 이익, 부채 비율 등을 철저히 분석하여 투자한다.",
+    type: "value_focused"
+  },
+  {
+    id: 31,
+    question: "시장에서 저평가된 기업을 찾아 장기적으로 보유하는 전략을 선호한다.",
+    type: "value_focused"
+  },
+  {
+    id: 32,
+    question: "시장의 유행이나 단기적 변동보다는 기업의 내재가치와 펀더멘탈을 중시한다.",
+    type: "value_focused"
+  },
+  {
+    id: 33,
+    question: "인기가 많고 과대평가된 기업보다는 숨겨진 우량 가치주를 선호한다.",
+    type: "value_focused"
+  },
+  
+  // 수익추구형 성향군 - 사회책임투자형 (4문제)
+  {
+    id: 34,
+    question: "환경보호, 윤리경영, ESG 점수가 높은 기업에 투자하는 것이 중요하다.",
+    type: "esg_focused"
+  },
+  {
+    id: 35,
+    question: "투자할 때 기업이 사회적 책임을 얼마나 다하는지를 반드시 고려한다.",
+    type: "esg_focused"
+  },
+  {
+    id: 36,
+    question: "수익률이 다소 낮더라도 환경과 사회에 긍정적인 영향을 미치는 기업에 투자한다.",
+    type: "esg_focused"
+  },
+  {
+    id: 37,
+    question: "지속가능성 및 사회적 가치와 관련된 펀드 및 ETF에 투자하고 싶다.",
+    type: "esg_focused"
+  },
+  
+  // 적극적/투기형 성향군 - 공격형 (4문제)
+  {
+    id: 38,
+    question: "매우 높은 수익을 얻기 위해서는 큰 손실도 적극 감수할 수 있다.",
+    type: "aggressive"
+  },
+  {
+    id: 39,
+    question: "시장이 하락했을 때 더 적극적으로 추가 매수하는 스타일이다.",
+    type: "aggressive"
+  },
+  {
+    id: 40,
+    question: "투자 포트폴리오에서 주식과 암호화폐 같은 고위험 자산 비중을 높게 유지한다.",
+    type: "aggressive"
+  },
+  {
+    id: 41,
+    question: "경제 사이클이나 시장 타이밍을 활용하여 적극적으로 자산을 매매한다.",
+    type: "aggressive"
+  },
+  
+  // 적극적/투기형 성향군 - 혁신추구형 (4문제)
+  {
+    id: 42,
+    question: "신기술이나 혁신을 주도할 기업 및 산업에 투자하는 것이 매우 매력적이다.",
+    type: "innovation_focused"
+  },
+  {
+    id: 43,
+    question: "검증되지 않은 스타트업이나 혁신기업에 투자를 적극적으로 고려한다.",
+    type: "innovation_focused"
+  },
+  {
+    id: 44,
+    question: "미래 산업을 주도할 것으로 기대되는 기술(예: AI, 블록체인)에 관심이 많다.",
+    type: "innovation_focused"
+  },
+  {
+    id: 45,
+    question: "아직 이익을 내지 못하는 초기 기업이라도 혁신적이라면 투자를 고려한다.",
+    type: "innovation_focused"
+  },
+  
+  // 적극적/투기형 성향군 - 단기차익추구형 (4문제)
+  {
+    id: 46,
+    question: "단기적으로 높은 수익을 얻기 위해 잦은 거래와 매매를 선호한다.",
+    type: "short_term_profit_focused"
+  },
+  {
+    id: 47,
+    question: "레버리지나 마진거래와 같은 고위험 단기 전략을 자주 활용한다.",
+    type: "short_term_profit_focused"
+  },
+  {
+    id: 48,
+    question: "하루 또는 며칠 이내의 단기 가격 변동을 이용한 투자가 더 효율적이라 생각한다.",
+    type: "short_term_profit_focused"
+  },
+  {
+    id: 49,
+    question: "빠른 시장 정보와 뉴스에 따라 민첩하게 투자 결정을 내린다.",
+    type: "short_term_profit_focused"
+  }
+];
+
+// 성향군 매핑
+export const groupMapping = {
+  stability: ['conservative', 'stability_focused', 'dividend_focused', 'balanced'],
+  profit: ['growth_oriented', 'value_focused', 'esg_focused'],
+  aggressive: ['aggressive', 'innovation_focused', 'short_term_profit_focused']
+};
+
+// 1단계: 성향군 결정 함수
+export function determineGroup(answers: number[]): 'stability' | 'profit' | 'aggressive' {
+  const stabilityScore = answers.slice(0, 3).reduce((sum, score) => sum + score, 0);
+  const profitScore = answers.slice(3, 6).reduce((sum, score) => sum + score, 0);
+  const aggressiveScore = answers.slice(6, 9).reduce((sum, score) => sum + score, 0);
+  
+  if (stabilityScore >= profitScore && stabilityScore >= aggressiveScore) {
+    return 'stability';
+  } else if (profitScore >= aggressiveScore) {
+    return 'profit';
+  } else {
+    return 'aggressive';
+  }
+}
+
+// 2단계: 세부 성향 결정 함수
+export function determineDetailType(group: 'stability' | 'profit' | 'aggressive', answers: number[]): InvestmentProfile {
+  const types = groupMapping[group];
+  const scores: { [key: string]: number } = {};
+  
+  // 각 성향별 점수 계산 (4문제씩)
+  types.forEach((type, index) => {
+    const startIndex = index * 4;
+    const endIndex = startIndex + 4;
+    scores[type] = answers.slice(startIndex, endIndex).reduce((sum, score) => sum + score, 0);
+  });
+  
+  // 가장 높은 점수의 성향 선택
+  const highestType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  
+  return investmentProfiles[highestType];
+}
 
 // 투자 성향 유형 정의
 export interface InvestmentProfile {
-  type: 'ultra_ultra_conservative' | 'ultra_conservative' | 'conservative' | 'moderate_conservative' | 'balanced' | 'moderate_growth' | 'growth' | 'aggressive_growth' | 'speculative_aggressive' | 'ultra_speculative_aggressive';
+  type: 'conservative' | 'stability_focused' | 'dividend_focused' | 'balanced' | 'growth_oriented' | 'value_focused' | 'esg_focused' | 'aggressive' | 'innovation_focused' | 'short_term_profit_focused';
   name: string;
   description: string;
   characteristics: string[];
@@ -329,86 +355,67 @@ export interface InvestmentProfile {
 }
 
 export const investmentProfiles: Record<string, InvestmentProfile> = {
-  ultra_ultra_conservative: {
-    type: 'ultra_ultra_conservative',
-    name: '초극보수형',
-    description: '원금 보장을 절대 우선시하며, 어떤 손실도 감수하지 않는 극도로 안전한 투자만 선호',
-    characteristics: [
-      '원금 손실 절대 불가',
-      '예금과 적금 위주 투자',
-      '변동성 극도로 기피',
-      '유동성 최우선 고려'
-    ],
-    riskLevel: 1,
-    expectedReturn: '1-2%',
-    recommendedAssets: {
-      stocks: 0,
-      bonds: 30,
-      cash: 65,
-      alternatives: 5
-    }
-  },
-  ultra_conservative: {
-    type: 'ultra_conservative',
-    name: '극보수형',
-    description: '안전성을 최우선으로 하며, 최소한의 위험만 감수하여 안정적인 수익을 추구',
-    characteristics: [
-      '원금 보장 상품 선호',
-      '국채 및 우량 채권 중심',
-      '극도로 안전한 투자만 고려',
-      '수익률보다 안정성 우선'
-    ],
-    riskLevel: 2,
-    expectedReturn: '2-3%',
-    recommendedAssets: {
-      stocks: 5,
-      bonds: 50,
-      cash: 40,
-      alternatives: 5
-    }
-  },
   conservative: {
     type: 'conservative',
     name: '보수형',
-    description: '안정성을 중시하면서도 약간의 위험을 감수하여 인플레이션을 상회하는 수익을 추구',
+    description: '안전성을 최우선으로 하며, 원금 보장을 중시하는 투자 성향',
     characteristics: [
-      '안정적 수익 추구',
-      '우량 대형주 선호',
-      '채권 비중 높음',
-      '인플레이션 헤지 고려'
+      '원금 보장 상품 선호',
+      '안전성 최우선 고려',
+      '예금, 적금, 국채 중심',
+      '변동성 극도로 기피'
     ],
-    riskLevel: 3,
-    expectedReturn: '3-4%',
+    riskLevel: 2,
+    expectedReturn: '2-4%',
     recommendedAssets: {
-      stocks: 15,
-      bonds: 55,
+      stocks: 10,
+      bonds: 60,
       cash: 25,
       alternatives: 5
     }
   },
-  moderate_conservative: {
-    type: 'moderate_conservative',
-    name: '온건보수형',
-    description: '안정성을 기반으로 하되, 적절한 위험을 감수하여 보다 나은 수익을 추구',
+  stability_focused: {
+    type: 'stability_focused',
+    name: '안정추구형',
+    description: '안정적인 수익을 추구하며, 변동성을 최소화하는 투자 성향',
     characteristics: [
-      '점진적 자산 증대',
-      '배당주 선호',
-      '안정적 성장 추구',
-      '리스크 관리 중시'
+      '안정적 수익 추구',
+      '변동성 최소화',
+      '우량 대형주 선호',
+      '장기 투자 지향'
     ],
-    riskLevel: 4,
-    expectedReturn: '4-5%',
+    riskLevel: 3,
+    expectedReturn: '3-5%',
     recommendedAssets: {
       stocks: 25,
-      bonds: 45,
+      bonds: 50,
       cash: 20,
+      alternatives: 5
+    }
+  },
+  dividend_focused: {
+    type: 'dividend_focused',
+    name: '배당중시형',
+    description: '배당 수익을 중시하며, 꾸준한 현금 흐름을 추구하는 투자 성향',
+    characteristics: [
+      '배당 수익 중심',
+      '꾸준한 현금 흐름 추구',
+      '배당 성장주 선호',
+      '인컴 투자 중시'
+    ],
+    riskLevel: 4,
+    expectedReturn: '4-6%',
+    recommendedAssets: {
+      stocks: 45,
+      bonds: 30,
+      cash: 15,
       alternatives: 10
     }
   },
   balanced: {
     type: 'balanced',
     name: '균형형',
-    description: '안정성과 수익성의 균형을 추구하며, 중간 정도의 위험을 감수',
+    description: '안정성과 수익성의 균형을 추구하며, 분산 투자를 선호하는 성향',
     characteristics: [
       '안정성과 수익성 균형',
       '분산투자 선호',
@@ -418,24 +425,62 @@ export const investmentProfiles: Record<string, InvestmentProfile> = {
     riskLevel: 5,
     expectedReturn: '5-7%',
     recommendedAssets: {
-      stocks: 40,
-      bonds: 35,
-      cash: 15,
+      stocks: 50,
+      bonds: 30,
+      cash: 10,
       alternatives: 10
     }
   },
-  moderate_growth: {
-    type: 'moderate_growth',
-    name: '온건성장형',
-    description: '성장성을 추구하면서도 적절한 안정성을 유지하여 균형잡힌 포트폴리오를 선호',
+  growth_oriented: {
+    type: 'growth_oriented',
+    name: '성장지향형',
+    description: '장기적 자산 성장을 목표로 하며, 성장 가능성을 중시하는 투자 성향',
     characteristics: [
-      '성장성과 안정성 조화',
-      '우량 성장주 선호',
-      '장기 투자 지향',
-      '변동성 어느 정도 수용'
+      '장기적 성장 추구',
+      '성장주 투자 선호',
+      '높은 수익률 추구',
+      '상당한 위험 감수'
     ],
     riskLevel: 6,
-    expectedReturn: '6-8%',
+    expectedReturn: '6-9%',
+    recommendedAssets: {
+      stocks: 65,
+      bonds: 20,
+      cash: 10,
+      alternatives: 5
+    }
+  },
+  value_focused: {
+    type: 'value_focused',
+    name: '가치중시형',
+    description: '저평가된 가치주를 선호하며, 펀더멘털 분석을 중시하는 투자 성향',
+    characteristics: [
+      '저평가 가치주 선호',
+      '펀더멘털 분석 중시',
+      '장기 관점 투자',
+      '내재가치 대비 할인 추구'
+    ],
+    riskLevel: 5,
+    expectedReturn: '5-8%',
+    recommendedAssets: {
+      stocks: 60,
+      bonds: 25,
+      cash: 10,
+      alternatives: 5
+    }
+  },
+  esg_focused: {
+    type: 'esg_focused',
+    name: '사회책임투자형',
+    description: 'ESG 요소를 고려하며, 사회적 가치와 지속가능성을 중시하는 투자 성향',
+    characteristics: [
+      'ESG 요소 고려',
+      '사회적 가치 중시',
+      '지속가능성 추구',
+      '사회책임 투자 선호'
+    ],
+    riskLevel: 5,
+    expectedReturn: '5-8%',
     recommendedAssets: {
       stocks: 55,
       bonds: 25,
@@ -443,108 +488,61 @@ export const investmentProfiles: Record<string, InvestmentProfile> = {
       alternatives: 10
     }
   },
-  growth: {
-    type: 'growth',
-    name: '성장형',
-    description: '장기적 자산 성장을 목표로 하며, 상당한 위험을 감수하여 높은 수익을 추구',
+  aggressive: {
+    type: 'aggressive',
+    name: '공격형',
+    description: '높은 위험을 감수하며, 공격적인 투자 전략을 선호하는 성향',
     characteristics: [
-      '장기적 성장 추구',
-      '성장주 투자 선호',
-      '상당한 위험 감수',
-      '시장 변동성 수용'
+      '높은 위험 감수',
+      '공격적 투자 전략',
+      '높은 수익률 추구',
+      '변동성 수용'
     ],
-    riskLevel: 7,
-    expectedReturn: '7-10%',
+    riskLevel: 8,
+    expectedReturn: '8-12%',
     recommendedAssets: {
-      stocks: 65,
-      bonds: 15,
-      cash: 10,
+      stocks: 75,
+      bonds: 10,
+      cash: 5,
       alternatives: 10
     }
   },
-  aggressive_growth: {
-    type: 'aggressive_growth',
-    name: '공격성장형',
-    description: '높은 수익을 추구하며, 큰 위험을 감수하고 적극적인 투자 전략을 선호',
+  innovation_focused: {
+    type: 'innovation_focused',
+    name: '혁신추구형',
+    description: '혁신적인 기술과 신성장 분야에 투자하며, 미래 가치를 추구하는 성향',
     characteristics: [
-      '높은 수익 추구',
-      '공격적 투자 전략',
-      '큰 위험 감수 가능',
-      '성장 가능성 중시'
+      '혁신 기술 투자',
+      '신성장 분야 선호',
+      '미래 가치 추구',
+      '테마 투자 선호'
     ],
-    riskLevel: 8,
-    expectedReturn: '9-13%',
-    recommendedAssets: {
-      stocks: 75,
-      bonds: 5,
-      cash: 5,
-      alternatives: 15
-    }
-  },
-  speculative_aggressive: {
-    type: 'speculative_aggressive',
-    name: '공격투기형',
-    description: '매우 높은 수익을 추구하며, 투기적 투자도 감수하는 적극적인 성향',
-    characteristics: [
-      '매우 높은 수익 추구',
-      '투기적 투자 가능',
-      '높은 변동성 수용',
-      '단기 트레이딩 선호'
-    ],
-    riskLevel: 9,
-    expectedReturn: '12-18%',
-    recommendedAssets: {
-      stocks: 80,
-      bonds: 0,
-      cash: 5,
-      alternatives: 15
-    }
-  },
-  ultra_speculative_aggressive: {
-    type: 'ultra_speculative_aggressive',
-    name: '극공격투기형',
-    description: '최대 수익을 추구하며, 극도로 높은 위험과 투기적 투자를 마다하지 않는 성향',
-    characteristics: [
-      '최대 수익 추구',
-      '극도로 높은 위험 감수',
-      '투기적 투자 선호',
-      '고위험 고수익 추구'
-    ],
-    riskLevel: 10,
-    expectedReturn: '15%+',
+    riskLevel: 7,
+    expectedReturn: '7-11%',
     recommendedAssets: {
       stocks: 70,
-      bonds: 0,
+      bonds: 15,
       cash: 5,
-      alternatives: 25
+      alternatives: 10
+    }
+  },
+  short_term_profit_focused: {
+    type: 'short_term_profit_focused',
+    name: '단기차익추구형',
+    description: '단기적인 차익 실현을 목표로 하며, 활발한 매매를 선호하는 성향',
+    characteristics: [
+      '단기 차익 실현',
+      '활발한 매매 선호',
+      '시장 타이밍 중시',
+      '높은 회전율'
+    ],
+    riskLevel: 9,
+    expectedReturn: '10-15%',
+    recommendedAssets: {
+      stocks: 80,
+      bonds: 5,
+      cash: 5,
+      alternatives: 10
     }
   }
-};
-
-// 점수 계산 함수
-export function calculateInvestmentProfile(scores: number[]): InvestmentProfile {
-  const totalScore = scores.reduce((sum, score) => sum + score, 0);
-  const averageScore = totalScore / scores.length;
-
-  if (averageScore <= 1.3) {
-    return investmentProfiles.ultra_ultra_conservative;
-  } else if (averageScore <= 1.6) {
-    return investmentProfiles.ultra_conservative;
-  } else if (averageScore <= 2.0) {
-    return investmentProfiles.conservative;
-  } else if (averageScore <= 2.4) {
-    return investmentProfiles.moderate_conservative;
-  } else if (averageScore <= 2.8) {
-    return investmentProfiles.balanced;
-  } else if (averageScore <= 3.2) {
-    return investmentProfiles.moderate_growth;
-  } else if (averageScore <= 3.6) {
-    return investmentProfiles.growth;
-  } else if (averageScore <= 4.0) {
-    return investmentProfiles.aggressive_growth;
-  } else if (averageScore <= 4.4) {
-    return investmentProfiles.speculative_aggressive;
-  } else {
-    return investmentProfiles.ultra_speculative_aggressive;
-  }
-} 
+}; 

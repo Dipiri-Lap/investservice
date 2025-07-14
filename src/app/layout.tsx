@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: '스마트 투자 포트폴리오 | 맞춤형 투자 성향 분석',
-  description: '25문항 설문을 통한 투자 성향 분석 및 AI 기반 맞춤형 포트폴리오 추천 서비스',
+  description: '2단계 맞춤형 설문을 통한 투자 성향 분석 및 AI 기반 맞춤형 포트폴리오 추천 서비스',
   keywords: '투자, 포트폴리오, 투자성향, 자산배분, 투자추천, AI',
   authors: [{ name: '스마트 투자 포트폴리오' }],
 }
