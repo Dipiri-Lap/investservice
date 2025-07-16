@@ -419,11 +419,18 @@ export default function ResultsPage() {
         
         if (result.success) {
           console.log('✅ GPT 분석 완료:', result.profile.type)
+          console.log('📈 질문 수 정보:', result.questionCounts)
           setProfile(result.profile)
           setGptAnalysis(result.profile.gptAnalysis)
           setConfidence(result.profile.confidence)
           setKeyFindings(result.profile.keyFindings || [])
           setIsFallback(result.fallback || false)
+          
+          // 업데이트된 설문 데이터를 상태에 저장
+          setSurveyData({
+            ...currentSurveyData,
+            questionCounts: result.questionCounts
+          })
         } else {
           throw new Error(result.error || '분석 중 오류가 발생했습니다.')
         }
@@ -605,18 +612,32 @@ export default function ResultsPage() {
           {/* PDF 전용 헤더 */}
           <div id="pdf-header" className="hidden print:block mb-8 text-center border-b pb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-4">SmartInvest 투자 성향 분석 결과</h1>
-            <p className="text-gray-600">분석일: {new Date().toLocaleDateString('ko-KR')}</p>
+            <p className="text-gray-600 mb-2">분석일: {new Date().toLocaleDateString('ko-KR')}</p>
+            {surveyData && (
+              <div className="text-sm text-gray-500 space-y-1">
+                <p>
+                  2단계 설문 결과 - 총 {9 + (surveyData.detailAnswers?.length || 0)}문항
+                </p>
+                <p>
+                  1단계: 성향군 구분 (9문항) | 2단계: 세부 성향 구분 ({surveyData.detailAnswers?.length || 0}문항)
+                </p>
+                <p>
+                  결정된 성향군: {surveyData.selectedGroup === 'stability' ? '안정추구형' : 
+                                 surveyData.selectedGroup === 'profit' ? '수익추구형' : '적극적/투기형'}
+                </p>
+              </div>
+            )}
           </div>
           
           {/* PDF 1장: 요약 섹션 */}
           <div id="pdf-summary" className="bg-white rounded-2xl shadow-lg p-8 mb-12">
-            {/* 결과 헤더 */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-center mb-12"
-            >
+                      {/* 결과 헤더 */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
@@ -648,6 +669,45 @@ export default function ResultsPage() {
             >
               {profile.description}
             </motion.p>
+            
+            {/* 2단계 설문 결과 요약 */}
+            {surveyData && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+                className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 max-w-2xl mx-auto"
+              >
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">2단계 설문 분석 결과</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-600">9문항</div>
+                    <div className="text-gray-600">1단계: 성향군 구분</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-purple-600">
+                      {surveyData.detailAnswers?.length || 0}문항
+                    </div>
+                    <div className="text-gray-600">2단계: 세부 성향 구분</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-indigo-600">
+                      {9 + (surveyData.detailAnswers?.length || 0)}문항
+                    </div>
+                    <div className="text-gray-600">총 설문 문항 수</div>
+                  </div>
+                </div>
+                <div className="mt-4 text-center">
+                  <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white rounded-full shadow-sm">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    <span className="text-sm text-gray-700">
+                      {surveyData.selectedGroup === 'stability' ? '안정추구형' : 
+                       surveyData.selectedGroup === 'profit' ? '수익추구형' : '적극적/투기형'} 성향군
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
 
             {/* 주요 지표 카드 */}
@@ -752,6 +812,35 @@ export default function ResultsPage() {
                   </div>
                   <h2 className="text-3xl font-bold text-gray-800">투자 성향 특징</h2>
                 </div>
+                
+                {/* 성향군별 분석 정보 */}
+                {surveyData && (
+                  <div className="mb-8 p-6 bg-white/70 rounded-xl border border-blue-100">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">분석 기반 정보</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <span className="text-gray-700">
+                          성향군: {surveyData.selectedGroup === 'stability' ? '안정추구형' : 
+                                   surveyData.selectedGroup === 'profit' ? '수익추구형' : '적극적/투기형'}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-gray-700">
+                          세부 성향: {surveyData.detailAnswers?.length || 0}문항 분석
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span className="text-gray-700">
+                          총 {9 + (surveyData.detailAnswers?.length || 0)}문항 완료
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {(profile.characteristics || []).map((characteristic, index) => (
                     <motion.div 

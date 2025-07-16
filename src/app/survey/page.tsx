@@ -17,11 +17,16 @@ import Link from 'next/link'
 export default function SurveyPage() {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [groupAnswers, setGroupAnswers] = useState<number[]>(new Array(9).fill(0))
-  const [detailAnswers, setDetailAnswers] = useState<number[]>(new Array(16).fill(0))
+  const [detailAnswers, setDetailAnswers] = useState<number[]>([])
   const [selectedGroup, setSelectedGroup] = useState<'stability' | 'profit' | 'aggressive' | null>(null)
   const [detailQuestionsForGroup, setDetailQuestionsForGroup] = useState<any[]>([])
   const [isCompleted, setIsCompleted] = useState(false)
   const router = useRouter()
+
+  // 성향군별 질문 수 계산
+  const getDetailQuestionCount = (group: 'stability' | 'profit' | 'aggressive') => {
+    return groupMapping[group].length * 4
+  }
 
   // 현재 성향군의 세부 질문들 준비
   useEffect(() => {
@@ -31,10 +36,22 @@ export default function SurveyPage() {
         groupTypes.includes(q.type)
       );
       setDetailQuestionsForGroup(questionsForThisGroup);
+      
+      // 선택된 성향군에 따라 답변 배열 크기 조정
+      const detailQuestionCount = getDetailQuestionCount(selectedGroup);
+      setDetailAnswers(new Array(detailQuestionCount).fill(0));
     }
   }, [selectedGroup]);
 
-  // 전체 질문 배열 (1-9: 성향군 질문, 10-25: 세부 질문)
+  // 전체 질문 수 계산
+  const getTotalQuestionCount = () => {
+    if (selectedGroup) {
+      return 9 + getDetailQuestionCount(selectedGroup);
+    }
+    return 9; // 아직 성향군이 결정되지 않은 경우
+  }
+
+  // 전체 질문 배열 (1-9: 성향군 질문, 10-?: 세부 질문)
   const getAllQuestions = () => {
     const allQuestions = [...groupQuestions];
     if (detailQuestionsForGroup.length > 0) {
@@ -44,7 +61,7 @@ export default function SurveyPage() {
   };
 
   const allQuestions = getAllQuestions();
-  const totalQuestions = 25; // 9 + 16
+  const totalQuestions = getTotalQuestionCount();
 
   const handleAnswer = (score: number) => {
     if (currentQuestion < 9) {
@@ -59,7 +76,7 @@ export default function SurveyPage() {
         setSelectedGroup(determinedGroup);
       }
     } else {
-      // 2단계: 세부 성향 결정 질문 (10-25번)
+      // 2단계: 세부 성향 결정 질문 (10-?)
       const detailIndex = currentQuestion - 9;
       const newDetailAnswers = [...detailAnswers];
       newDetailAnswers[detailIndex] = score;
@@ -138,7 +155,28 @@ export default function SurveyPage() {
     return null;
   };
 
+  const getStageInfo = () => {
+    if (currentQuestion < 9) {
+      return {
+        stage: '1단계: 성향군 결정',
+        description: '투자 성향 그룹을 결정하는 질문입니다.',
+        questionCount: 9
+      };
+    } else if (selectedGroup) {
+      const detailCount = getDetailQuestionCount(selectedGroup);
+      const groupName = selectedGroup === 'stability' ? '안정추구형' : 
+                       selectedGroup === 'profit' ? '수익추구형' : '적극적/투기형';
+      return {
+        stage: '2단계: 세부 성향 결정',
+        description: `${groupName} 성향군 내 세부 성향을 결정하는 질문입니다.`,
+        questionCount: detailCount
+      };
+    }
+    return null;
+  };
+
   const currentQuestionData = getCurrentQuestionData();
+  const stageInfo = getStageInfo();
 
   // 성향군이 결정되지 않았고 10번째 질문인 경우 로딩 표시
   if (currentQuestion >= 9 && !selectedGroup) {
@@ -184,9 +222,13 @@ export default function SurveyPage() {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             설문이 완료되었습니다!
           </h2>
-          <p className="text-gray-600 mb-8">
-            투자 성향 분석 결과를 확인해보세요.
+          <p className="text-gray-600 mb-4">
+            총 {totalQuestions}문항의 투자 성향 분석이 완료되었습니다.
           </p>
+          <div className="text-sm text-gray-500 mb-8">
+            <p>1단계: 성향군 결정 (9문항)</p>
+            <p>2단계: 세부 성향 결정 ({getDetailQuestionCount(selectedGroup!)}문항)</p>
+          </div>
           
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -229,10 +271,11 @@ export default function SurveyPage() {
         {/* 진행률 바 */}
         <div className="mb-8">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
-            <span>
-              {currentQuestion < 9 ? '1단계: 성향군 결정' : '2단계: 세부 성향 결정'}
-            </span>
-            <span>{currentQuestion + 1} / {totalQuestions}</span>
+            <div>
+              <span className="font-medium">{stageInfo?.stage}</span>
+              <p className="text-xs text-gray-500 mt-1">{stageInfo?.description}</p>
+            </div>
+            <span className="font-medium">{currentQuestion + 1} / {totalQuestions}</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <motion.div
@@ -241,6 +284,19 @@ export default function SurveyPage() {
               animate={{ width: `${getProgressPercentage()}%` }}
               transition={{ duration: 0.5 }}
             />
+          </div>
+          
+          {/* 성향군별 질문 수 표시 */}
+          <div className="flex justify-between text-xs text-gray-500 mt-2">
+            <span>1단계: 9문항</span>
+            {selectedGroup && (
+              <span>
+                2단계: {getDetailQuestionCount(selectedGroup)}문항
+                {selectedGroup === 'stability' && ' (안정추구형)'}
+                {selectedGroup === 'profit' && ' (수익추구형)'}
+                {selectedGroup === 'aggressive' && ' (적극적/투기형)'}
+              </span>
+            )}
           </div>
         </div>
 
@@ -257,15 +313,15 @@ export default function SurveyPage() {
               {currentQuestionData.question}
             </h2>
             {currentQuestion === 9 && selectedGroup && (
-              <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-700 font-medium">
-                  성향군이 결정되었습니다: {
+              <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                <p className="text-sm text-blue-700 font-medium mb-2">
+                  ✅ 성향군이 결정되었습니다: {
                     selectedGroup === 'stability' ? '안정추구형' :
                     selectedGroup === 'profit' ? '수익추구형' : '적극적/투기형'
                   }
                 </p>
-                <p className="text-xs text-blue-600 mt-1">
-                  이제 세부 성향을 결정하기 위한 질문들이 이어집니다.
+                <p className="text-xs text-blue-600">
+                  이제 {getDetailQuestionCount(selectedGroup)}개의 세부 성향 질문이 이어집니다.
                 </p>
               </div>
             )}

@@ -6,6 +6,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
+// 성향군별 예상 답변 개수 계산
+function getExpectedAnswerCount(selectedGroup: keyof typeof groupMapping) {
+  return groupMapping[selectedGroup].length * 4;
+}
+
 export async function POST(request: NextRequest) {
   // CORS 헤더 설정 (모바일 브라우저 호환성)
   const corsHeaders = {
@@ -43,10 +48,10 @@ export async function POST(request: NextRequest) {
     }
 
     // 성향군별 예상 답변 개수 확인
-    const expectedAnswerCount = groupMapping[selectedGroup as keyof typeof groupMapping]?.length * 4
+    const expectedAnswerCount = getExpectedAnswerCount(selectedGroup as keyof typeof groupMapping)
     if (detailAnswers.length !== expectedAnswerCount) {
       return NextResponse.json(
-        { error: `선택된 성향군(${selectedGroup})에 대한 답변 개수가 올바르지 않습니다.` },
+        { error: `선택된 성향군(${selectedGroup})에 대한 답변 개수가 올바르지 않습니다. ${expectedAnswerCount}개의 답변이 필요합니다.` },
         { 
           status: 400,
           headers: corsHeaders
@@ -512,6 +517,12 @@ ${detailSurveyResults.map(result =>
 `
 
     console.log('🚀 OpenAI API 호출 시작...')
+    console.log('📊 설문 데이터 요약:', {
+      selectedGroup,
+      groupAnswersCount: groupAnswers.length,
+      detailAnswersCount: detailAnswers.length,
+      expectedAnswerCount
+    })
     
     // GPT API 호출 (타임아웃 포함)
     const completion = await Promise.race([
@@ -548,7 +559,9 @@ ${detailSurveyResults.map(result =>
         investmentType: analysisResult.investmentType, 
         selectedGroup,
         groupAverageScore: groupAverageScore.toFixed(2),
-        detailAverageScore: detailAverageScore.toFixed(2)
+        detailAverageScore: detailAverageScore.toFixed(2),
+        expectedAnswerCount,
+        actualAnswerCount: detailAnswers.length
       })
     } catch (parseError) {
       console.error('GPT 응답 파싱 에러:', gptResponse)
@@ -584,6 +597,11 @@ ${detailSurveyResults.map(result =>
         groupAnswers,
         detailAnswers,
         selectedGroup
+      },
+      questionCounts: {
+        groupQuestions: 9,
+        detailQuestions: expectedAnswerCount,
+        total: 9 + expectedAnswerCount
       }
     }, {
       headers: corsHeaders
@@ -600,9 +618,13 @@ ${detailSurveyResults.map(result =>
       const determinedGroup = determineGroup(groupAnswers)
       const detailProfile = determineDetailType(determinedGroup, detailAnswers)
       
+      const expectedAnswerCount = getExpectedAnswerCount(selectedGroup as keyof typeof groupMapping)
+      
       console.log('Fallback 분석 결과:', { 
         determinedGroup, 
-        profileType: detailProfile.type 
+        profileType: detailProfile.type,
+        expectedAnswerCount,
+        actualAnswerCount: detailAnswers.length
       })
 
       console.log('⚠️ 폴백 분석 사용')
@@ -678,6 +700,11 @@ ${detailSurveyResults.map(result =>
           groupAnswers,
           detailAnswers,
           selectedGroup
+        },
+        questionCounts: {
+          groupQuestions: 9,
+          detailQuestions: expectedAnswerCount,
+          total: 9 + expectedAnswerCount
         },
         fallback: true
       }, {
