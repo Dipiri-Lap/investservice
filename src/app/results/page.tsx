@@ -130,11 +130,13 @@ export default function ResultsPage() {
         if (overviewElements.length > 0) {
           // 임시 컨테이너로 통합
           const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:800px;'
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
           
           overviewElements.forEach(el => {
             const clone = el.cloneNode(true) as HTMLElement
             clone.style.marginBottom = '30px'
+            clone.style.width = '100%'
+            clone.style.maxWidth = '100%'
             tempDiv.appendChild(clone)
           })
           
@@ -144,21 +146,14 @@ export default function ResultsPage() {
             scale: 2,
             backgroundColor: '#ffffff',
             useCORS: true,
+            width: 794, // A4 width in pixels at 96 DPI
+            height: 1123, // A4 height in pixels at 96 DPI
           })
           
           document.body.removeChild(tempDiv)
           
           const imgData = canvas.toDataURL('image/png')
-          const imgRatio = canvas.width / canvas.height
-          let imgWidth = contentWidth
-          let imgHeight = contentWidth / imgRatio
-          
-          if (imgHeight > contentHeight) {
-            imgHeight = contentHeight
-            imgWidth = contentHeight * imgRatio
-          }
-          
-          pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight)
+          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
         }
         
         // 2페이지: AI 분석 + 포트폴리오 전략
@@ -166,23 +161,29 @@ export default function ResultsPage() {
         if (analysisEl) {
           pdf.addPage()
           
-          const canvas = await html2canvas(analysisEl, {
-            scale: 1.5,
+          // 임시 컨테이너 생성
+          const tempDiv = document.createElement('div')
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
+          
+          const clone = analysisEl.cloneNode(true) as HTMLElement
+          clone.style.width = '100%'
+          clone.style.maxWidth = '100%'
+          tempDiv.appendChild(clone)
+          
+          document.body.appendChild(tempDiv)
+          
+          const canvas = await html2canvas(tempDiv, {
+            scale: 2,
             backgroundColor: '#ffffff',
             useCORS: true,
+            width: 794,
+            height: 1123,
           })
           
+          document.body.removeChild(tempDiv)
+          
           const imgData = canvas.toDataURL('image/png')
-          const imgRatio = canvas.width / canvas.height
-          let imgWidth = contentWidth
-          let imgHeight = contentWidth / imgRatio
-          
-          if (imgHeight > contentHeight) {
-            imgHeight = contentHeight
-            imgWidth = contentHeight * imgRatio
-          }
-          
-          pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight)
+          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
         }
         
         // 3페이지: 추천 종목
@@ -190,23 +191,29 @@ export default function ResultsPage() {
         if (portfolioEl) {
           pdf.addPage()
           
-          const canvas = await html2canvas(portfolioEl, {
-            scale: 1.5,
+          // 임시 컨테이너 생성
+          const tempDiv = document.createElement('div')
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
+          
+          const clone = portfolioEl.cloneNode(true) as HTMLElement
+          clone.style.width = '100%'
+          clone.style.maxWidth = '100%'
+          tempDiv.appendChild(clone)
+          
+          document.body.appendChild(tempDiv)
+          
+          const canvas = await html2canvas(tempDiv, {
+            scale: 2,
             backgroundColor: '#ffffff',
             useCORS: true,
+            width: 794,
+            height: 1123,
           })
           
+          document.body.removeChild(tempDiv)
+          
           const imgData = canvas.toDataURL('image/png')
-          const imgRatio = canvas.width / canvas.height
-          let imgWidth = contentWidth
-          let imgHeight = contentWidth / imgRatio
-          
-          if (imgHeight > contentHeight) {
-            imgHeight = contentHeight
-            imgWidth = contentHeight * imgRatio
-          }
-          
-          pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight)
+          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
         }
         
         // 4페이지: 자산 배분 및 추천사항
@@ -214,47 +221,59 @@ export default function ResultsPage() {
         if (recommendEl) {
           pdf.addPage()
           
-          const canvas = await html2canvas(recommendEl, {
+          // 임시 컨테이너 생성
+          const tempDiv = document.createElement('div')
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
+          
+          const clone = recommendEl.cloneNode(true) as HTMLElement
+          clone.style.width = '100%'
+          clone.style.maxWidth = '100%'
+          tempDiv.appendChild(clone)
+          
+          document.body.appendChild(tempDiv)
+          
+          const canvas = await html2canvas(tempDiv, {
             scale: 2,
             backgroundColor: '#ffffff',
             useCORS: true,
+            width: 794,
+            height: 1123,
           })
           
+          document.body.removeChild(tempDiv)
+          
           const imgData = canvas.toDataURL('image/png')
-          const imgRatio = canvas.width / canvas.height
-          let imgWidth = contentWidth
-          let imgHeight = contentWidth / imgRatio
-          
-          if (imgHeight > contentHeight) {
-            imgHeight = contentHeight
-            imgWidth = contentHeight * imgRatio
-          }
-          
-          pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight)
+          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
         }
 
-        // 5페이지: 1억원 포트폴리오 예시
-        const portfolioExampleEl = document.getElementById('pdf-portfolio-example')
-        if (portfolioExampleEl) {
+        // 5페이지: 투자 전략 가이드
+        const strategyEl = document.getElementById('pdf-investment-strategy')
+        if (strategyEl) {
           pdf.addPage()
           
-          const canvas = await html2canvas(portfolioExampleEl, {
-            scale: 1.5,
+          // 임시 컨테이너 생성
+          const tempDiv = document.createElement('div')
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
+          
+          const clone = strategyEl.cloneNode(true) as HTMLElement
+          clone.style.width = '100%'
+          clone.style.maxWidth = '100%'
+          tempDiv.appendChild(clone)
+          
+          document.body.appendChild(tempDiv)
+          
+          const canvas = await html2canvas(tempDiv, {
+            scale: 2,
             backgroundColor: '#ffffff',
             useCORS: true,
+            width: 794,
+            height: 1123,
           })
           
+          document.body.removeChild(tempDiv)
+          
           const imgData = canvas.toDataURL('image/png')
-          const imgRatio = canvas.width / canvas.height
-          let imgWidth = contentWidth
-          let imgHeight = contentWidth / imgRatio
-          
-          if (imgHeight > contentHeight) {
-            imgHeight = contentHeight
-            imgWidth = contentHeight * imgRatio
-          }
-          
-          pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight)
+          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
         }
       
               // 파일명 생성
@@ -759,34 +778,6 @@ export default function ResultsPage() {
                   </div>
                   <h2 className="text-3xl font-bold text-gray-800">투자 성향 특징</h2>
                 </div>
-                
-                {/* 성향군별 분석 정보 */}
-                {surveyData && (
-                  <div className="mb-8 p-6 bg-white/70 rounded-xl border border-blue-100">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">분석 기반 정보</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                        <span className="text-gray-700">
-                          성향군: {surveyData.selectedGroup === 'stability' ? '안정추구형' : 
-                                   surveyData.selectedGroup === 'profit' ? '수익추구형' : '적극적/투기형'}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-gray-700">
-                          세부 성향: {surveyData.detailAnswers?.length || 0}문항 분석
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                        <span className="text-gray-700">
-                          총 {9 + (surveyData.detailAnswers?.length || 0)}문항 완료
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {(profile.characteristics || []).map((characteristic, index) => (
