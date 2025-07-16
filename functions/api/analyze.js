@@ -36,149 +36,11 @@ function createPrompt(selectedGroup, groupAnswers, detailAnswers, groupResultsTe
   prompt += '9. **혁신추구형 (innovation_focused)**: 혁신적인 기술과 신성장 분야에 투자하며, 미래 가치를 추구하는 성향\n';
   prompt += '10. **단기차익추구형 (short_term_profit_focused)**: 단기적인 차익 실현을 목표로 하며, 활발한 매매를 선호하는 성향\n\n';
   
+  // 성향군별 세부 성향 매핑
   prompt += '**성향군별 세부 성향:**\n';
   prompt += '- 안정추구형 성향군: 보수형, 안정추구형, 배당중시형, 균형형\n';
   prompt += '- 수익추구형 성향군: 성장지향형, 가치중시형, 사회책임투자형\n';
   prompt += '- 적극적/투기형 성향군: 공격형, 혁신추구형, 단기차익추구형\n\n';
-  
-  // 분석 요청사항
-  prompt += '분석 요청사항:\n';
-  prompt += '1. 1단계에서 결정된 성향군(' + selectedGroup + ') 내에서 2단계 답변을 바탕으로 세부 성향을 분석해주세요.\n';
-  prompt += '2. 2단계 답변에서 각 성향별 점수를 계산하여 가장 높은 점수의 성향을 선택해주세요.\n';
-  prompt += '3. 투자 성향 분석 시 리스크 감내력, 투자 목적, 투자 전략, 심리적 특성을 종합적으로 고려해주세요.\n';
-  prompt += '4. 투자 성향 상세 설명(description)에는 점수나 평균 점수와 같은 수치 정보는 포함하지 말고, 순수하게 투자 성향의 특징과 행동 패턴만 설명해주세요.\n';
-  prompt += '5. 포트폴리오 구성 시 주식, 채권, 현금, 부동산(REITs), 암호화폐 비중을 총 100%로 맞춰주세요.\n';
-  prompt += '6. 주식 투자 부분에 대해서는 투자 성향에 맞는 세부 배분을 제공해주세요 (배당주, 성장주, 테마주, 가치주의 비중을 %로 표시하며, 총합이 100%가 되도록).\n';
-  prompt += '   - 보수적 성향: 배당주 50-70%, 가치주 20-30%, 성장주 10-20%, 테마주 0-10%\n';
-  prompt += '   - 균형 성향: 배당주 30-40%, 가치주 25-35%, 성장주 20-30%, 테마주 10-20%\n';
-  prompt += '   - 공격적 성향: 성장주 40-50%, 테마주 25-35%, 배당주 10-20%, 가치주 10-20%\n';
-  prompt += '7. 각 주식 유형별로 한국 3개, 미국 3개씩 총 6개를 추천해주세요 (배당주, 성장주, 테마주, 가치주 각각 국가별 3개씩).\n';
-  prompt += '8. 추천 주식 종목은 분석 당일 날짜를 기준으로 검색하여 최신 트렌드를 고려하여 투자 성향에 맞는 다양성을 고려해주세요.\n';
-  prompt += '9. 각 종목에는 국가(한국/미국), 거래소(KRX/NYSE/NASDAQ), 추천 이유를 포함해주세요.\n';
-  prompt += '10. 분석 당일일 날짜를 토대로 검색하여 주식 트렌드를 반영하여 추천.\n';
-  prompt += '11. 투자 성향에 따라 보수적이면 안전한 대형주, 공격적이면 성장주나 테마주를 추천해주세요.\n';
-  prompt += '12. 암호화폐도 투자 성향에 맞게 3-5개를 추천해주세요 (보수적이면 비트코인/이더리움 위주, 공격적이면 알트코인 포함).\n';
-  prompt += '13. 1억원을 기준으로 한 구체적인 포트폴리오 예시를 제공해주세요. 각 자산군별 금액, 추천 종목과 수량을 포함하여 실제 투자 가능한 형태로 작성해주세요.\n';
-  prompt += '14. 투자 성향에 따른 투자 기간(단기 1년 이하, 중기 1-5년, 장기 5년 이상)을 분석하고, 각 기간별 행동지침을 제공해주세요:\n';
-  prompt += '    - 월별: 기존 투자 자산 모니터링, 추가 투자금 확보 방법, 시장 상황 대응\n';
-  prompt += '    - 분기별: 포트폴리오 리밸런싱, 수익 실현/손절 기준, 새로운 투자 기회 발굴\n';
-  prompt += '    - 반기별: 투자 전략 재검토, 자산 배분 조정, 세금 최적화 방안\n';
-  prompt += '    - 년도별: 투자 목표 재설정, 장기 계획 수립, 투자 성과 종합 평가\n';
-  prompt += '    각 기간별로 투자 성향에 맞는 구체적이고 실행 가능한 행동 방안을 제시해주세요.\n';
-  prompt += '15. 모든 답변은 전문적이고 구체적인 어투로 200-300자 분량으로 작성해주세요.\n\n';
-  
-  // JSON 형식 요청
-  prompt += '다음 JSON 형식으로만 응답해주세요:\n';
-  prompt += '{\n';
-  prompt += '  "investmentType": "conservative|stability_focused|dividend_focused|balanced|growth_oriented|value_focused|esg_focused|aggressive|innovation_focused|short_term_profit_focused",\n';
-  prompt += '  "confidence": 85,\n';
-  prompt += '  "analysis": {\n';
-  prompt += '    "description": "투자 성향의 핵심 특징, 투자 행동 패턴, 심리적 특성, 투자 목표, 위험 감내도, 의사결정 과정, 시장 변동에 대한 반응, 선호하는 투자 방식, 투자 경험 수준, 학습 의지 등을 포함하여 500자 내외로 매우 상세하고 구체적으로 설명",\n';
-  prompt += '    "advantages": "해당 성향의 투자 강점과 긍정적 측면 (200-300자)",\n';
-  prompt += '    "disadvantages": "투자 시 주의할 점과 보완할 부분 (200-300자)",\n';
-  prompt += '    "improvements": "투자자에게 도움이 될 구체적인 행동 지침 및 전략 개선 제안 (200-300자)",\n';
-  prompt += '    "portfolio": {\n';
-  prompt += '      "stocks": 40,\n';
-  prompt += '      "bonds": 30,\n';
-  prompt += '      "cash": 15,\n';
-  prompt += '      "reits": 10,\n';
-  prompt += '      "crypto": 5,\n';
-  prompt += '      "reason": "포트폴리오 구성 이유와 비중 설명 (200-300자)",\n';
-  prompt += '      "stockAllocation": {\n';
-  prompt += '        "dividendStocks": 50,\n';
-  prompt += '        "growthStocks": 25,\n';
-  prompt += '        "themeStocks": 15,\n';
-  prompt += '        "valueStocks": 10,\n';
-  prompt += '        "reason": "투자 성향에 맞는 주식 내 세부 배분 이유와 각 유형별 비중 설명 (100-150자)"\n';
-  prompt += '      }\n';
-  prompt += '    },\n';
-  prompt += '    "recommendedStocks": [\n';
-  prompt += '      {"category": "dividend", "name": "배당주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "dividend", "name": "배당주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "dividend", "name": "배당주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "dividend", "name": "배당주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "dividend", "name": "배당주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "dividend", "name": "배당주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "배당 수익률, 안정성 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "growth", "name": "성장주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "성장성, 기술력 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "growth", "name": "성장주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "성장성, 기술력 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "growth", "name": "성장주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "성장성, 기술력 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "growth", "name": "성장주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "성장성, 기술력 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "growth", "name": "성장주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "성장성, 기술력 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "growth", "name": "성장주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "성장성, 기술력 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "theme", "name": "테마주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "테마, 트렌드 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "theme", "name": "테마주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "테마, 트렌드 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "theme", "name": "테마주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "테마, 트렌드 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "theme", "name": "테마주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "테마, 트렌드 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "theme", "name": "테마주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "테마, 트렌드 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "theme", "name": "테마주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "테마, 트렌드 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "value", "name": "가치주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "value", "name": "가치주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "value", "name": "가치주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "value", "name": "가치주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "value", "name": "가치주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"},\n';
-  prompt += '      {"category": "value", "name": "가치주 기업명", "ticker": "종목코드", "market": "KRX 또는 NYSE/NASDAQ", "country": "한국 또는 미국", "reason": "저평가, 펀더멘털 등 추천 이유 (100-150자)"}\n';
-  prompt += '    ],\n';
-  prompt += '    "portfolioExample": {\n';
-  prompt += '      "totalAmount": 100000000,\n';
-  prompt += '      "breakdown": [\n';
-  prompt += '        {"category": "주식", "percentage": 40, "amount": 40000000, "investments": [{"name": "종목명 (코드)", "shares": "수량", "estimatedValue": "예상 금액"}]},\n';
-  prompt += '        {"category": "채권", "percentage": 30, "amount": 30000000, "investments": [{"name": "채권명 또는 ETF명", "shares": "수량", "estimatedValue": "예상 금액"}]},\n';
-  prompt += '        {"category": "현금", "percentage": 15, "amount": 15000000, "investments": [{"name": "예비 현금 보유", "shares": "-", "estimatedValue": "15,000,000원"}]},\n';
-  prompt += '        {"category": "부동산", "percentage": 10, "amount": 10000000, "investments": [{"name": "리츠 ETF명", "shares": "수량", "estimatedValue": "예상 금액"}]},\n';
-  prompt += '        {"category": "암호화폐", "percentage": 5, "amount": 5000000, "investments": [{"name": "비트코인 (BTC)", "shares": "수량", "estimatedValue": "예상 금액"}]}\n';
-  prompt += '      ],\n';
-  prompt += '      "notes": ["각 자산군별 구체적인 투자 방법과 주의사항", "리밸런싱 주기 및 방법", "세금 고려사항"]\n';
-  prompt += '    },\n';
-  prompt += '    "recommendedCrypto": [\n';
-  prompt += '      {"name": "비트코인", "symbol": "BTC", "reason": "각 암호화폐별 특징 및 투자 고려 이유 (100-150자)"},\n';
-  prompt += '      {"name": "이더리움", "symbol": "ETH", "reason": "각 암호화폐별 특징 및 투자 고려 이유 (100-150자)"},\n';
-  prompt += '      {"name": "바이낸스 코인", "symbol": "BNB", "reason": "각 암호화폐별 특징 및 투자 고려 이유 (100-150자)"}\n';
-  prompt += '    ],\n';
-  prompt += '    "actionGuide": {\n';
-  prompt += '      "investmentHorizon": {\n';
-  prompt += '        "primary": "장기투자 (5년 이상)",\n';
-  prompt += '        "description": "투자 성향에 맞는 주요 투자 기간과 특징 설명 (100-150자)"\n';
-  prompt += '      },\n';
-  prompt += '      "monthly": {\n';
-  prompt += '        "title": "매월 해야 할 일",\n';
-  prompt += '        "actions": [\n';
-  prompt += '          "기존 투자 자산 성과 모니터링 및 기록 (구체적 방법)",\n';
-  prompt += '          "추가 투자금 확보 전략 (적금, 여유자금 활용 등)",\n';
-  prompt += '          "시장 상황 대응 방안 (투자 성향별 맞춤 대응법)"\n';
-  prompt += '        ]\n';
-  prompt += '      },\n';
-  prompt += '      "quarterly": {\n';
-  prompt += '        "title": "분기별 해야 할 일 (3개월)",\n';
-  prompt += '        "actions": [\n';
-  prompt += '          "포트폴리오 리밸런싱 실행 (구체적 기준과 방법)",\n';
-  prompt += '          "수익 실현 및 손절 기준 적용 (투자 성향별 기준)",\n';
-  prompt += '          "새로운 투자 기회 발굴 및 분석 (어떤 분야, 어떤 방식)"\n';
-  prompt += '        ]\n';
-  prompt += '      },\n';
-  prompt += '      "semiannual": {\n';
-  prompt += '        "title": "반기별 해야 할 일 (6개월)",\n';
-  prompt += '        "actions": [\n';
-  prompt += '          "투자 전략 전면 재검토 (목표 대비 성과 분석)",\n';
-  prompt += '          "자산 배분 비율 조정 (시장 변화 반영)",\n';
-  prompt += '          "세금 최적화 및 절세 방안 실행 (구체적 방법)"\n';
-  prompt += '        ]\n';
-  prompt += '      },\n';
-  prompt += '      "annual": {\n';
-  prompt += '        "title": "년도별 해야 할 일 (1년)",\n';
-  prompt += '        "actions": [\n';
-  prompt += '          "투자 목표 및 전략 전면 재설정 (다음 해 계획)",\n';
-  prompt += '          "투자 성과 종합 분석 및 개선 방안 도출",\n';
-  prompt += '          "장기 투자 계획 수립 및 자산 증식 로드맵 설정"\n';
-  prompt += '        ]\n';
-  prompt += '      }\n';
-  prompt += '    }\n';
-  prompt += '  },\n';
-  prompt += '  "keyFindings": [\n';
-  prompt += '    "주요 발견사항 1",\n';
-  prompt += '    "주요 발견사항 2",\n';
-  prompt += '    "주요 발견사항 3"\n';
-  prompt += '  ]\n';
-  prompt += '}';
   
   return prompt;
 }
@@ -382,6 +244,130 @@ var investmentProfiles = {
   }
 };
 
+// ============================================
+// ✅ preGeneratedAnalysis 데이터 (ES5 호환)
+// ============================================
+
+// 미리 생성된 분석 데이터 - 실제 사용 시 별도 파일로 분리 권장
+var preGeneratedAnalysisData = {
+  "conservative": {
+    "investmentType": "conservative",
+    "confidence": 90,
+    "analysis": {
+      "description": "보수형 투자자는 원금 보호를 최우선으로 생각하며, 안정적이고 예측 가능한 수익을 선호합니다. 투자 행동은 채권, 우량주, 현금성 자산 중심으로 분산되며, 급격한 시장 변동에는 신중하게 대응하는 편입니다. 위험 감내도는 낮아 큰 손실에 대한 두려움이 크고, 의사결정은 전문가 의견과 검증된 정보를 바탕으로 이루어집니다. 투자 목표는 자산의 안정적 성장과 보호이며, 주로 장기 투자를 지향합니다.",
+      "advantages": "보수형 투자자는 자산 손실 위험을 최소화하고 안정적인 수익을 지속적으로 창출할 수 있다는 강점이 있습니다. 급락장에서도 감정에 흔들리지 않고 원칙을 지키며 장기적인 재무 건전성을 확보할 수 있어 은퇴자나 안정적인 자산 보호가 필요한 투자자에게 적합합니다.",
+      "disadvantages": "과도한 안전 자산 선호로 인플레이션 및 시장 성장 기회를 놓칠 위험이 있습니다. 현금 보유 비중이 높아 기회비용이 발생하며, 성장 자산 편입에 소극적일 수 있습니다.",
+      "improvements": "안정성을 유지하면서도 적절한 위험 감수를 통해 포트폴리오를 다각화할 것을 권장합니다. 우량주 외 성장주를 일부 포함시키고, 사전에 매수·매도 기준을 정해 감정적 대응을 줄이세요.",
+      "portfolio": {
+        "stocks": 40,
+        "bonds": 40,
+        "cash": 15,
+        "reits": 4,
+        "crypto": 1,
+        "reason": "보수형 투자자는 원금 보호와 안정적 수익을 우선하므로 채권과 현금 비중을 높여 안정성을 확보합니다. 주식은 우량주 중심으로 일부 성장성을 포함하여 균형을 맞추고, 리츠로 부동산 간접투자를 통한 배당 수익을 기대합니다.",
+        "stockAllocation": {
+          "dividendStocks": 25,
+          "growthStocks": 10,
+          "themeStocks": 3,
+          "valueStocks": 2,
+          "reason": "주식 내에서는 안정적 배당을 주는 종목에 비중을 높여 현금 흐름을 확보하고, 일부 성장주와 테마주를 포함해 성장 잠재력을 반영합니다."
+        }
+      },
+      "recommendedStocks": [
+        {
+          "category": "dividend",
+          "name": "KT&G",
+          "ticker": "033780",
+          "market": "KRX",
+          "country": "한국",
+          "reason": "안정적 배당과 꾸준한 현금 흐름을 제공하는 고배당주로, 경기 변동에 강해 보수형 투자자에게 적합합니다."
+        },
+        {
+          "category": "dividend",
+          "name": "삼성전자",
+          "ticker": "005930",
+          "market": "KRX",
+          "country": "한국",
+          "reason": "글로벌 기술 대기업으로 재무 건전성과 안정적 배당을 바탕으로 보수적 포트폴리오에 적합합니다."
+        },
+        {
+          "category": "dividend",
+          "name": "Johnson & Johnson",
+          "ticker": "JNJ",
+          "market": "NYSE",
+          "country": "미국",
+          "reason": "헬스케어 분야의 대표적 고배당주로 꾸준한 배당 인상과 안정적인 수익을 제공합니다."
+        }
+      ],
+      "recommendedCrypto": [
+        {
+          "name": "비트코인",
+          "symbol": "BTC",
+          "reason": "가장 안정적인 암호화폐로 보수형 투자자에게 적합한 소량 투자 대상입니다."
+        },
+        {
+          "name": "이더리움",
+          "symbol": "ETH",
+          "reason": "스마트 컨트랙트 플랫폼 기반의 대표적 암호화폐입니다."
+        }
+      ]
+    },
+    "keyFindings": [
+      "보수형 투자자는 안정성과 원금 보호를 최우선으로 한다.",
+      "채권과 배당주 중심의 포트폴리오로 꾸준한 수익을 추구한다.",
+      "급락장에서도 흔들리지 않는 심리적 안정감이 장점이다."
+    ]
+  },
+  "stability_focused": {
+    "investmentType": "stability_focused",
+    "confidence": 88,
+    "analysis": {
+      "description": "안정추구형 투자자는 변동성을 최소화하면서도 꾸준한 수익을 추구하는 성향입니다. 시장 변동에 민감하지 않은 안정적인 자산을 선호하며, 장기적인 관점에서 자산을 운용합니다.",
+      "advantages": "꾸준한 수익 창출과 낮은 변동성으로 안정적인 자산 운용이 가능합니다.",
+      "disadvantages": "시장 상승 시 기회를 놓칠 수 있으며, 인플레이션 위험에 노출될 수 있습니다.",
+      "improvements": "적절한 성장 자산 편입으로 수익성을 높이고, 정기적인 리밸런싱을 통해 포트폴리오를 관리하세요.",
+      "portfolio": {
+        "stocks": 35,
+        "bonds": 45,
+        "cash": 15,
+        "reits": 4,
+        "crypto": 1,
+        "reason": "안정추구형은 채권 비중을 높여 안정성을 확보하면서도 우량주를 통해 일정한 수익을 추구합니다.",
+        "stockAllocation": {
+          "dividendStocks": 20,
+          "growthStocks": 10,
+          "themeStocks": 3,
+          "valueStocks": 2,
+          "reason": "안정적인 배당주 중심으로 구성하여 변동성을 최소화합니다."
+        }
+      },
+      "recommendedStocks": [
+        {
+          "category": "dividend",
+          "name": "삼성전자",
+          "ticker": "005930",
+          "market": "KRX",
+          "country": "한국",
+          "reason": "안정적인 배당과 대형주 안정성을 제공합니다."
+        }
+      ],
+      "recommendedCrypto": [
+        {
+          "name": "비트코인",
+          "symbol": "BTC",
+          "reason": "가장 안정적인 암호화폐입니다."
+        }
+      ]
+    },
+    "keyFindings": [
+      "안정추구형 투자자는 변동성을 최소화하면서 꾸준한 수익을 추구한다.",
+      "채권과 우량주 중심의 안정적인 포트폴리오를 구성한다.",
+      "장기적인 관점에서 자산을 운용한다."
+    ]
+  }
+  // 실제 사용 시 모든 성향에 대한 데이터 포함 필요
+};
+
 export function onRequestPost(context) {
   var request = context.request;
   var env = context.env;
@@ -519,6 +505,10 @@ export function onRequestPost(context) {
           controller.abort();
         }, 90000); // 90초 타임아웃
         
+        // ============================================
+        // 🚫 기존 OpenAI API 호출 주석처리 시작
+        // ============================================
+        /*
         // OpenAI API 호출
         fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -629,7 +619,6 @@ export function onRequestPost(context) {
           var fallbackProfile = determineDetailType(selectedGroup, detailAnswers);
           console.log('⚠️ Fallback 분석 사용 - 선택된 프로필:', fallbackProfile.type);
           
-          // 기본 분석 결과 생성
           var fallbackAnalysis = {
             description: "AI 분석을 사용할 수 없어 기본 분석을 제공합니다. 설문 점수를 기반으로 한 간단한 분석 결과입니다.",
             advantages: "설문 결과를 바탕으로 한 기본적인 투자 성향 분석이 제공됩니다.",
@@ -721,6 +710,161 @@ export function onRequestPost(context) {
             headers: corsHeaders
           }));
         });
+        */
+        // ============================================
+        // 🚫 기존 OpenAI API 호출 주석처리 끝
+        // ============================================
+        
+        // ============================================
+        // ✅ 새로운 preGeneratedAnalysis 사용 시작
+        // ============================================
+        
+        console.log('✅ preGeneratedAnalysis 사용으로 GPT 분석 대체');
+        
+        // 1단계 성향군에서 2단계 답변을 기반으로 세부 성향 결정
+        var fallbackProfile = determineDetailType(selectedGroup, detailAnswers);
+        var profileType = fallbackProfile.type;
+        
+        // preGeneratedAnalysisData에서 해당 성향의 데이터 가져오기
+        var preGeneratedData = preGeneratedAnalysisData[profileType];
+        
+        if (!preGeneratedData) {
+          console.log('⚠️ preGeneratedAnalysisData에서 ' + profileType + ' 성향 데이터를 찾을 수 없음. 기본 분석 사용');
+          
+          // 기본 분석 사용
+          var basicAnalysis = {
+            description: "기본 분석을 사용합니다. 설문 점수를 기반으로 한 간단한 분석 결과입니다.",
+            advantages: "설문 결과를 바탕으로 한 기본적인 투자 성향 분석이 제공됩니다.",
+            disadvantages: "더 정확한 분석을 위해서는 상세 분석 데이터가 필요합니다.",
+            improvements: "보다 구체적이고 개인화된 투자 전략이 필요합니다.",
+            portfolio: {
+              stocks: fallbackProfile.recommendedAssets.stocks,
+              bonds: fallbackProfile.recommendedAssets.bonds,
+              cash: fallbackProfile.recommendedAssets.cash,
+              reits: 0,
+              crypto: fallbackProfile.recommendedAssets.alternatives,
+              reason: "기본 분석 결과를 바탕으로 한 일반적인 자산 배분 제안입니다.",
+              stockAllocation: {
+                dividendStocks: 40,
+                growthStocks: 30,
+                themeStocks: 20,
+                valueStocks: 10,
+                reason: "안정적인 배당주 위주의 기본 배분입니다."
+              }
+            },
+            recommendedStocks: [
+              {
+                category: "dividend",
+                name: "삼성전자",
+                ticker: "005930",
+                market: "KRX",
+                country: "한국",
+                reason: "안정적인 배당 수익률과 대형주 안정성을 제공하는 대표 종목입니다."
+              }
+            ],
+            recommendedCrypto: [
+              {
+                name: "비트코인",
+                symbol: "BTC",
+                reason: "가장 안정적인 암호화폐입니다."
+              }
+            ]
+          };
+          
+          resolve(new Response(JSON.stringify({
+            success: true,
+            profile: {
+              type: fallbackProfile.type,
+              name: fallbackProfile.name,
+              description: fallbackProfile.description,
+              riskLevel: fallbackProfile.riskLevel,
+              expectedReturn: fallbackProfile.expectedReturn,
+              recommendedAssets: fallbackProfile.recommendedAssets,
+              characteristics: fallbackProfile.characteristics,
+              gptAnalysis: basicAnalysis,
+              confidence: 70,
+              keyFindings: [
+                "기본 점수 분석 기반 결과",
+                "상세 분석 데이터 필요",
+                "추가 상담을 통한 정밀 분석 권장"
+              ]
+            },
+            rawAnswers: {
+              groupAnswers: groupAnswers,
+              detailAnswers: detailAnswers,
+              selectedGroup: selectedGroup
+            },
+            questionCounts: {
+              groupQuestions: 9,
+              detailQuestions: expectedAnswerCount,
+              total: 9 + expectedAnswerCount
+            },
+            dataSource: 'basicAnalysis'
+          }), {
+            headers: corsHeaders
+          }));
+          return;
+        }
+        
+        // preGeneratedAnalysisData 사용
+        console.log('📊 preGeneratedAnalysis 분석 결과:', { 
+          investmentType: preGeneratedData.investmentType, 
+          selectedGroup: selectedGroup,
+          detailAnswerCount: detailAnswers.length,
+          expectedAnswerCount: expectedAnswerCount,
+          source: 'preGeneratedAnalysis'
+        });
+        
+        // 기존 분석 결과 구조에 맞게 데이터 변환
+        var analysisResult = {
+          investmentType: preGeneratedData.investmentType,
+          confidence: preGeneratedData.confidence,
+          analysis: preGeneratedData.analysis,
+          keyFindings: preGeneratedData.keyFindings
+        };
+        
+        // 투자 성향 프로필 가져오기
+        var baseProfile = investmentProfiles[profileType];
+        
+        if (!baseProfile) {
+          throw new Error('유효하지 않은 투자 성향 타입입니다.');
+        }
+
+        // 분석 결과와 기본 프로필 결합
+        var enhancedProfile = {
+          type: baseProfile.type,
+          name: baseProfile.name,
+          description: baseProfile.description,
+          riskLevel: baseProfile.riskLevel,
+          expectedReturn: baseProfile.expectedReturn,
+          recommendedAssets: baseProfile.recommendedAssets,
+          characteristics: baseProfile.characteristics,
+          gptAnalysis: analysisResult.analysis,
+          confidence: analysisResult.confidence,
+          keyFindings: analysisResult.keyFindings
+        };
+
+        resolve(new Response(JSON.stringify({
+          success: true,
+          profile: enhancedProfile,
+          rawAnswers: {
+            groupAnswers: groupAnswers,
+            detailAnswers: detailAnswers,
+            selectedGroup: selectedGroup
+          },
+          questionCounts: {
+            groupQuestions: 9,
+            detailQuestions: expectedAnswerCount,
+            total: 9 + expectedAnswerCount
+          },
+          dataSource: 'preGeneratedAnalysis'
+        }), {
+          headers: corsHeaders
+        }));
+        
+        // ============================================
+        // ✅ 새로운 preGeneratedAnalysis 사용 끝
+        // ============================================
 
       }).catch(function(error) {
         console.error('요청 파싱 에러:', error);

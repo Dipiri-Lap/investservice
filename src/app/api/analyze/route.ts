@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { groupQuestions, detailQuestions, commonOptions, groupMapping, determineGroup, determineDetailType, InvestmentProfile, investmentProfiles } from '@/data/surveyQuestions'
+import { preGeneratedAnalysis } from '@/data/preGeneratedAnalysis'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -524,6 +525,10 @@ ${detailSurveyResults.map(result =>
       expectedAnswerCount
     })
     
+    // ============================================
+    // 🚫 기존 GPT API 호출 주석처리 시작
+    // ============================================
+    /*
     // GPT API 호출 (타임아웃 포함)
     const completion = await Promise.race([
       openai.chat.completions.create({
@@ -567,16 +572,59 @@ ${detailSurveyResults.map(result =>
       console.error('GPT 응답 파싱 에러:', gptResponse)
       throw new Error('GPT 응답을 파싱할 수 없습니다.')
     }
+    */
+    // ============================================
+    // 🚫 기존 GPT API 호출 주석처리 끝
+    // ============================================
+    
+    // ============================================
+    // ✅ 새로운 preGeneratedAnalysis 사용 시작
+    // ============================================
+    
+    console.log('✅ preGeneratedAnalysis 사용으로 GPT 분석 대체')
+    
+    // 1단계 성향군에서 2단계 답변을 기반으로 세부 성향 결정
+    const determinedGroup = determineGroup(groupAnswers)
+    const detailProfile = determineDetailType(determinedGroup, detailAnswers)
+    
+    // preGeneratedAnalysis에서 해당 성향의 데이터 가져오기
+    const profileType = detailProfile.type
+    const preGeneratedData = preGeneratedAnalysis[profileType as keyof typeof preGeneratedAnalysis]
+    
+    if (!preGeneratedData) {
+      throw new Error(`preGeneratedAnalysis에서 '${profileType}' 성향 데이터를 찾을 수 없습니다.`)
+    }
+    
+    // 기존 분석 결과 구조에 맞게 데이터 변환
+    const analysisResult = {
+      investmentType: preGeneratedData.investmentType,
+      confidence: preGeneratedData.confidence,
+      analysis: preGeneratedData.analysis,
+      keyFindings: preGeneratedData.keyFindings
+    }
+    
+    console.log('📊 preGeneratedAnalysis 분석 결과:', { 
+      investmentType: analysisResult.investmentType, 
+      selectedGroup,
+      groupAverageScore: groupAverageScore.toFixed(2),
+      detailAverageScore: detailAverageScore.toFixed(2),
+      expectedAnswerCount,
+      actualAnswerCount: detailAnswers.length,
+      source: 'preGeneratedAnalysis'
+    })
+    
+    // ============================================
+    // ✅ 새로운 preGeneratedAnalysis 사용 끝
+    // ============================================
 
     // 투자 성향 프로필 가져오기
-    const profileType = analysisResult.investmentType
     const baseProfile = investmentProfiles[profileType]
     
     if (!baseProfile) {
       throw new Error('유효하지 않은 투자 성향 타입입니다.')
     }
 
-    // GPT 분석 결과와 기본 프로필 결합
+    // 분석 결과와 기본 프로필 결합
     const enhancedProfile: InvestmentProfile & { 
       gptAnalysis: any,
       confidence: number,
@@ -588,7 +636,7 @@ ${detailSurveyResults.map(result =>
       keyFindings: analysisResult.keyFindings
     }
 
-    console.log('✅ GPT 분석 완료!')
+    console.log('✅ 분석 완료! (preGeneratedAnalysis 사용)')
     
     return NextResponse.json({
       success: true,
@@ -602,7 +650,8 @@ ${detailSurveyResults.map(result =>
         groupQuestions: 9,
         detailQuestions: expectedAnswerCount,
         total: 9 + expectedAnswerCount
-      }
+      },
+      dataSource: 'preGeneratedAnalysis'
     }, {
       headers: corsHeaders
     })
