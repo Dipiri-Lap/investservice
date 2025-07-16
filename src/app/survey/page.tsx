@@ -83,16 +83,25 @@ export default function SurveyPage() {
       setDetailAnswers(newDetailAnswers);
     }
 
-    // 마지막 문항이 아니면 다음 문항으로 자동 이동
-    if (currentQuestion < totalQuestions - 1) {
-      // 9번째 질문 후에는 잠시 기다려서 성향군 결정 후 이동
-      const delay = currentQuestion === 8 ? 1000 : 500;
+    // 9번째 질문 후에는 성향군이 결정되므로 특별 처리
+    if (currentQuestion === 8) {
+      // 성향군 결정 후 2단계 질문으로 이동
       setTimeout(() => {
         setCurrentQuestion(currentQuestion + 1);
-      }, delay);
+      }, 1000);
     } else {
-      // 마지막 문항이면 완료 처리
-      setIsCompleted(true);
+      // 실제 총 질문 수 계산 (selectedGroup이 설정된 후)
+      const actualTotalQuestions = selectedGroup ? 9 + getDetailQuestionCount(selectedGroup) : 9;
+      
+      // 마지막 문항이 아니면 다음 문항으로 자동 이동
+      if (currentQuestion < actualTotalQuestions - 1) {
+        setTimeout(() => {
+          setCurrentQuestion(currentQuestion + 1);
+        }, 500);
+      } else {
+        // 마지막 문항이면 완료 처리
+        setIsCompleted(true);
+      }
     }
   };
 
