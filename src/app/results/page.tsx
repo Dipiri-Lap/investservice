@@ -1093,7 +1093,7 @@ export default function ResultsPage() {
                   <h3 className="font-semibold text-gray-800 mb-4">유형별 추천 주식</h3>
                   <div className="space-y-8">
                     {/* 배당주 */}
-                    {safeGptAnalysis.recommendedStocks.dividend && safeGptAnalysis.recommendedStocks.dividend.length > 0 && (
+                    {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend').length > 0 && (
                       <div>
                         <h4 className="font-medium text-gray-800 mb-4 flex items-center">
                           <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
@@ -1101,14 +1101,14 @@ export default function ResultsPage() {
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* 한국 배당주 */}
-                          {safeGptAnalysis.recommendedStocks.dividend.filter((stock: any) => stock.country === '한국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '한국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-red-500 rounded-sm mr-2"></span>
                                 한국
                               </h5>
                               <div className="space-y-3">
-                                {safeGptAnalysis.recommendedStocks.dividend.filter((stock: any) => stock.country === '한국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '한국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-blue-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1122,14 +1122,14 @@ export default function ResultsPage() {
                           )}
                           
                           {/* 미국 배당주 */}
-                          {safeGptAnalysis.recommendedStocks.dividend.filter((stock: any) => stock.country === '미국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '미국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-blue-600 rounded-sm mr-2"></span>
                                 미국
                               </h5>
                               <div className="space-y-3">
-                                {safeGptAnalysis.recommendedStocks.dividend.filter((stock: any) => stock.country === '미국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'dividend' && stock.country === '미국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-blue-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1146,7 +1146,7 @@ export default function ResultsPage() {
                     )}
                     
                     {/* 성장주 */}
-                    {safeGptAnalysis.recommendedStocks.growth && safeGptAnalysis.recommendedStocks.growth.length > 0 && (
+                    {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth').length > 0 && (
                       <div>
                         <h4 className="font-medium text-gray-800 mb-4 flex items-center">
                           <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -1154,14 +1154,14 @@ export default function ResultsPage() {
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* 한국 성장주 */}
-                          {safeGptAnalysis.recommendedStocks.growth.filter((stock: any) => stock.country === '한국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '한국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-red-500 rounded-sm mr-2"></span>
                                 한국
                               </h5>
                               <div className="space-y-3">
-                                {safeGptAnalysis.recommendedStocks.growth.filter((stock: any) => stock.country === '한국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '한국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-green-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1175,14 +1175,14 @@ export default function ResultsPage() {
                           )}
                           
                           {/* 미국 성장주 */}
-                          {safeGptAnalysis.recommendedStocks.growth.filter((stock: any) => stock.country === '미국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '미국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-blue-600 rounded-sm mr-2"></span>
                                 미국
                               </h5>
                               <div className="space-y-3">
-                                {safeGptAnalysis.recommendedStocks.growth.filter((stock: any) => stock.country === '미국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'growth' && stock.country === '미국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-green-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1199,7 +1199,7 @@ export default function ResultsPage() {
                     )}
 
                     {/* 테마주 */}
-                    {safeGptAnalysis.recommendedStocks.theme && safeGptAnalysis.recommendedStocks.theme.length > 0 && (
+                    {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme').length > 0 && (
                       <div>
                         <h4 className="font-medium text-gray-800 mb-4 flex items-center">
                           <span className="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
@@ -1207,14 +1207,14 @@ export default function ResultsPage() {
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* 한국 테마주 */}
-                          {safeGptAnalysis.recommendedStocks.theme.filter((stock: any) => stock.country === '한국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '한국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-red-500 rounded-sm mr-2"></span>
                                 한국
                               </h5>
                               <div className="space-y-3">
-                                {safeGptAnalysis.recommendedStocks.theme.filter((stock: any) => stock.country === '한국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '한국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-purple-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1228,14 +1228,14 @@ export default function ResultsPage() {
                           )}
                           
                           {/* 미국 테마주 */}
-                          {safeGptAnalysis.recommendedStocks.theme.filter((stock: any) => stock.country === '미국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '미국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-blue-600 rounded-sm mr-2"></span>
                                 미국
                               </h5>
                               <div className="space-y-3">
-                                {safeGptAnalysis.recommendedStocks.theme.filter((stock: any) => stock.country === '미국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'theme' && stock.country === '미국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-purple-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1252,7 +1252,7 @@ export default function ResultsPage() {
                     )}
 
                     {/* 가치주 */}
-                    {safeGptAnalysis.recommendedStocks.value && safeGptAnalysis.recommendedStocks.value.length > 0 && (
+                    {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value').length > 0 && (
                       <div>
                         <h4 className="font-medium text-gray-800 mb-4 flex items-center">
                           <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
@@ -1260,14 +1260,14 @@ export default function ResultsPage() {
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/* 한국 가치주 */}
-                          {safeGptAnalysis.recommendedStocks.value.filter((stock: any) => stock.country === '한국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '한국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-red-500 rounded-sm mr-2"></span>
                                 한국
                               </h5>
                               <div className="space-y-3">
-                                {safeGptAnalysis.recommendedStocks.value.filter((stock: any) => stock.country === '한국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '한국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-orange-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
@@ -1281,14 +1281,14 @@ export default function ResultsPage() {
                           )}
                           
                           {/* 미국 가치주 */}
-                          {safeGptAnalysis.recommendedStocks.value.filter((stock: any) => stock.country === '미국').length > 0 && (
+                          {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '미국').length > 0 && (
                             <div className="border rounded-lg p-4">
                               <h5 className="font-medium text-gray-800 mb-3 flex items-center">
                                 <span className="w-6 h-4 bg-blue-600 rounded-sm mr-2"></span>
                                 미국
                               </h5>
                               <div className="space-y-3">
-                                {safeGptAnalysis.recommendedStocks.value.filter((stock: any) => stock.country === '미국').map((stock: any, index: number) => (
+                                {safeGptAnalysis.recommendedStocks.filter((stock: any) => stock.category === 'value' && stock.country === '미국').map((stock: any, index: number) => (
                                   <div key={index} className="border-l-4 border-orange-500 pl-4">
                                     <div className="flex items-center space-x-2 mb-1">
                                       <h6 className="font-medium text-gray-800">{stock.name}</h6>
