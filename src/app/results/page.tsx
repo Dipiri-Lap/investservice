@@ -398,7 +398,7 @@ export default function ResultsPage() {
           throw new Error(`preGeneratedAnalysis에서 '${profileType}' 성향 데이터를 찾을 수 없습니다.`)
         }
         
-        // 결과 데이터 구조 맞춰서 생성 (recommendedStocks 포함)
+        // 결과 데이터 구조 맞춰서 생성 (모든 데이터 포함)
         const result = {
           success: true,
           profile: {
@@ -406,7 +406,11 @@ export default function ResultsPage() {
             gptAnalysis: {
               ...preGeneratedData.analysis,
               recommendedStocks: (preGeneratedData as any).recommendedStocks,
-              portfolio: (preGeneratedData as any).portfolio
+              recommendedCrypto: (preGeneratedData as any).recommendedCrypto,
+              portfolio: (preGeneratedData as any).portfolio,
+              portfolioExample: (preGeneratedData as any).portfolioExample,
+              actionGuide: (preGeneratedData as any).actionGuide,
+              investmentStrategy: (preGeneratedData as any).investmentStrategy
             },
             confidence: preGeneratedData.confidence,
             keyFindings: preGeneratedData.keyFindings
@@ -427,6 +431,10 @@ export default function ResultsPage() {
           console.log('📊 gptAnalysis 데이터:', result.profile.gptAnalysis)
           console.log('📊 recommendedStocks 개수:', (result.profile.gptAnalysis as any)?.recommendedStocks?.length || 0)
           console.log('📊 recommendedStocks 데이터:', (result.profile.gptAnalysis as any)?.recommendedStocks)
+          console.log('📊 recommendedCrypto 개수:', (result.profile.gptAnalysis as any)?.recommendedCrypto?.length || 0)
+          console.log('📊 recommendedCrypto 데이터:', (result.profile.gptAnalysis as any)?.recommendedCrypto)
+          console.log('📊 actionGuide 데이터:', (result.profile.gptAnalysis as any)?.actionGuide)
+          console.log('📊 portfolio 데이터:', (result.profile.gptAnalysis as any)?.portfolio)
           setProfile(result.profile)
           setGptAnalysis(result.profile.gptAnalysis)
           setConfidence(result.profile.confidence)
