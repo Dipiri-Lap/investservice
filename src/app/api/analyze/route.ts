@@ -613,6 +613,10 @@ ${detailSurveyResults.map(result =>
       source: 'preGeneratedAnalysis'
     })
     
+    console.log('📊 preGeneratedData.analysis:', preGeneratedData.analysis)
+    console.log('📊 recommendedStocks 개수:', (preGeneratedData.analysis as any)?.recommendedStocks?.length || 0)
+    console.log('📊 recommendedStocks 데이터:', (preGeneratedData.analysis as any)?.recommendedStocks)
+    
     // ============================================
     // ✅ 새로운 preGeneratedAnalysis 사용 끝
     // ============================================
@@ -637,6 +641,8 @@ ${detailSurveyResults.map(result =>
     }
 
     console.log('✅ 분석 완료! (preGeneratedAnalysis 사용)')
+    console.log('📊 최종 enhancedProfile.gptAnalysis:', enhancedProfile.gptAnalysis)
+    console.log('📊 최종 recommendedStocks:', (enhancedProfile.gptAnalysis as any)?.recommendedStocks)
     
     return NextResponse.json({
       success: true,

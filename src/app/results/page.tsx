@@ -439,6 +439,9 @@ export default function ResultsPage() {
         if (result.success) {
           console.log('✅ GPT 분석 완료:', result.profile.type)
           console.log('📈 질문 수 정보:', result.questionCounts)
+          console.log('📊 gptAnalysis 데이터:', result.profile.gptAnalysis)
+          console.log('📊 recommendedStocks 개수:', result.profile.gptAnalysis?.recommendedStocks?.length || 0)
+          console.log('📊 recommendedStocks 데이터:', result.profile.gptAnalysis?.recommendedStocks)
           setProfile(result.profile)
           setGptAnalysis(result.profile.gptAnalysis)
           setConfidence(result.profile.confidence)
