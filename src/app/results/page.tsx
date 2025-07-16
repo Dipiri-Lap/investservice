@@ -613,20 +613,6 @@ export default function ResultsPage() {
           <div id="pdf-header" className="hidden print:block mb-8 text-center border-b pb-8">
             <h1 className="text-4xl font-bold text-gray-800 mb-4">SmartInvest 투자 성향 분석 결과</h1>
             <p className="text-gray-600 mb-2">분석일: {new Date().toLocaleDateString('ko-KR')}</p>
-            {surveyData && (
-              <div className="text-sm text-gray-500 space-y-1">
-                <p>
-                  2단계 설문 결과 - 총 {9 + (surveyData.detailAnswers?.length || 0)}문항
-                </p>
-                <p>
-                  1단계: 성향군 구분 (9문항) | 2단계: 세부 성향 구분 ({surveyData.detailAnswers?.length || 0}문항)
-                </p>
-                <p>
-                  결정된 성향군: {surveyData.selectedGroup === 'stability' ? '안정추구형' : 
-                                 surveyData.selectedGroup === 'profit' ? '수익추구형' : '적극적/투기형'}
-                </p>
-              </div>
-            )}
           </div>
           
           {/* PDF 1장: 요약 섹션 */}
@@ -656,7 +642,7 @@ export default function ResultsPage() {
             >
               당신의 투자 성향은
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600">
+              <span className="text-gray-800">
                 {profile.name}
               </span>
               입니다
@@ -669,45 +655,6 @@ export default function ResultsPage() {
             >
               {profile.description}
             </motion.p>
-            
-            {/* 2단계 설문 결과 요약 */}
-            {surveyData && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-                className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 max-w-2xl mx-auto"
-              >
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">2단계 설문 분석 결과</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-600">9문항</div>
-                    <div className="text-gray-600">1단계: 성향군 구분</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-600">
-                      {surveyData.detailAnswers?.length || 0}문항
-                    </div>
-                    <div className="text-gray-600">2단계: 세부 성향 구분</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-indigo-600">
-                      {9 + (surveyData.detailAnswers?.length || 0)}문항
-                    </div>
-                    <div className="text-gray-600">총 설문 문항 수</div>
-                  </div>
-                </div>
-                <div className="mt-4 text-center">
-                  <div className="inline-flex items-center space-x-2 px-4 py-2 bg-white rounded-full shadow-sm">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-sm text-gray-700">
-                      {surveyData.selectedGroup === 'stability' ? '안정추구형' : 
-                       surveyData.selectedGroup === 'profit' ? '수익추구형' : '적극적/투기형'} 성향군
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            )}
           </motion.div>
 
             {/* 주요 지표 카드 */}
@@ -1331,9 +1278,119 @@ export default function ResultsPage() {
 
           {/* 1억원 포트폴리오 예시 */}
           <div id="pdf-recommendations" className="bg-white p-8 rounded-2xl shadow-lg mb-12">
+            {/* 투자 성향별 행동지침 */}
+            {safeGptAnalysis && safeGptAnalysis.actionGuide && (
+              <motion.div
+                id="pdf-action-guide"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.7 }}
+                className="mb-12"
+              >
+                <div className="flex items-center space-x-3 mb-8">
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center">
+                    <Target className="w-5 h-5 text-white" />
+                  </div>
+                  <h2 className="text-3xl font-bold text-gray-800">투자 성향별 행동지침</h2>
+                </div>
 
+                {/* 투자 기간 분석 */}
+                {safeGptAnalysis.actionGuide.investmentHorizon && (
+                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 mb-8">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                        <span className="text-white text-sm font-bold">⏱</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-indigo-800">추천 투자 기간</h3>
+                    </div>
+                    <div className="bg-white rounded-lg p-4">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
+                          {safeGptAnalysis.actionGuide.investmentHorizon.primary}
+                        </span>
+                      </div>
+                      <p className="text-gray-700 leading-relaxed">
+                        {safeGptAnalysis.actionGuide.investmentHorizon.description}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* 월별 */}
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
+                    <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
+                      <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-white text-sm font-bold">월</span>
+                      </div>
+                      {safeGptAnalysis.actionGuide.monthly.title}
+                    </h3>
+                    <div className="space-y-3">
+                      {(safeGptAnalysis.actionGuide.monthly.actions || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="text-blue-700 text-sm leading-relaxed">{action}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
 
+                  {/* 분기별 */}
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
+                    <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center">
+                      <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-white text-sm font-bold">분기</span>
+                      </div>
+                      {safeGptAnalysis.actionGuide.quarterly.title}
+                    </h3>
+                    <div className="space-y-3">
+                      {(safeGptAnalysis.actionGuide.quarterly.actions || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="text-green-700 text-sm leading-relaxed">{action}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 반기별 */}
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
+                    <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center">
+                      <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-white text-sm font-bold">반기</span>
+                      </div>
+                      {safeGptAnalysis.actionGuide.semiannual.title}
+                    </h3>
+                    <div className="space-y-3">
+                      {(safeGptAnalysis.actionGuide.semiannual.actions || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="text-purple-700 text-sm leading-relaxed">{action}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 년도별 */}
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6">
+                    <h3 className="text-xl font-bold text-orange-800 mb-4 flex items-center">
+                      <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center mr-3">
+                        <span className="text-white text-sm font-bold">년</span>
+                      </div>
+                      {safeGptAnalysis.actionGuide.annual.title}
+                    </h3>
+                    <div className="space-y-3">
+                      {(safeGptAnalysis.actionGuide.annual.actions || []).map((action: string, index: number) => (
+                        <div key={index} className="flex items-start space-x-2">
+                          <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 flex-shrink-0"></div>
+                          <p className="text-orange-700 text-sm leading-relaxed">{action}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             {/* 1억원 포트폴리오 예시 */}
             {safeGptAnalysis && safeGptAnalysis.portfolioExample && (
@@ -1353,44 +1410,44 @@ export default function ResultsPage() {
                   </h2>
                 </div>
                 
-                                 <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-                   <div className="overflow-x-auto">
-                     <table className="w-full">
-                       <thead className="bg-gray-50">
-                         <tr>
-                           <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">자산군</th>
-                           <th className="px-4 py-3 text-center text-sm font-semibold text-gray-800">비중 (%)</th>
-                           <th className="px-4 py-3 text-center text-sm font-semibold text-gray-800">금액 (원)</th>
-                           <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">구체적 투자 종목 및 수량(예시)</th>
-                         </tr>
-                       </thead>
-                       <tbody className="divide-y divide-gray-200">
-                         {(safeGptAnalysis.portfolioExample.breakdown || []).map((item: any, index: number) => (
-                           <tr key={index} className="hover:bg-gray-50">
-                             <td className="px-4 py-4 text-sm font-medium text-gray-800">{item.category || '자산군'}</td>
-                             <td className="px-4 py-4 text-center text-sm text-gray-600">{item.percentage || 0}%</td>
-                             <td className="px-4 py-4 text-center text-sm text-gray-600">
-                               {(item.amount || 0).toLocaleString()}
-                             </td>
-                             <td className="px-4 py-4 text-sm text-gray-600">
-                               <div className="space-y-1">
-                                 {(item.investments || []).map((investment: any, investIndex: number) => (
-                                   <div key={investIndex} className="flex items-center space-x-2">
-                                     <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                                     <span>
-                                       {investment.name} {investment.shares !== '-' ? `${investment.shares}주` : ''} 
-                                       (약 {investment.estimatedValue})
-                                     </span>
-                                   </div>
-                                 ))}
-                               </div>
-                             </td>
-                           </tr>
-                         ))}
-                       </tbody>
-                     </table>
-                   </div>
-                 </div>
+                <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">자산군</th>
+                          <th className="px-4 py-3 text-center text-sm font-semibold text-gray-800">비중 (%)</th>
+                          <th className="px-4 py-3 text-center text-sm font-semibold text-gray-800">금액 (원)</th>
+                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-800">구체적 투자 종목 및 수량(예시)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {(safeGptAnalysis.portfolioExample.breakdown || []).map((item: any, index: number) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            <td className="px-4 py-4 text-sm font-medium text-gray-800">{item.category || '자산군'}</td>
+                            <td className="px-4 py-4 text-center text-sm text-gray-600">{item.percentage || 0}%</td>
+                            <td className="px-4 py-4 text-center text-sm text-gray-600">
+                              {(item.amount || 0).toLocaleString()}
+                            </td>
+                            <td className="px-4 py-4 text-sm text-gray-600">
+                              <div className="space-y-1">
+                                {(item.investments || []).map((investment: any, investIndex: number) => (
+                                  <div key={investIndex} className="flex items-center space-x-2">
+                                    <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                                    <span>
+                                      {investment.name} {investment.shares !== '-' ? `${investment.shares}주` : ''} 
+                                      (약 {investment.estimatedValue})
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
 
                 {/* 세부 설명 */}
                 {safeGptAnalysis.portfolioExample.notes && safeGptAnalysis.portfolioExample.notes.length > 0 && (
@@ -1414,155 +1471,6 @@ export default function ResultsPage() {
               </motion.div>
             )}
           </div>
-
-          {/* 기간별 행동지침 */}
-          {safeGptAnalysis && safeGptAnalysis.actionGuide && (
-            <motion.div
-              id="pdf-action-guide"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              className="bg-white rounded-2xl shadow-lg p-8 mb-12"
-            >
-              <div className="flex items-center space-x-3 mb-8">
-                <div className="w-10 h-10 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl flex items-center justify-center">
-                  <Target className="w-5 h-5 text-white" />
-                </div>
-                <h2 className="text-3xl font-bold text-gray-800">투자 성향별 행동지침</h2>
-              </div>
-
-              {/* 투자 기간 분석 */}
-              {safeGptAnalysis.actionGuide.investmentHorizon && (
-                <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 mb-8">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">⏱</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-indigo-800">추천 투자 기간</h3>
-                  </div>
-                  <div className="bg-white rounded-lg p-4">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <span className="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium">
-                        {safeGptAnalysis.actionGuide.investmentHorizon.primary}
-                      </span>
-                    </div>
-                    <p className="text-gray-700 leading-relaxed">
-                      {safeGptAnalysis.actionGuide.investmentHorizon.description}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* 월별 */}
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
-                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">월</span>
-                    </div>
-                    {safeGptAnalysis.actionGuide.monthly.title}
-                  </h3>
-                  <div className="space-y-3">
-                    {(safeGptAnalysis.actionGuide.monthly.actions || []).map((action: string, index: number) => (
-                      <div key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-blue-700 text-sm leading-relaxed">{action}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 분기별 */}
-                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center">
-                    <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">분기</span>
-                    </div>
-                    {safeGptAnalysis.actionGuide.quarterly.title}
-                  </h3>
-                  <div className="space-y-3">
-                    {(safeGptAnalysis.actionGuide.quarterly.actions || []).map((action: string, index: number) => (
-                      <div key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-green-700 text-sm leading-relaxed">{action}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 반기별 */}
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-purple-800 mb-4 flex items-center">
-                    <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">반기</span>
-                    </div>
-                    {safeGptAnalysis.actionGuide.semiannual.title}
-                  </h3>
-                  <div className="space-y-3">
-                    {(safeGptAnalysis.actionGuide.semiannual.actions || []).map((action: string, index: number) => (
-                      <div key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 bg-purple-600 rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-purple-700 text-sm leading-relaxed">{action}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 년도별 */}
-                <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-orange-800 mb-4 flex items-center">
-                    <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center mr-3">
-                      <span className="text-white text-sm font-bold">년</span>
-                    </div>
-                    {safeGptAnalysis.actionGuide.annual.title}
-                  </h3>
-                  <div className="space-y-3">
-                    {(safeGptAnalysis.actionGuide.annual.actions || []).map((action: string, index: number) => (
-                      <div key={index} className="flex items-start space-x-2">
-                        <div className="w-2 h-2 bg-orange-600 rounded-full mt-2 flex-shrink-0"></div>
-                        <p className="text-orange-700 text-sm leading-relaxed">{action}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 bg-gray-50 rounded-xl p-6">
-                <div className="flex items-center space-x-2 mb-4">
-                  <div className="w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs">💡</span>
-                  </div>
-                  <h4 className="font-semibold text-gray-800">투자 행동지침 실행 가이드</h4>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-                  <div className="flex items-start space-x-2">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p><strong>월별 점검:</strong> 투자 자산 모니터링과 추가 투자금 확보 계획을 매월 첫째 주에 실행하세요.</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p><strong>분기별 조정:</strong> 포트폴리오 리밸런싱과 수익 실현을 분기 말에 체계적으로 진행하세요.</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p><strong>반기별 전략:</strong> 투자 전략 재검토와 세금 최적화를 6월, 12월에 집중적으로 실행하세요.</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p><strong>연간 계획:</strong> 투자 목표 재설정과 장기 계획 수립을 매년 12월-1월에 진행하세요.</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <div className="w-1.5 h-1.5 bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p><strong>감정 관리:</strong> 투자 성향에 맞는 행동지침을 따라 시장 변동성에 흔들리지 않는 투자를 유지하세요.</p>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <div className="w-1.5 h-1.5 bg-gray-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p><strong>기록 관리:</strong> 모든 투자 활동을 기록하고 정기적으로 성과를 분석하여 개선점을 찾아내세요.</p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
 
           {/* 투자 전략 섹션 */}
           {safeGptAnalysis && safeGptAnalysis.investmentStrategy && (
