@@ -7,8 +7,8 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
   
-  // 정적 export 설정을 제거하여 API 라우트 활성화
-  // output: 'export',
+  // 정적 export 설정 (클라이언트에서 직접 preGeneratedAnalysis 사용)
+  output: 'export',
   
   // 이미지 최적화 비활성화 (사이즈 절약)
   images: {

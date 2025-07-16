@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { BarChart3, TrendingUp, Shield, Target, AlertCircle, Download, ArrowLeft, DollarSign, Building, Building2, Brain } from 'lucide-react'
-import { InvestmentProfile } from '@/data/surveyQuestions'
+import { InvestmentProfile, determineGroup, determineDetailType, groupMapping } from '@/data/surveyQuestions'
+import { preGeneratedAnalysis } from '@/data/preGeneratedAnalysis'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -332,44 +333,7 @@ export default function ResultsPage() {
       return true
     }
     
-    // 재시도 로직이 포함된 API 요청 함수
-    const fetchWithRetry = async (url: string, options: RequestInit, maxRetries = 3): Promise<Response> => {
-      let lastError: Error = new Error('알 수 없는 네트워크 오류가 발생했습니다.')
-      
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          console.log(`🔄 API 요청 시도 ${attempt}/${maxRetries}`)
-          
-          const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), 60000) // 60초 타임아웃
-          
-          const response = await fetch(url, {
-            ...options,
-            signal: controller.signal,
-          })
-          
-          clearTimeout(timeoutId)
-          
-          if (response.ok) {
-            console.log(`✅ API 요청 성공 (시도 ${attempt}/${maxRetries})`)
-            return response
-          } else {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-          }
-        } catch (error: any) {
-          lastError = error
-          console.error(`❌ API 요청 실패 (시도 ${attempt}/${maxRetries}):`, error.message)
-          
-          if (attempt < maxRetries) {
-            const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000) // 지수 백오프 (최대 5초)
-            console.log(`⏳ ${delay}ms 후 재시도...`)
-            await new Promise(resolve => setTimeout(resolve, delay))
-          }
-        }
-      }
-      
-      throw lastError
-    }
+    // 더 이상 API 요청이 필요하지 않음 (클라이언트에서 직접 preGeneratedAnalysis 사용)
     
     const analyzeResults = async (surveyDataParam?: any) => {
       try {
@@ -419,29 +383,46 @@ export default function ResultsPage() {
           detailAnswersLength: currentSurveyData.detailAnswers?.length
         })
         
-        // 재시도 로직이 포함된 GPT API 요청 (새로운 데이터 구조)
-        const response = await fetchWithRetry('/api/analyze', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-          },
-          body: JSON.stringify({
-            groupAnswers: currentSurveyData.groupAnswers,
-            detailAnswers: currentSurveyData.detailAnswers,
-            selectedGroup: currentSurveyData.selectedGroup
-          })
-        })
+        // 클라이언트에서 직접 preGeneratedAnalysis 데이터 사용
+        console.log('🚀 클라이언트 분석 시작 (preGeneratedAnalysis 데이터 사용)...')
         
-        const result = await response.json()
+        // 성향 결정 로직 (API 라우트와 동일)
+        const determinedGroup = determineGroup(currentSurveyData.groupAnswers)
+        const detailProfile = determineDetailType(determinedGroup, currentSurveyData.detailAnswers)
+        
+        // preGeneratedAnalysis에서 해당 성향의 데이터 가져오기
+        const profileType = detailProfile.type
+        const preGeneratedData = preGeneratedAnalysis[profileType as keyof typeof preGeneratedAnalysis]
+        
+        if (!preGeneratedData) {
+          throw new Error(`preGeneratedAnalysis에서 '${profileType}' 성향 데이터를 찾을 수 없습니다.`)
+        }
+        
+        // 결과 데이터 구조 맞춰서 생성
+        const result = {
+          success: true,
+          profile: {
+            ...detailProfile,
+            gptAnalysis: preGeneratedData.analysis,
+            confidence: preGeneratedData.confidence,
+            keyFindings: preGeneratedData.keyFindings
+          },
+          questionCounts: {
+            groupQuestions: 9,
+            detailQuestions: currentSurveyData.detailAnswers.length,
+            total: 9 + currentSurveyData.detailAnswers.length
+          },
+          dataSource: 'preGeneratedAnalysis',
+          fallback: false,
+          error: null
+        }
         
         if (result.success) {
           console.log('✅ GPT 분석 완료:', result.profile.type)
           console.log('📈 질문 수 정보:', result.questionCounts)
           console.log('📊 gptAnalysis 데이터:', result.profile.gptAnalysis)
-          console.log('📊 recommendedStocks 개수:', result.profile.gptAnalysis?.recommendedStocks?.length || 0)
-          console.log('📊 recommendedStocks 데이터:', result.profile.gptAnalysis?.recommendedStocks)
+          console.log('📊 recommendedStocks 개수:', (result.profile.gptAnalysis as any)?.recommendedStocks?.length || 0)
+          console.log('📊 recommendedStocks 데이터:', (result.profile.gptAnalysis as any)?.recommendedStocks)
           setProfile(result.profile)
           setGptAnalysis(result.profile.gptAnalysis)
           setConfidence(result.profile.confidence)
