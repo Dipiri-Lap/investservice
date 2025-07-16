@@ -555,6 +555,51 @@ export default function ResultsPage() {
       semiannual: { actions: gptAnalysis?.actionGuide?.semiannual?.actions || [] },
       annual: { actions: gptAnalysis?.actionGuide?.annual?.actions || [] },
       ...gptAnalysis?.actionGuide
+    },
+    investmentStrategy: {
+      assetAllocation: {
+        summary: gptAnalysis?.investmentStrategy?.assetAllocation?.summary || '',
+        keyPoints: gptAnalysis?.investmentStrategy?.assetAllocation?.keyPoints || [],
+        warnings: gptAnalysis?.investmentStrategy?.assetAllocation?.warnings || [],
+        actionGuide: gptAnalysis?.investmentStrategy?.assetAllocation?.actionGuide || [],
+        ...gptAnalysis?.investmentStrategy?.assetAllocation
+      },
+      stockInvestment: {
+        summary: gptAnalysis?.investmentStrategy?.stockInvestment?.summary || '',
+        keyPoints: gptAnalysis?.investmentStrategy?.stockInvestment?.keyPoints || [],
+        warnings: gptAnalysis?.investmentStrategy?.stockInvestment?.warnings || [],
+        actionGuide: gptAnalysis?.investmentStrategy?.stockInvestment?.actionGuide || [],
+        ...gptAnalysis?.investmentStrategy?.stockInvestment
+      },
+      bondInvestment: {
+        summary: gptAnalysis?.investmentStrategy?.bondInvestment?.summary || '',
+        keyPoints: gptAnalysis?.investmentStrategy?.bondInvestment?.keyPoints || [],
+        warnings: gptAnalysis?.investmentStrategy?.bondInvestment?.warnings || [],
+        actionGuide: gptAnalysis?.investmentStrategy?.bondInvestment?.actionGuide || [],
+        ...gptAnalysis?.investmentStrategy?.bondInvestment
+      },
+      alternativeInvestment: {
+        summary: gptAnalysis?.investmentStrategy?.alternativeInvestment?.summary || '',
+        keyPoints: gptAnalysis?.investmentStrategy?.alternativeInvestment?.keyPoints || [],
+        warnings: gptAnalysis?.investmentStrategy?.alternativeInvestment?.warnings || [],
+        actionGuide: gptAnalysis?.investmentStrategy?.alternativeInvestment?.actionGuide || [],
+        ...gptAnalysis?.investmentStrategy?.alternativeInvestment
+      },
+      riskManagement: {
+        summary: gptAnalysis?.investmentStrategy?.riskManagement?.summary || '',
+        keyPoints: gptAnalysis?.investmentStrategy?.riskManagement?.keyPoints || [],
+        warnings: gptAnalysis?.investmentStrategy?.riskManagement?.warnings || [],
+        actionGuide: gptAnalysis?.investmentStrategy?.riskManagement?.actionGuide || [],
+        ...gptAnalysis?.investmentStrategy?.riskManagement
+      },
+      psychologyManagement: {
+        summary: gptAnalysis?.investmentStrategy?.psychologyManagement?.summary || '',
+        keyPoints: gptAnalysis?.investmentStrategy?.psychologyManagement?.keyPoints || [],
+        warnings: gptAnalysis?.investmentStrategy?.psychologyManagement?.warnings || [],
+        actionGuide: gptAnalysis?.investmentStrategy?.psychologyManagement?.actionGuide || [],
+        ...gptAnalysis?.investmentStrategy?.psychologyManagement
+      },
+      ...gptAnalysis?.investmentStrategy
     }
   }
 
