@@ -398,12 +398,16 @@ export default function ResultsPage() {
           throw new Error(`preGeneratedAnalysis에서 '${profileType}' 성향 데이터를 찾을 수 없습니다.`)
         }
         
-        // 결과 데이터 구조 맞춰서 생성
+        // 결과 데이터 구조 맞춰서 생성 (recommendedStocks 포함)
         const result = {
           success: true,
           profile: {
             ...detailProfile,
-            gptAnalysis: preGeneratedData.analysis,
+            gptAnalysis: {
+              ...preGeneratedData.analysis,
+              recommendedStocks: (preGeneratedData as any).recommendedStocks,
+              portfolio: (preGeneratedData as any).portfolio
+            },
             confidence: preGeneratedData.confidence,
             keyFindings: preGeneratedData.keyFindings
           },
