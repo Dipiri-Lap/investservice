@@ -562,6 +562,7 @@ export default function ResultsPage() {
         keyPoints: gptAnalysis?.investmentStrategy?.assetAllocation?.keyPoints || [],
         warnings: gptAnalysis?.investmentStrategy?.assetAllocation?.warnings || [],
         actionGuide: gptAnalysis?.investmentStrategy?.assetAllocation?.actionGuide || [],
+        adjustmentByType: gptAnalysis?.investmentStrategy?.assetAllocation?.adjustmentByType || {},
         ...gptAnalysis?.investmentStrategy?.assetAllocation
       },
       stockInvestment: {
@@ -569,6 +570,7 @@ export default function ResultsPage() {
         keyPoints: gptAnalysis?.investmentStrategy?.stockInvestment?.keyPoints || [],
         warnings: gptAnalysis?.investmentStrategy?.stockInvestment?.warnings || [],
         actionGuide: gptAnalysis?.investmentStrategy?.stockInvestment?.actionGuide || [],
+        adjustmentByType: gptAnalysis?.investmentStrategy?.stockInvestment?.adjustmentByType || {},
         ...gptAnalysis?.investmentStrategy?.stockInvestment
       },
       bondInvestment: {
@@ -576,6 +578,7 @@ export default function ResultsPage() {
         keyPoints: gptAnalysis?.investmentStrategy?.bondInvestment?.keyPoints || [],
         warnings: gptAnalysis?.investmentStrategy?.bondInvestment?.warnings || [],
         actionGuide: gptAnalysis?.investmentStrategy?.bondInvestment?.actionGuide || [],
+        adjustmentByType: gptAnalysis?.investmentStrategy?.bondInvestment?.adjustmentByType || {},
         ...gptAnalysis?.investmentStrategy?.bondInvestment
       },
       alternativeInvestment: {
@@ -583,6 +586,7 @@ export default function ResultsPage() {
         keyPoints: gptAnalysis?.investmentStrategy?.alternativeInvestment?.keyPoints || [],
         warnings: gptAnalysis?.investmentStrategy?.alternativeInvestment?.warnings || [],
         actionGuide: gptAnalysis?.investmentStrategy?.alternativeInvestment?.actionGuide || [],
+        adjustmentByType: gptAnalysis?.investmentStrategy?.alternativeInvestment?.adjustmentByType || {},
         ...gptAnalysis?.investmentStrategy?.alternativeInvestment
       },
       riskManagement: {
@@ -590,6 +594,7 @@ export default function ResultsPage() {
         keyPoints: gptAnalysis?.investmentStrategy?.riskManagement?.keyPoints || [],
         warnings: gptAnalysis?.investmentStrategy?.riskManagement?.warnings || [],
         actionGuide: gptAnalysis?.investmentStrategy?.riskManagement?.actionGuide || [],
+        adjustmentByType: gptAnalysis?.investmentStrategy?.riskManagement?.adjustmentByType || {},
         ...gptAnalysis?.investmentStrategy?.riskManagement
       },
       psychologyManagement: {
@@ -597,6 +602,7 @@ export default function ResultsPage() {
         keyPoints: gptAnalysis?.investmentStrategy?.psychologyManagement?.keyPoints || [],
         warnings: gptAnalysis?.investmentStrategy?.psychologyManagement?.warnings || [],
         actionGuide: gptAnalysis?.investmentStrategy?.psychologyManagement?.actionGuide || [],
+        adjustmentByType: gptAnalysis?.investmentStrategy?.psychologyManagement?.adjustmentByType || {},
         ...gptAnalysis?.investmentStrategy?.psychologyManagement
       },
       ...gptAnalysis?.investmentStrategy
