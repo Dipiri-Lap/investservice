@@ -122,10 +122,10 @@ export default function ResultsPage() {
       const contentHeight = pageHeight - (margin * 2)
       
                             // 전체 콘텐츠를 4페이지로 나누어 캡처
-        const sections = ['pdf-header', 'pdf-summary', 'pdf-characteristics', 'pdf-analysis', 'pdf-portfolio', 'pdf-recommendations']
+        const sections = ['pdf-header', 'pdf-summary', 'pdf-analysis', 'pdf-portfolio', 'pdf-recommendations']
         
-        // 1페이지: 헤더 + 요약 + 특징 통합
-        const overviewSections = ['pdf-header', 'pdf-summary', 'pdf-characteristics']
+        // 1페이지: 헤더 + 요약 (특징 포함) 통합
+        const overviewSections = ['pdf-header', 'pdf-summary']
         const overviewElements = overviewSections.map(id => document.getElementById(id)).filter(el => el !== null)
         
         if (overviewElements.length > 0) {
