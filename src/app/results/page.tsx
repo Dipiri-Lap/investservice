@@ -121,10 +121,51 @@ export default function ResultsPage() {
       const contentWidth = pageWidth - (margin * 2)
       const contentHeight = pageHeight - (margin * 2)
       
-                            // 전체 콘텐츠를 4페이지로 나누어 캡처
-        const sections = ['pdf-header', 'pdf-summary', 'pdf-analysis', 'pdf-portfolio', 'pdf-recommendations']
+        // 더 세분화된 섹션별 페이지 생성
+        const createPage = async (elementIds: string[], title?: string) => {
+          const elements = elementIds.map(id => document.getElementById(id)).filter(el => el !== null)
+          
+          if (elements.length > 0) {
+            pdf.addPage()
+            
+            // 임시 컨테이너 생성
+            const tempDiv = document.createElement('div')
+            tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
+            
+            // 제목 추가
+            if (title) {
+              const titleEl = document.createElement('h2')
+              titleEl.textContent = title
+              titleEl.style.cssText = 'font-size:24px;font-weight:bold;margin-bottom:20px;color:#1f2937;'
+              tempDiv.appendChild(titleEl)
+            }
+            
+            elements.forEach(el => {
+              const clone = el.cloneNode(true) as HTMLElement
+              clone.style.marginBottom = '20px'
+              clone.style.width = '100%'
+              clone.style.maxWidth = '100%'
+              tempDiv.appendChild(clone)
+            })
+            
+            document.body.appendChild(tempDiv)
+            
+            const canvas = await html2canvas(tempDiv, {
+              scale: 2,
+              backgroundColor: '#ffffff',
+              useCORS: true,
+              width: 794,
+              height: 1123,
+            })
+            
+            document.body.removeChild(tempDiv)
+            
+            const imgData = canvas.toDataURL('image/png')
+            pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
+          }
+        }
         
-        // 1페이지: 헤더 + 요약 (특징 포함) 통합
+        // 1페이지: 헤더 + 요약
         const overviewSections = ['pdf-header', 'pdf-summary']
         const overviewElements = overviewSections.map(id => document.getElementById(id)).filter(el => el !== null)
         
@@ -147,36 +188,6 @@ export default function ResultsPage() {
             scale: 2,
             backgroundColor: '#ffffff',
             useCORS: true,
-            width: 794, // A4 width in pixels at 96 DPI
-            height: 1123, // A4 height in pixels at 96 DPI
-          })
-          
-          document.body.removeChild(tempDiv)
-          
-          const imgData = canvas.toDataURL('image/png')
-          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
-        }
-        
-        // 2페이지: AI 분석 + 포트폴리오 전략
-        const analysisEl = document.getElementById('pdf-analysis')
-        if (analysisEl) {
-          pdf.addPage()
-          
-          // 임시 컨테이너 생성
-          const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
-          
-          const clone = analysisEl.cloneNode(true) as HTMLElement
-          clone.style.width = '100%'
-          clone.style.maxWidth = '100%'
-          tempDiv.appendChild(clone)
-          
-          document.body.appendChild(tempDiv)
-          
-          const canvas = await html2canvas(tempDiv, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            useCORS: true,
             width: 794,
             height: 1123,
           })
@@ -187,95 +198,26 @@ export default function ResultsPage() {
           pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
         }
         
-        // 3페이지: 추천 종목
-        const portfolioEl = document.getElementById('pdf-portfolio')
-        if (portfolioEl) {
-          pdf.addPage()
-          
-          // 임시 컨테이너 생성
-          const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
-          
-          const clone = portfolioEl.cloneNode(true) as HTMLElement
-          clone.style.width = '100%'
-          clone.style.maxWidth = '100%'
-          tempDiv.appendChild(clone)
-          
-          document.body.appendChild(tempDiv)
-          
-          const canvas = await html2canvas(tempDiv, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            useCORS: true,
-            width: 794,
-            height: 1123,
-          })
-          
-          document.body.removeChild(tempDiv)
-          
-          const imgData = canvas.toDataURL('image/png')
-          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
-        }
+        // 2페이지: 분석 결과 - 상세 설명 및 장단점
+        await createPage(['pdf-analysis-detail', 'pdf-analysis-strengths', 'pdf-analysis-improvements'], '분석 결과 (1/2)')
         
-        // 4페이지: 자산 배분 및 추천사항
-        const recommendEl = document.getElementById('pdf-recommendations')
-        if (recommendEl) {
-          pdf.addPage()
-          
-          // 임시 컨테이너 생성
-          const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
-          
-          const clone = recommendEl.cloneNode(true) as HTMLElement
-          clone.style.width = '100%'
-          clone.style.maxWidth = '100%'
-          tempDiv.appendChild(clone)
-          
-          document.body.appendChild(tempDiv)
-          
-          const canvas = await html2canvas(tempDiv, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            useCORS: true,
-            width: 794,
-            height: 1123,
-          })
-          
-          document.body.removeChild(tempDiv)
-          
-          const imgData = canvas.toDataURL('image/png')
-          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
-        }
-
-        // 5페이지: 투자 전략 가이드
-        const strategyEl = document.getElementById('pdf-investment-strategy')
-        if (strategyEl) {
-          pdf.addPage()
-          
-          // 임시 컨테이너 생성
-          const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
-          
-          const clone = strategyEl.cloneNode(true) as HTMLElement
-          clone.style.width = '100%'
-          clone.style.maxWidth = '100%'
-          tempDiv.appendChild(clone)
-          
-          document.body.appendChild(tempDiv)
-          
-          const canvas = await html2canvas(tempDiv, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            useCORS: true,
-            width: 794,
-            height: 1123,
-          })
-          
-          document.body.removeChild(tempDiv)
-          
-          const imgData = canvas.toDataURL('image/png')
-          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
-        }
+        // 3페이지: 분석 결과 - 추천 포트폴리오
+        await createPage(['pdf-analysis-portfolio'], '분석 결과 (2/2)')
+        
+        // 4페이지: 추천 종목 - 주식
+        await createPage(['pdf-portfolio-stocks'], '추천 종목 (1/2)')
+        
+        // 5페이지: 추천 종목 - 암호화폐
+        await createPage(['pdf-portfolio-crypto'], '추천 종목 (2/2)')
+        
+        // 6페이지: 투자 성향별 행동지침 - 투자 기간
+        await createPage(['pdf-action-guide-horizon'], '투자 성향별 행동지침 (1/2)')
+        
+        // 7페이지: 투자 성향별 행동지침 - 행동지침 그리드
+        await createPage(['pdf-action-guide-grid'], '투자 성향별 행동지침 (2/2)')
+        
+        // 8페이지: 1억원 포트폴리오 예시
+        await createPage(['pdf-portfolio-example'], '1억원 포트폴리오 예시')
       
               // 파일명 생성
         const fileName = `투자성향분석_${profile.type}_${new Date().toISOString().split('T')[0]}.pdf`
@@ -888,13 +830,13 @@ export default function ResultsPage() {
               </div>
               
               {/* 투자 성향 상세 설명 */}
-              <div className="bg-white rounded-lg p-6 mb-6">
+              <div id="pdf-analysis-detail" className="bg-white rounded-lg p-6 mb-6">
                 <h3 className="font-semibold text-gray-800 mb-3">투자 성향 상세 설명</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{safeGptAnalysis.description}</p>
               </div>
               
               {/* 장단점 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div id="pdf-analysis-strengths" className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="bg-white rounded-lg p-6">
                   <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
                     <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
@@ -913,7 +855,7 @@ export default function ResultsPage() {
               </div>
               
               {/* 권장 개선 방향 */}
-              <div className="bg-white rounded-lg p-6 mb-6">
+              <div id="pdf-analysis-improvements" className="bg-white rounded-lg p-6 mb-6">
                 <h3 className="font-semibold text-gray-800 mb-3 flex items-center">
                   <span className="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
                   권장 개선 방향
@@ -923,7 +865,7 @@ export default function ResultsPage() {
               
               {/* 추천 포트폴리오 */}
               {safeGptAnalysis.portfolio && (
-                <div className="bg-white rounded-2xl p-8 mb-6 shadow-lg">
+                <div id="pdf-analysis-portfolio" className="bg-white rounded-2xl p-8 mb-6 shadow-lg">
                   <h3 className="font-bold text-gray-800 mb-6 text-xl">추천 포트폴리오</h3>
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
                     <motion.div 
@@ -1074,7 +1016,7 @@ export default function ResultsPage() {
 
               {/* 추천 주식 종목 */}
               {safeGptAnalysis.recommendedStocks && (
-                <div className="bg-white rounded-lg p-6 mb-6">
+                <div id="pdf-portfolio-stocks" className="bg-white rounded-lg p-6 mb-6">
                   <h3 className="font-semibold text-gray-800 mb-4">유형별 추천 주식</h3>
                   <div className="space-y-8">
                     {/* 배당주 */}
@@ -1294,7 +1236,7 @@ export default function ResultsPage() {
               
               {/* 추천 암호화폐 */}
               {safeGptAnalysis.recommendedCrypto && (
-                <div className="bg-white rounded-lg p-6 mb-6">
+                <div id="pdf-portfolio-crypto" className="bg-white rounded-lg p-6 mb-6">
                   <h3 className="font-semibold text-gray-800 mb-4">추천 암호화폐</h3>
                   <div className="space-y-3">
                                                              {(safeGptAnalysis.recommendedCrypto || []).map((crypto: any, index: number) => (
@@ -1334,7 +1276,7 @@ export default function ResultsPage() {
 
                 {/* 투자 기간 분석 */}
                 {safeGptAnalysis.actionGuide.investmentHorizon && (
-                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 mb-8">
+                  <div id="pdf-action-guide-horizon" className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 mb-8">
                     <div className="flex items-center space-x-3 mb-4">
                       <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
                         <span className="text-white text-sm font-bold">⏱</span>
@@ -1354,7 +1296,7 @@ export default function ResultsPage() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div id="pdf-action-guide-grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {/* 월별 */}
                   <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6">
                     <h3 className="text-xl font-bold text-blue-800 mb-4 flex items-center">
