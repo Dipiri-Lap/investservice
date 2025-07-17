@@ -128,9 +128,9 @@ export default function ResultsPage() {
           if (elements.length > 0) {
             pdf.addPage()
             
-            // 임시 컨테이너 생성
+            // 임시 컨테이너 생성 (PDF용 고정 가로 비율)
             const tempDiv = document.createElement('div')
-            tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
+            tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
             
             // 제목 추가
             if (title) {
@@ -142,6 +142,30 @@ export default function ResultsPage() {
             
             elements.forEach(el => {
               const clone = el.cloneNode(true) as HTMLElement
+              
+              // PDF용 데스크톱 뷰 강제 적용
+              const forceDesktopView = (element: HTMLElement) => {
+                // 반응형 grid 클래스들을 데스크톱 뷰로 강제 적용
+                const gridElements = element.querySelectorAll('[class*="grid-cols-1"], [class*="md:grid-cols-2"], [class*="lg:grid-cols-4"]')
+                gridElements.forEach(gridEl => {
+                  const htmlEl = gridEl as HTMLElement
+                  if (htmlEl.className.includes('lg:grid-cols-4')) {
+                    htmlEl.style.gridTemplateColumns = 'repeat(4, minmax(0, 1fr))'
+                  } else if (htmlEl.className.includes('md:grid-cols-2')) {
+                    htmlEl.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))'
+                  }
+                  htmlEl.style.display = 'grid'
+                })
+                
+                // flex 레이아웃 강제 적용
+                const flexElements = element.querySelectorAll('[class*="flex-col"], [class*="sm:flex-row"]')
+                flexElements.forEach(flexEl => {
+                  const htmlEl = flexEl as HTMLElement
+                  if (htmlEl.className.includes('sm:flex-row')) {
+                    htmlEl.style.flexDirection = 'row'
+                  }
+                })
+              }
               
               // 특정 카테고리만 필터링하는 경우
               if (filterCategories && el.id === 'pdf-portfolio-stocks') {
@@ -162,6 +186,9 @@ export default function ResultsPage() {
                 })
               }
               
+              // 데스크톱 뷰 강제 적용
+              forceDesktopView(clone)
+              
               clone.style.marginBottom = '20px'
               clone.style.width = '100%'
               clone.style.maxWidth = '100%'
@@ -174,8 +201,8 @@ export default function ResultsPage() {
               scale: 2,
               backgroundColor: '#ffffff',
               useCORS: true,
-              width: 794,
-              height: 1123,
+              width: 1200,
+              height: 1600,
             })
             
             document.body.removeChild(tempDiv)
@@ -190,12 +217,40 @@ export default function ResultsPage() {
         const overviewElements = overviewSections.map(id => document.getElementById(id)).filter(el => el !== null)
         
         if (overviewElements.length > 0) {
-          // 임시 컨테이너로 통합
+          // 임시 컨테이너로 통합 (PDF용 고정 가로 비율)
           const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:210mm;max-width:210mm;'
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
           
           overviewElements.forEach(el => {
             const clone = el.cloneNode(true) as HTMLElement
+            
+            // PDF용 데스크톱 뷰 강제 적용
+            const forceDesktopView = (element: HTMLElement) => {
+              // 반응형 grid 클래스들을 데스크톱 뷰로 강제 적용
+              const gridElements = element.querySelectorAll('[class*="grid-cols-1"], [class*="md:grid-cols-2"], [class*="lg:grid-cols-4"]')
+              gridElements.forEach(gridEl => {
+                const htmlEl = gridEl as HTMLElement
+                if (htmlEl.className.includes('lg:grid-cols-4')) {
+                  htmlEl.style.gridTemplateColumns = 'repeat(4, minmax(0, 1fr))'
+                } else if (htmlEl.className.includes('md:grid-cols-2')) {
+                  htmlEl.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))'
+                }
+                htmlEl.style.display = 'grid'
+              })
+              
+              // flex 레이아웃 강제 적용
+              const flexElements = element.querySelectorAll('[class*="flex-col"], [class*="sm:flex-row"]')
+              flexElements.forEach(flexEl => {
+                const htmlEl = flexEl as HTMLElement
+                if (htmlEl.className.includes('sm:flex-row')) {
+                  htmlEl.style.flexDirection = 'row'
+                }
+              })
+            }
+            
+            // 데스크톱 뷰 강제 적용
+            forceDesktopView(clone)
+            
             clone.style.marginBottom = '30px'
             clone.style.width = '100%'
             clone.style.maxWidth = '100%'
@@ -208,8 +263,8 @@ export default function ResultsPage() {
             scale: 2,
             backgroundColor: '#ffffff',
             useCORS: true,
-            width: 794,
-            height: 1123,
+            width: 1200,
+            height: 1600,
           })
           
           document.body.removeChild(tempDiv)
