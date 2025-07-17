@@ -122,7 +122,7 @@ export default function ResultsPage() {
       const contentHeight = pageHeight - (margin * 2)
       
         // 더 세분화된 섹션별 페이지 생성
-        const createPage = async (elementIds: string[], title?: string) => {
+        const createPage = async (elementIds: string[], title?: string, filterCategories?: string[]) => {
           const elements = elementIds.map(id => document.getElementById(id)).filter(el => el !== null)
           
           if (elements.length > 0) {
@@ -142,6 +142,26 @@ export default function ResultsPage() {
             
             elements.forEach(el => {
               const clone = el.cloneNode(true) as HTMLElement
+              
+              // 특정 카테고리만 필터링하는 경우
+              if (filterCategories && el.id === 'pdf-portfolio-stocks') {
+                const stockSections = clone.querySelectorAll('div[class*="space-y-8"] > div')
+                stockSections.forEach(section => {
+                  const sectionTitle = section.querySelector('h4')?.textContent || ''
+                  const shouldShow = filterCategories.some(category => {
+                    if (category === 'dividend' && sectionTitle.includes('배당주')) return true
+                    if (category === 'growth' && sectionTitle.includes('성장주')) return true
+                    if (category === 'theme' && sectionTitle.includes('테마주')) return true
+                    if (category === 'value' && sectionTitle.includes('가치주')) return true
+                    return false
+                  })
+                  
+                  if (!shouldShow) {
+                    (section as HTMLElement).style.display = 'none'
+                  }
+                })
+              }
+              
               clone.style.marginBottom = '20px'
               clone.style.width = '100%'
               clone.style.maxWidth = '100%'
@@ -199,25 +219,19 @@ export default function ResultsPage() {
         }
         
         // 2페이지: 분석 결과 - 상세 설명 및 장단점
-        await createPage(['pdf-analysis-detail', 'pdf-analysis-strengths', 'pdf-analysis-improvements'], '분석 결과 (1/2)')
+        await createPage(['pdf-analysis-detail', 'pdf-analysis-strengths', 'pdf-analysis-improvements'], '분석 결과')
         
-        // 3페이지: 분석 결과 - 추천 포트폴리오
-        await createPage(['pdf-analysis-portfolio'], '분석 결과 (2/2)')
+        // 3페이지: 추천 종목 - 배당 성장주
+        await createPage(['pdf-portfolio-stocks'], '추천 종목 (1/2) - 배당 성장주', ['dividend', 'growth'])
         
-        // 4페이지: 추천 종목 - 주식
-        await createPage(['pdf-portfolio-stocks'], '추천 종목 (1/2)')
+        // 4페이지: 추천 종목 - 테마 가치주 및 암호화폐
+        await createPage(['pdf-portfolio-stocks', 'pdf-portfolio-crypto'], '추천 종목 (2/2) - 테마 가치주 및 암호화폐', ['theme', 'value'])
         
-        // 5페이지: 추천 종목 - 암호화폐
-        await createPage(['pdf-portfolio-crypto'], '추천 종목 (2/2)')
+        // 5페이지: 투자 성향별 행동지침 (통합)
+        await createPage(['pdf-action-guide-horizon', 'pdf-action-guide-grid'], '투자 성향별 행동지침')
         
-        // 6페이지: 투자 성향별 행동지침 - 투자 기간
-        await createPage(['pdf-action-guide-horizon'], '투자 성향별 행동지침 (1/2)')
-        
-        // 7페이지: 투자 성향별 행동지침 - 행동지침 그리드
-        await createPage(['pdf-action-guide-grid'], '투자 성향별 행동지침 (2/2)')
-        
-        // 8페이지: 1억원 포트폴리오 예시
-        await createPage(['pdf-portfolio-example'], '1억원 포트폴리오 예시')
+        // 6페이지: 추천 포트폴리오 + 1억원 포트폴리오 예시
+        await createPage(['pdf-analysis-portfolio', 'pdf-portfolio-example'], '포트폴리오 추천 및 예시')
       
               // 파일명 생성
         const fileName = `투자성향분석_${profile.type}_${new Date().toISOString().split('T')[0]}.pdf`
