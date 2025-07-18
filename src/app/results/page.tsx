@@ -268,8 +268,9 @@ export default function ResultsPage() {
           pdf.addImage(titleImgData, 'PNG', margin, margin, contentWidth, contentHeight)
           
           // 각 섹션별로 페이지 생성
-          for (const section of guide.sections) {
-            pdf.addPage()
+          for (let i = 0; i < guide.sections.length; i++) {
+            if (i !== 0) pdf.addPage();
+            const section = guide.sections[i];
             
             const sectionDiv = document.createElement('div')
             sectionDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
