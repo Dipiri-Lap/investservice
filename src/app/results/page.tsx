@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { BarChart3, TrendingUp, Shield, Target, AlertCircle, Download, ArrowLeft, DollarSign, Building, Building2, Brain } from 'lucide-react'
 import { InvestmentProfile, determineGroup, determineDetailType, groupMapping } from '@/data/surveyQuestions'
 import { preGeneratedAnalysis } from '@/data/preGeneratedAnalysis'
+import { investmentGuides } from '@/data/investmentGuides'
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -212,6 +213,93 @@ export default function ResultsPage() {
           }
         }
         
+        // 투자 전략 가이드 페이지 생성 함수
+        const createInvestmentGuidePages = async (profileType: string) => {
+          // 투자 성향에 따른 가이드 키 매핑 (9개 성향 모두 포함)
+          const guideKeyMap: Record<string, string> = {
+            '보수형': 'conservative',
+            '안정추구형': 'stable',           
+            '성장지향형': 'growth-oriented',
+            '공격형': 'aggressive',
+            '혁신추구형': 'innovative',
+            '가치중시형': 'value-focused',
+            '배당중시형': 'income-focused',
+            '사회책임투자형': 'socially-responsible',
+            '단기차익추구형': 'short-term',
+            '균형형': 'balanced'
+          }
+          
+          const guideKey = guideKeyMap[profileType] || 'conservative'
+          const guide = investmentGuides[guideKey]
+          
+          if (!guide) {
+            console.warn(`⚠️ 투자 전략 가이드를 찾을 수 없습니다: ${profileType} (${guideKey})`)
+            return
+          }
+          
+          console.log(`📖 투자 전략 가이드 로드: ${guide.title}`)
+          
+          // 가이드 제목 페이지
+          pdf.addPage()
+          const titleDiv = document.createElement('div')
+          titleDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
+          
+          const titleHTML = `
+            <div style="text-align: center; padding: 100px 40px;">
+              <h1 style="font-size: 48px; font-weight: bold; color: #1f2937; margin-bottom: 40px;">${guide.title}</h1>
+              <div style="width: 100px; height: 4px; background: linear-gradient(to right, #3b82f6, #6366f1); margin: 0 auto;"></div>
+              <p style="font-size: 18px; color: #6b7280; margin-top: 40px;">상세한 투자 전략과 실용적인 가이드라인을 제공합니다</p>
+              <p style="font-size: 16px; color: #9ca3af; margin-top: 20px;">각 섹션별로 구체적인 투자 방법과 주의사항을 확인하세요</p>
+            </div>
+          `
+          titleDiv.innerHTML = titleHTML
+          document.body.appendChild(titleDiv)
+          
+          const titleCanvas = await html2canvas(titleDiv, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            width: 1200,
+            height: 1600,
+          })
+          
+          document.body.removeChild(titleDiv)
+          const titleImgData = titleCanvas.toDataURL('image/png')
+          pdf.addImage(titleImgData, 'PNG', margin, margin, contentWidth, contentHeight)
+          
+          // 각 섹션별로 페이지 생성
+          for (const section of guide.sections) {
+            pdf.addPage()
+            
+            const sectionDiv = document.createElement('div')
+            sectionDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
+            
+            const sectionHTML = `
+              <div style="padding: 40px; max-width: 1200px;">
+                <h2 style="font-size: 32px; font-weight: bold; color: #1f2937; margin-bottom: 30px; border-bottom: 3px solid #3b82f6; padding-bottom: 15px; display: flex; align-items: center;">
+                  <span style="width: 8px; height: 32px; background: linear-gradient(to bottom, #3b82f6, #6366f1); margin-right: 15px; border-radius: 4px;"></span>
+                  ${section.title}
+                </h2>
+                <div style="font-size: 16px; line-height: 1.9; color: #374151; white-space: pre-wrap; text-align: justify; padding: 20px; background: #f9fafb; border-radius: 12px; border-left: 4px solid #3b82f6;">${section.content}</div>
+              </div>
+            `
+            sectionDiv.innerHTML = sectionHTML
+            document.body.appendChild(sectionDiv)
+            
+            const sectionCanvas = await html2canvas(sectionDiv, {
+              scale: 2,
+              backgroundColor: '#ffffff',  
+              useCORS: true,
+              width: 1200,
+              height: 1600,
+            })
+            
+            document.body.removeChild(sectionDiv)
+            const sectionImgData = sectionCanvas.toDataURL('image/png')
+            pdf.addImage(sectionImgData, 'PNG', margin, margin, contentWidth, contentHeight)
+          }
+        }
+        
         // 1페이지: 헤더 + 요약
         const overviewSections = ['pdf-header', 'pdf-summary']
         const overviewElements = overviewSections.map(id => document.getElementById(id)).filter(el => el !== null)
@@ -285,9 +373,14 @@ export default function ResultsPage() {
         // 5페이지: 투자 성향별 행동지침 (통합)
         await createPage(['pdf-action-guide-horizon', 'pdf-action-guide-grid'], '투자 성향별 행동지침')
         
-        // 6페이지: 추천 포트폴리오 + 1억원 포트폴리오 예시
+                // 6페이지: 추천 포트폴리오 + 1억원 포트폴리오 예시
         await createPage(['pdf-analysis-portfolio', 'pdf-portfolio-example'], '포트폴리오 추천 및 예시')
-      
+        
+        // 투자 전략 가이드 페이지 추가
+        console.log('📚 투자 전략 가이드 생성 시작:', profile.type)
+        await createInvestmentGuidePages(profile.type)
+        console.log('✅ 투자 전략 가이드 생성 완료')
+        
               // 파일명 생성
         const fileName = `투자성향분석_${profile.type}_${new Date().toISOString().split('T')[0]}.pdf`
       
