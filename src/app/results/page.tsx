@@ -269,7 +269,6 @@ export default function ResultsPage() {
           
           // 각 섹션별로 페이지 생성
           for (let i = 0; i < guide.sections.length; i++) {
-            if (i !== 0) pdf.addPage();
             const section = guide.sections[i];
             
             const sectionDiv = document.createElement('div')
@@ -298,6 +297,9 @@ export default function ResultsPage() {
             document.body.removeChild(sectionDiv)
             const sectionImgData = sectionCanvas.toDataURL('image/png')
             pdf.addImage(sectionImgData, 'PNG', margin, margin, contentWidth, contentHeight)
+            if (i < guide.sections.length - 1) {
+              pdf.addPage();
+            }
           }
         }
         
