@@ -661,10 +661,33 @@ export default function ResultsPage() {
         
         // 성향 결정 로직 (API 라우트와 동일)
         const determinedGroup = determineGroup(currentSurveyData.groupAnswers)
+        console.log('🎯 1단계 결정된 그룹:', determinedGroup)
+        console.log('📊 그룹 점수:', {
+          stability: currentSurveyData.groupAnswers.slice(0, 3).reduce((sum: number, score: number) => sum + score, 0),
+          profit: currentSurveyData.groupAnswers.slice(3, 6).reduce((sum: number, score: number) => sum + score, 0),
+          aggressive: currentSurveyData.groupAnswers.slice(6, 9).reduce((sum: number, score: number) => sum + score, 0)
+        })
+        
         const detailProfile = determineDetailType(determinedGroup, currentSurveyData.detailAnswers)
+        console.log('🎯 2단계 결정된 상세 성향:', detailProfile.type, detailProfile.name)
+        
+        // aggressive 그룹인 경우 세부 점수 확인
+        if (determinedGroup === 'aggressive') {
+          const types = ['aggressive', 'innovation_focused', 'short_term_profit_focused']
+          const scores: { [key: string]: number } = {}
+          types.forEach((type, index) => {
+            const startIndex = index * 4
+            const endIndex = startIndex + 4
+            scores[type] = currentSurveyData.detailAnswers.slice(startIndex, endIndex).reduce((sum: number, score: number) => sum + score, 0)
+          })
+          console.log('📊 aggressive 그룹 세부 점수:', scores)
+        }
         
         // preGeneratedAnalysis에서 해당 성향의 데이터 가져오기
         const profileType = detailProfile.type
+        console.log('🔍 profileType:', profileType)
+        console.log('📋 preGeneratedAnalysis 키들:', Object.keys(preGeneratedAnalysis))
+        
         const preGeneratedData = preGeneratedAnalysis[profileType as keyof typeof preGeneratedAnalysis]
         
         if (!preGeneratedData) {
@@ -677,7 +700,7 @@ export default function ResultsPage() {
           profile: {
             ...detailProfile,
             gptAnalysis: {
-              ...preGeneratedData.analysis,
+              ...(preGeneratedData as any).analysis,
               recommendedStocks: (preGeneratedData as any).recommendedStocks,
               recommendedCrypto: (preGeneratedData as any).recommendedCrypto,
               portfolio: (preGeneratedData as any).portfolio,
@@ -685,8 +708,8 @@ export default function ResultsPage() {
               actionGuide: (preGeneratedData as any).actionGuide,
               investmentStrategy: (preGeneratedData as any).investmentStrategy
             },
-            confidence: preGeneratedData.confidence,
-            keyFindings: preGeneratedData.keyFindings
+            confidence: (preGeneratedData as any).confidence,
+            keyFindings: (preGeneratedData as any).keyFindings
           },
           questionCounts: {
             groupQuestions: 9,
