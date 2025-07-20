@@ -511,12 +511,30 @@ export default function ResultsPage() {
             backgroundColor: '#ffffff',
             useCORS: true,
             width: 1200,
-            height: 2600, // 높이 대폭 증가로 압축 방지
+            height: 1600, // 원래 높이로 복원
           })
           
           document.body.removeChild(tempDiv)
           const imgData = canvas.toDataURL('image/png')
-          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
+          
+          // 이미지 비율을 유지하면서 PDF 페이지에 맞게 조정
+          const imgAspectRatio = canvas.width / canvas.height
+          const pageAspectRatio = contentWidth / contentHeight
+          
+          let finalWidth = contentWidth
+          let finalHeight = contentHeight
+          
+          if (imgAspectRatio > pageAspectRatio) {
+            // 이미지가 더 넓으면 높이에 맞춤
+            finalHeight = contentHeight
+            finalWidth = contentHeight * imgAspectRatio
+          } else {
+            // 이미지가 더 높으면 너비에 맞춤
+            finalWidth = contentWidth
+            finalHeight = contentWidth / imgAspectRatio
+          }
+          
+          pdf.addImage(imgData, 'PNG', margin, margin, finalWidth, finalHeight)
         }
         
         // 투자 전략 가이드 페이지 추가
