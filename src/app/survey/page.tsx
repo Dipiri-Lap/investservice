@@ -352,7 +352,6 @@ export default function SurveyPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{option.text}</span>
-                  <span className="text-sm opacity-70">({option.score}점)</span>
                 </div>
               </motion.button>
             ))}
