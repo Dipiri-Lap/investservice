@@ -246,34 +246,6 @@ export default function ResultsPage() {
           console.log(`📊 guide 객체:`, guide)
           console.log(`📊 sections 배열:`, guide.sections)
           
-          // 가이드 제목 페이지
-          pdf.addPage()
-          const titleDiv = document.createElement('div')
-          titleDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
-          
-          const titleHTML = `
-            <div style="text-align: center; padding: 100px 40px;">
-              <h1 style="font-size: 48px; font-weight: bold; color: #1f2937; margin-bottom: 40px;">${guide.title}</h1>
-              <div style="width: 100px; height: 4px; background: linear-gradient(to right, #3b82f6, #6366f1); margin: 0 auto;"></div>
-              <p style="font-size: 18px; color: #6b7280; margin-top: 40px;">상세한 투자 전략과 실용적인 가이드라인을 제공합니다</p>
-              <p style="font-size: 16px; color: #9ca3af; margin-top: 20px;">각 섹션별로 구체적인 투자 방법과 주의사항을 확인하세요</p>
-            </div>
-          `
-          titleDiv.innerHTML = titleHTML
-          document.body.appendChild(titleDiv)
-          
-          const titleCanvas = await html2canvas(titleDiv, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            useCORS: true,
-            width: 1200,
-            height: 1600,
-          })
-          
-          document.body.removeChild(titleDiv)
-          const titleImgData = titleCanvas.toDataURL('image/png')
-          pdf.addImage(titleImgData, 'PNG', margin, margin, contentWidth, contentHeight)
-          
           // 모든 섹션을 하나의 연속된 페이지로 생성
           pdf.addPage()
           const allSectionsDiv = document.createElement('div')
