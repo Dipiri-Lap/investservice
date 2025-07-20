@@ -275,13 +275,25 @@ export default function ResultsPage() {
           let allSectionsHTML = ''
           guide.sections.forEach((section, index) => {
             console.log(`📝 섹션 ${index + 1}/${guide.sections.length}: ${section.title}`)
+            console.log(`📝 섹션 내용 길이: ${section.content.length}자`)
+            console.log(`📝 섹션 내용 미리보기: ${section.content.substring(0, 100)}...`)
+            
+            // HTML 특수문자 이스케이프
+            const escapedContent = section.content
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#39;')
+            
             allSectionsHTML += `
-              <div style="margin-bottom: ${index < guide.sections.length - 1 ? '60px' : '40px'};">
-                <h2 style="font-size: 32px; font-weight: bold; color: #1f2937; margin-bottom: 30px; border-bottom: 3px solid #3b82f6; padding-bottom: 15px; display: flex; align-items: center;">
-                  <span style="width: 8px; height: 32px; background: linear-gradient(to bottom, #3b82f6, #6366f1); margin-right: 15px; border-radius: 4px;"></span>
-                  ${section.title}
+              <div style="margin-bottom: ${index < guide.sections.length - 1 ? '60px' : '40px'}; page-break-inside: avoid;">
+                <h2 style="font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 25px; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
+                  ${index + 1}. ${section.title}
                 </h2>
-                <div style="font-size: 16px; line-height: 1.9; color: #374151; white-space: pre-wrap; text-align: justify; padding: 20px; background: #f9fafb; border-radius: 12px; border-left: 4px solid #3b82f6;">${section.content}</div>
+                <div style="font-size: 14px; line-height: 1.8; color: #374151; padding: 15px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #3b82f6; word-wrap: break-word; overflow-wrap: break-word;">
+                  ${escapedContent.replace(/\n/g, '<br>')}
+                </div>
               </div>
             `
           })
@@ -305,15 +317,24 @@ export default function ResultsPage() {
           
           // 전체 문서를 한 번에 캡처 - 높이 제한 해제
           const allSectionsCanvas = await html2canvas(allSectionsDiv, {
-            scale: 1.5, // scale을 줄여서 메모리 사용량 감소
+            scale: 1.2, // scale을 더 줄여서 안정성 확보
             backgroundColor: '#ffffff',
             useCORS: true,
             width: 1200,
             height: actualHeight,
             scrollX: 0,
             scrollY: 0,
-            allowTaint: true,
-            foreignObjectRendering: true
+            allowTaint: false,
+            foreignObjectRendering: false,
+            logging: true, // 디버깅을 위한 로깅 활성화
+            onclone: function(clonedDoc) {
+              console.log('📄 문서 클론 완료, 폰트 로딩 확인 중...')
+              // 폰트가 제대로 로드되었는지 확인
+              const clonedDiv = clonedDoc.querySelector('div')
+              if (clonedDiv) {
+                clonedDiv.style.fontFamily = 'Arial, sans-serif, "맑은 고딕", "Malgun Gothic"'
+              }
+            }
           })
           
           console.log(`🖼️ 캔버스 생성 완료: ${allSectionsCanvas.width}x${allSectionsCanvas.height}`)
@@ -328,13 +349,13 @@ export default function ResultsPage() {
             return
           }
           canvas.width = allSectionsCanvas.width
-          canvas.height = Math.min(pageHeight * 1.5, allSectionsCanvas.height) // scale: 1.5 적용
+          canvas.height = Math.min(pageHeight * 1.2, allSectionsCanvas.height) // scale: 1.2 적용
           
           for (let page = 0; page < totalPages; page++) {
             if (page > 0) pdf.addPage()
             
-            const sourceY = page * pageHeight * 1.5
-            const sourceHeight = Math.min(pageHeight * 1.5, allSectionsCanvas.height - sourceY)
+            const sourceY = page * pageHeight * 1.2
+            const sourceHeight = Math.min(pageHeight * 1.2, allSectionsCanvas.height - sourceY)
             
             console.log(`📄 페이지 ${page + 1}/${totalPages}: sourceY=${sourceY}, sourceHeight=${sourceHeight}`)
             
@@ -350,7 +371,7 @@ export default function ResultsPage() {
             )
             
             const pageImgData = canvas.toDataURL('image/png')
-            pdf.addImage(pageImgData, 'PNG', margin, margin, contentWidth, (sourceHeight / 1.5) * (contentWidth / canvas.width))
+            pdf.addImage(pageImgData, 'PNG', margin, margin, contentWidth, (sourceHeight / 1.2) * (contentWidth / canvas.width))
           }
           
           console.log(`✅ 투자 전략 가이드 PDF 생성 완료 (${totalPages}페이지)`)
