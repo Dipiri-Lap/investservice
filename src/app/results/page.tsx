@@ -215,21 +215,24 @@ export default function ResultsPage() {
         
                   // 투자 전략 가이드 페이지 생성 함수
         const createInvestmentGuidePages = async (profileType: string) => {
-          // 투자 성향에 따른 가이드 키 매핑 (9개 성향 모두 포함)
+          // 투자 성향에 따른 가이드 키 매핑 (type 값 기준)
           const guideKeyMap: Record<string, string> = {
-            '보수형': 'conservative',
-            '안정추구형': 'stable',
-            '균형형': 'balanced',
-            '성장지향형': 'growth-oriented',
-            '공격형': 'aggressive',
-            '혁신추구형': 'innovative',
-            '가치중시형': 'value-focused',
-            '배당중시형': 'income-focused',
-            '사회책임투자형': 'socially-responsible',
-            '단기차익추구형': 'short-term'
+            'conservative': 'conservative',
+            'stability_focused': 'stable', 
+            'dividend_focused': 'income-focused',
+            'balanced': 'balanced',
+            'growth_oriented': 'growth-oriented',
+            'value_focused': 'value-focused',
+            'esg_focused': 'socially-responsible',
+            'aggressive': 'aggressive',
+            'innovation_focused': 'innovative',
+            'short_term_profit_focused': 'short-term'
           }
           
           const guideKey = guideKeyMap[profileType] || 'conservative'
+          console.log(`🔍 프로필 타입: "${profileType}" → 가이드 키: "${guideKey}"`)
+          console.log(`📋 사용 가능한 가이드 키들:`, Object.keys(investmentGuides))
+          
           const guide = investmentGuides[guideKey]
           
           if (!guide) {
@@ -238,6 +241,10 @@ export default function ResultsPage() {
           }
           
           console.log(`📖 투자 전략 가이드 로드: ${guide.title}`)
+          console.log(`📊 총 섹션 수: ${guide.sections.length}`)
+          console.log(`📊 섹션 제목들:`, guide.sections.map((section, idx) => `${idx + 1}. ${section.title}`))
+          console.log(`📊 guide 객체:`, guide)
+          console.log(`📊 sections 배열:`, guide.sections)
           
           // 가이드 제목 페이지
           pdf.addPage()
