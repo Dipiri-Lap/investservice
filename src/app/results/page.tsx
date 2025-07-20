@@ -218,15 +218,15 @@ export default function ResultsPage() {
           // 투자 성향에 따른 가이드 키 매핑 (9개 성향 모두 포함)
           const guideKeyMap: Record<string, string> = {
             '보수형': 'conservative',
-            '안정추구형': 'stable',           
+            '안정추구형': 'stable',
+            '균형형': 'balanced',
             '성장지향형': 'growth-oriented',
             '공격형': 'aggressive',
             '혁신추구형': 'innovative',
             '가치중시형': 'value-focused',
             '배당중시형': 'income-focused',
             '사회책임투자형': 'socially-responsible',
-            '단기차익추구형': 'short-term',
-            '균형형': 'balanced'
+            '단기차익추구형': 'short-term'
           }
           
           const guideKey = guideKeyMap[profileType] || 'conservative'
@@ -267,15 +267,15 @@ export default function ResultsPage() {
           const titleImgData = titleCanvas.toDataURL('image/png')
           pdf.addImage(titleImgData, 'PNG', margin, margin, contentWidth, contentHeight)
           
-          // 각 섹션별로 페이지 생성
-          for (let i = 0; i < guide.sections.length; i++) {
-            const section = guide.sections[i];
-            
-            const sectionDiv = document.createElement('div')
-            sectionDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
-            
-            const sectionHTML = `
-              <div style="padding: 40px; max-width: 1200px;">
+          // 모든 섹션을 하나의 연속된 문서로 생성
+          pdf.addPage()
+          const allSectionsDiv = document.createElement('div')
+          allSectionsDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:40px;width:1200px;max-width:1200px;min-width:1200px;'
+          
+          let allSectionsHTML = ''
+          guide.sections.forEach((section, index) => {
+            allSectionsHTML += `
+              <div style="margin-bottom: ${index < guide.sections.length - 1 ? '60px' : '40px'};">
                 <h2 style="font-size: 32px; font-weight: bold; color: #1f2937; margin-bottom: 30px; border-bottom: 3px solid #3b82f6; padding-bottom: 15px; display: flex; align-items: center;">
                   <span style="width: 8px; height: 32px; background: linear-gradient(to bottom, #3b82f6, #6366f1); margin-right: 15px; border-radius: 4px;"></span>
                   ${section.title}
@@ -283,23 +283,56 @@ export default function ResultsPage() {
                 <div style="font-size: 16px; line-height: 1.9; color: #374151; white-space: pre-wrap; text-align: justify; padding: 20px; background: #f9fafb; border-radius: 12px; border-left: 4px solid #3b82f6;">${section.content}</div>
               </div>
             `
-            sectionDiv.innerHTML = sectionHTML
-            document.body.appendChild(sectionDiv)
+          })
+          
+          allSectionsDiv.innerHTML = allSectionsHTML
+          document.body.appendChild(allSectionsDiv)
+          
+          // 실제 높이 측정
+          const actualHeight = allSectionsDiv.scrollHeight
+          const pageHeight = 1600 // A4 기준 높이
+          const totalPages = Math.ceil(actualHeight / pageHeight)
+          
+          console.log(`📄 투자 전략 가이드 총 높이: ${actualHeight}px, 예상 페이지 수: ${totalPages}`)
+          
+          // 전체 문서를 한 번에 캡처
+          const allSectionsCanvas = await html2canvas(allSectionsDiv, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            width: 1200,
+            height: actualHeight,
+            scrollX: 0,
+            scrollY: 0
+          })
+          
+          document.body.removeChild(allSectionsDiv)
+          
+          // 캡처된 이미지를 페이지 단위로 나누어 PDF에 추가
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            console.error('Canvas context를 생성할 수 없습니다.')
+            return
+          }
+          canvas.width = allSectionsCanvas.width
+          canvas.height = pageHeight * 2 // scale: 2 적용
+          
+          for (let page = 0; page < totalPages; page++) {
+            if (page > 0) pdf.addPage()
             
-            const sectionCanvas = await html2canvas(sectionDiv, {
-              scale: 2,
-              backgroundColor: '#ffffff',  
-              useCORS: true,
-              width: 1200,
-              height: 1600,
-            })
+            // 현재 페이지에 해당하는 부분만 잘라내기
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.drawImage(
+              allSectionsCanvas,
+              0, page * pageHeight * 2, // 소스 시작점
+              canvas.width, Math.min(pageHeight * 2, allSectionsCanvas.height - page * pageHeight * 2), // 소스 크기
+              0, 0, // 대상 시작점
+              canvas.width, Math.min(pageHeight * 2, allSectionsCanvas.height - page * pageHeight * 2) // 대상 크기
+            )
             
-            document.body.removeChild(sectionDiv)
-            const sectionImgData = sectionCanvas.toDataURL('image/png')
-            pdf.addImage(sectionImgData, 'PNG', margin, margin, contentWidth, contentHeight)
-            if (i < guide.sections.length - 1) {
-              pdf.addPage();
-            }
+            const pageImgData = canvas.toDataURL('image/png')
+            pdf.addImage(pageImgData, 'PNG', margin, margin, contentWidth, contentHeight)
           }
         }
         
