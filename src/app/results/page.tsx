@@ -350,16 +350,17 @@ export default function ResultsPage() {
           console.log(`✅ 투자 전략 가이드 PDF 생성 완료 (${guide.sections.length}개 섹션, ${guide.sections.length + 1}페이지)`)
         }
         
-        // 1페이지: 헤더 + 요약
-        const overviewSections = ['pdf-header', 'pdf-summary']
-        const overviewElements = overviewSections.map(id => document.getElementById(id)).filter(el => el !== null)
+        // 1페이지: 헤더 + 요약 + 분석 결과 통합 (최적화)
+        const allFirstPageElements = ['pdf-header', 'pdf-summary', 'pdf-analysis-detail', 'pdf-analysis-strengths', 'pdf-analysis-improvements']
+          .map(id => document.getElementById(id))
+          .filter(el => el !== null)
         
-        if (overviewElements.length > 0) {
+        if (allFirstPageElements.length > 0) {
           // 임시 컨테이너로 통합 (PDF용 고정 가로 비율)
           const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:15px;width:1200px;max-width:1200px;min-width:1200px;'
           
-          overviewElements.forEach(el => {
+          allFirstPageElements.forEach((el, index) => {
             const clone = el.cloneNode(true) as HTMLElement
             
             // PDF용 데스크톱 뷰 강제 적용
@@ -389,71 +390,21 @@ export default function ResultsPage() {
             // 데스크톱 뷰 강제 적용
             forceDesktopView(clone)
             
-            clone.style.marginBottom = '30px'
-            clone.style.width = '100%'
-            clone.style.maxWidth = '100%'
-            tempDiv.appendChild(clone)
-          })
-          
-          document.body.appendChild(tempDiv)
-          
-          const canvas = await html2canvas(tempDiv, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            useCORS: true,
-            width: 1200,
-            height: 1600,
-          })
-          
-          document.body.removeChild(tempDiv)
-          
-          const imgData = canvas.toDataURL('image/png')
-          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
-        }
-        
-        // 2페이지: 분석 결과 - 상세 설명 및 장단점 (높이 증가)
-        const analysisElements = ['pdf-analysis-detail', 'pdf-analysis-strengths', 'pdf-analysis-improvements']
-          .map(id => document.getElementById(id))
-          .filter(el => el !== null)
-        
-        if (analysisElements.length > 0) {
-          pdf.addPage()
-          const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
-          
-          // 제목 추가
-          const titleEl = document.createElement('h2')
-          titleEl.textContent = '분석 결과'
-          titleEl.style.cssText = 'font-size:24px;font-weight:bold;margin-bottom:20px;color:#1f2937;'
-          tempDiv.appendChild(titleEl)
-          
-          analysisElements.forEach(el => {
-            const clone = el.cloneNode(true) as HTMLElement
-            
-            // PDF용 데스크톱 뷰 강제 적용
-            const forceDesktopView = (element: HTMLElement) => {
-              const gridElements = element.querySelectorAll('[class*="grid-cols-1"], [class*="md:grid-cols-2"], [class*="lg:grid-cols-4"]')
-              gridElements.forEach(gridEl => {
-                const htmlEl = gridEl as HTMLElement
-                if (htmlEl.className.includes('lg:grid-cols-4')) {
-                  htmlEl.style.gridTemplateColumns = 'repeat(4, minmax(0, 1fr))'
-                } else if (htmlEl.className.includes('md:grid-cols-2')) {
-                  htmlEl.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))'
-                }
-                htmlEl.style.display = 'grid'
-              })
-              
-              const flexElements = element.querySelectorAll('[class*="flex-col"], [class*="sm:flex-row"]')
-              flexElements.forEach(flexEl => {
-                const htmlEl = flexEl as HTMLElement
-                if (htmlEl.className.includes('sm:flex-row')) {
-                  htmlEl.style.flexDirection = 'row'
-                }
-              })
+            // 분석 결과 섹션에 제목 추가 (세 번째 요소부터)
+            if (index === 2) {
+              const titleEl = document.createElement('h2')
+              titleEl.textContent = '분석 결과'
+              titleEl.style.cssText = 'font-size:20px;font-weight:bold;margin:15px 0 10px 0;color:#1f2937;border-bottom:2px solid #3b82f6;padding-bottom:8px;'
+              tempDiv.appendChild(titleEl)
             }
             
-            forceDesktopView(clone)
-            clone.style.marginBottom = '20px'
+            // 각 섹션 간격 최적화
+            if (index < 2) {
+              clone.style.marginBottom = '20px' // 헤더, 요약 섹션
+            } else {
+              clone.style.marginBottom = '15px' // 분석 결과 섹션들
+            }
+            
             clone.style.width = '100%'
             clone.style.maxWidth = '100%'
             tempDiv.appendChild(clone)
@@ -466,21 +417,22 @@ export default function ResultsPage() {
             backgroundColor: '#ffffff',
             useCORS: true,
             width: 1200,
-            height: 2000, // 높이 증가로 압축 방지
+            height: 2400, // 높이 대폭 증가로 모든 내용 수용
           })
           
           document.body.removeChild(tempDiv)
+          
           const imgData = canvas.toDataURL('image/png')
           pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
         }
         
-        // 3페이지: 추천 종목 - 배당 성장주
+        // 2페이지: 추천 종목 - 배당 성장주
         await createPage(['pdf-portfolio-stocks'], '추천 종목 (1/2) - 배당 성장주', ['dividend', 'growth'])
         
-        // 4페이지: 추천 종목 - 테마 가치주 및 암호화폐
+        // 3페이지: 추천 종목 - 테마 가치주 및 암호화폐
         await createPage(['pdf-portfolio-stocks', 'pdf-portfolio-crypto'], '추천 종목 (2/2) - 테마 가치주 및 암호화폐', ['theme', 'value'])
         
-        // 5페이지: 투자 성향별 행동지침 + 포트폴리오 추천 및 예시 (통합)
+        // 4페이지: 투자 성향별 행동지침 + 포트폴리오 추천 및 예시 (통합, 압축 방지)
         const combinedElements = ['pdf-action-guide-horizon', 'pdf-action-guide-grid', 'pdf-analysis-portfolio', 'pdf-portfolio-example']
           .map(id => document.getElementById(id))
           .filter(el => el !== null)
@@ -488,15 +440,15 @@ export default function ResultsPage() {
         if (combinedElements.length > 0) {
           pdf.addPage()
           const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:15px;width:1200px;max-width:1200px;min-width:1200px;'
           
           // 제목 추가
           const titleEl = document.createElement('h2')
           titleEl.textContent = '투자 성향별 행동지침 및 포트폴리오 추천'
-          titleEl.style.cssText = 'font-size:24px;font-weight:bold;margin-bottom:20px;color:#1f2937;'
+          titleEl.style.cssText = 'font-size:22px;font-weight:bold;margin-bottom:15px;color:#1f2937;'
           tempDiv.appendChild(titleEl)
           
-          combinedElements.forEach(el => {
+          combinedElements.forEach((el, index) => {
             const clone = el.cloneNode(true) as HTMLElement
             
             // PDF용 데스크톱 뷰 강제 적용
@@ -522,7 +474,14 @@ export default function ResultsPage() {
             }
             
             forceDesktopView(clone)
-            clone.style.marginBottom = '20px'
+            
+            // 행동지침 섹션들의 간격 조정 (압축 방지)
+            if (index < 2) {
+              clone.style.marginBottom = '25px' // 행동지침 섹션들 간격 증가
+            } else {
+              clone.style.marginBottom = '20px' // 포트폴리오 섹션들
+            }
+            
             clone.style.width = '100%'
             clone.style.maxWidth = '100%'
             tempDiv.appendChild(clone)
@@ -535,7 +494,7 @@ export default function ResultsPage() {
             backgroundColor: '#ffffff',
             useCORS: true,
             width: 1200,
-            height: 2000, // 높이 증가로 압축 방지
+            height: 2600, // 높이 대폭 증가로 압축 방지
           })
           
           document.body.removeChild(tempDiv)
