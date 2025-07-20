@@ -4002,10 +4002,10 @@ export const preGeneratedAnalysis = {
         "crypto": 10,
         "reason": "단기차익추구형은 빠른 매매와 유동성 확보가 핵심이므로 주식 비중을 높게 유지하면서도 현금 비중을 넉넉히 둡니다. 채권과 리츠는 안정성 보완용으로 소량 배분하며, 암호화폐는 단기 고수익 기회를 위해 일부 포함합니다. 이 구성은 빠른 매매를 위한 유동성과 위험 관리에 초점을 맞추고 있습니다.",
         "stockAllocation": {
-        "dividendStocks": 10,
-        "growthStocks": 30,
-        "themeStocks": 20,
-        "valueStocks": 0,
+        "dividendStocks": 20,
+        "growthStocks": 40,
+        "themeStocks": 30,
+        "valueStocks": 10,
         "reason": "단기차익추구형은 배당주로 일부 안정성을 확보하며, 성장주와 테마주에 집중해 단기 가격 변동을 활용한 수익 극대화를 노립니다. 가치주는 상대적으로 비중이 낮아 단기 트레이딩에 적합한 종목 위주로 배분합니다."
         }
         },
