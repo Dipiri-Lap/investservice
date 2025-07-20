@@ -281,7 +281,7 @@ export default function ResultsPage() {
             
             pdf.addPage()
             const sectionDiv = document.createElement('div')
-            sectionDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:50px;width:1200px;max-width:1200px;min-width:1200px;min-height:1500px;'
+            sectionDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:50px;width:1200px;max-width:1200px;min-width:1200px;min-height:1800px;'
             
             // HTML 특수문자 이스케이프
             const escapedContent = section.content
@@ -292,7 +292,7 @@ export default function ResultsPage() {
               .replace(/'/g, '&#39;')
             
             const sectionHTML = `
-              <div style="min-height: 1400px; display: flex; flex-direction: column;">
+              <div style="min-height: 1700px; display: flex; flex-direction: column;">
                 <div style="margin-bottom: 40px;">
                   <h1 style="font-size: 36px; font-weight: bold; color: #1f2937; margin-bottom: 20px; text-align: center;">
                     ${guide.title}
@@ -324,7 +324,7 @@ export default function ResultsPage() {
               backgroundColor: '#ffffff',
               useCORS: true,
               width: 1200,
-              height: 1500, // 고정 높이로 설정하여 압축 방지
+              height: 1800, // 높이 증가로 압축 방지
               scrollX: 0,
               scrollY: 0,
               allowTaint: false,
@@ -411,8 +411,68 @@ export default function ResultsPage() {
           pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
         }
         
-        // 2페이지: 분석 결과 - 상세 설명 및 장단점
-        await createPage(['pdf-analysis-detail', 'pdf-analysis-strengths', 'pdf-analysis-improvements'], '분석 결과')
+        // 2페이지: 분석 결과 - 상세 설명 및 장단점 (높이 증가)
+        const analysisElements = ['pdf-analysis-detail', 'pdf-analysis-strengths', 'pdf-analysis-improvements']
+          .map(id => document.getElementById(id))
+          .filter(el => el !== null)
+        
+        if (analysisElements.length > 0) {
+          pdf.addPage()
+          const tempDiv = document.createElement('div')
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
+          
+          // 제목 추가
+          const titleEl = document.createElement('h2')
+          titleEl.textContent = '분석 결과'
+          titleEl.style.cssText = 'font-size:24px;font-weight:bold;margin-bottom:20px;color:#1f2937;'
+          tempDiv.appendChild(titleEl)
+          
+          analysisElements.forEach(el => {
+            const clone = el.cloneNode(true) as HTMLElement
+            
+            // PDF용 데스크톱 뷰 강제 적용
+            const forceDesktopView = (element: HTMLElement) => {
+              const gridElements = element.querySelectorAll('[class*="grid-cols-1"], [class*="md:grid-cols-2"], [class*="lg:grid-cols-4"]')
+              gridElements.forEach(gridEl => {
+                const htmlEl = gridEl as HTMLElement
+                if (htmlEl.className.includes('lg:grid-cols-4')) {
+                  htmlEl.style.gridTemplateColumns = 'repeat(4, minmax(0, 1fr))'
+                } else if (htmlEl.className.includes('md:grid-cols-2')) {
+                  htmlEl.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))'
+                }
+                htmlEl.style.display = 'grid'
+              })
+              
+              const flexElements = element.querySelectorAll('[class*="flex-col"], [class*="sm:flex-row"]')
+              flexElements.forEach(flexEl => {
+                const htmlEl = flexEl as HTMLElement
+                if (htmlEl.className.includes('sm:flex-row')) {
+                  htmlEl.style.flexDirection = 'row'
+                }
+              })
+            }
+            
+            forceDesktopView(clone)
+            clone.style.marginBottom = '20px'
+            clone.style.width = '100%'
+            clone.style.maxWidth = '100%'
+            tempDiv.appendChild(clone)
+          })
+          
+          document.body.appendChild(tempDiv)
+          
+          const canvas = await html2canvas(tempDiv, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            width: 1200,
+            height: 2000, // 높이 증가로 압축 방지
+          })
+          
+          document.body.removeChild(tempDiv)
+          const imgData = canvas.toDataURL('image/png')
+          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
+        }
         
         // 3페이지: 추천 종목 - 배당 성장주
         await createPage(['pdf-portfolio-stocks'], '추천 종목 (1/2) - 배당 성장주', ['dividend', 'growth'])
@@ -420,11 +480,68 @@ export default function ResultsPage() {
         // 4페이지: 추천 종목 - 테마 가치주 및 암호화폐
         await createPage(['pdf-portfolio-stocks', 'pdf-portfolio-crypto'], '추천 종목 (2/2) - 테마 가치주 및 암호화폐', ['theme', 'value'])
         
-        // 5페이지: 투자 성향별 행동지침 (통합)
-        await createPage(['pdf-action-guide-horizon', 'pdf-action-guide-grid'], '투자 성향별 행동지침')
+        // 5페이지: 투자 성향별 행동지침 + 포트폴리오 추천 및 예시 (통합)
+        const combinedElements = ['pdf-action-guide-horizon', 'pdf-action-guide-grid', 'pdf-analysis-portfolio', 'pdf-portfolio-example']
+          .map(id => document.getElementById(id))
+          .filter(el => el !== null)
         
-                // 6페이지: 추천 포트폴리오 + 1억원 포트폴리오 예시
-        await createPage(['pdf-analysis-portfolio', 'pdf-portfolio-example'], '포트폴리오 추천 및 예시')
+        if (combinedElements.length > 0) {
+          pdf.addPage()
+          const tempDiv = document.createElement('div')
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:20px;width:1200px;max-width:1200px;min-width:1200px;'
+          
+          // 제목 추가
+          const titleEl = document.createElement('h2')
+          titleEl.textContent = '투자 성향별 행동지침 및 포트폴리오 추천'
+          titleEl.style.cssText = 'font-size:24px;font-weight:bold;margin-bottom:20px;color:#1f2937;'
+          tempDiv.appendChild(titleEl)
+          
+          combinedElements.forEach(el => {
+            const clone = el.cloneNode(true) as HTMLElement
+            
+            // PDF용 데스크톱 뷰 강제 적용
+            const forceDesktopView = (element: HTMLElement) => {
+              const gridElements = element.querySelectorAll('[class*="grid-cols-1"], [class*="md:grid-cols-2"], [class*="lg:grid-cols-4"]')
+              gridElements.forEach(gridEl => {
+                const htmlEl = gridEl as HTMLElement
+                if (htmlEl.className.includes('lg:grid-cols-4')) {
+                  htmlEl.style.gridTemplateColumns = 'repeat(4, minmax(0, 1fr))'
+                } else if (htmlEl.className.includes('md:grid-cols-2')) {
+                  htmlEl.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))'
+                }
+                htmlEl.style.display = 'grid'
+              })
+              
+              const flexElements = element.querySelectorAll('[class*="flex-col"], [class*="sm:flex-row"]')
+              flexElements.forEach(flexEl => {
+                const htmlEl = flexEl as HTMLElement
+                if (htmlEl.className.includes('sm:flex-row')) {
+                  htmlEl.style.flexDirection = 'row'
+                }
+              })
+            }
+            
+            forceDesktopView(clone)
+            clone.style.marginBottom = '20px'
+            clone.style.width = '100%'
+            clone.style.maxWidth = '100%'
+            tempDiv.appendChild(clone)
+          })
+          
+          document.body.appendChild(tempDiv)
+          
+          const canvas = await html2canvas(tempDiv, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            width: 1200,
+            height: 2000, // 높이 증가로 압축 방지
+          })
+          
+          document.body.removeChild(tempDiv)
+          const imgData = canvas.toDataURL('image/png')
+          pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
+        }
         
         // 투자 전략 가이드 페이지 추가
         console.log('📚 투자 전략 가이드 생성 시작:', profile.type)
