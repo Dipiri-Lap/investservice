@@ -332,18 +332,22 @@ export default function ResultsPage() {
             const pageCanvas = document.createElement('canvas')
             const pageCtx = pageCanvas.getContext('2d')
             
+            // 모든 페이지를 동일한 비율로 유지 (표준 페이지 높이 사용)
             pageCanvas.width = allSectionsCanvas.width
-            pageCanvas.height = currentPageHeight
+            pageCanvas.height = pageCanvasHeight // 항상 표준 페이지 높이 사용
             
             if (pageCtx) {
               pageCtx.fillStyle = '#ffffff'
               pageCtx.fillRect(0, 0, pageCanvas.width, pageCanvas.height)
               
-              pageCtx.drawImage(
-                allSectionsCanvas,
-                0, currentY, allSectionsCanvas.width, currentPageHeight,
-                0, 0, allSectionsCanvas.width, currentPageHeight
-              )
+              // 실제 콘텐츠가 있는 부분만 그리기
+              if (currentPageHeight > 0) {
+                pageCtx.drawImage(
+                  allSectionsCanvas,
+                  0, currentY, allSectionsCanvas.width, currentPageHeight,
+                  0, 0, allSectionsCanvas.width, currentPageHeight
+                )
+              }
             }
             
             // 첫 번째 페이지가 아니면 새 페이지 추가
@@ -352,7 +356,29 @@ export default function ResultsPage() {
             }
             
             const pageImgData = pageCanvas.toDataURL('image/jpeg', 0.85)
-            pdf.addImage(pageImgData, 'JPEG', margin, margin, contentWidth, contentHeight)
+            
+            // 이미지 비율을 유지하면서 PDF 페이지에 맞게 조정
+            const imgAspectRatio = pageCanvas.width / pageCanvas.height
+            const pageAspectRatio = contentWidth / contentHeight
+            
+            let finalWidth = contentWidth
+            let finalHeight = contentHeight
+            let xOffset = margin
+            let yOffset = margin
+            
+            if (imgAspectRatio > pageAspectRatio) {
+              // 이미지가 더 넓으면 높이에 맞춤
+              finalHeight = contentHeight
+              finalWidth = contentHeight * imgAspectRatio
+              xOffset = margin + (contentWidth - finalWidth) / 2
+            } else {
+              // 이미지가 더 높으면 너비에 맞춤
+              finalWidth = contentWidth
+              finalHeight = contentWidth / imgAspectRatio
+              yOffset = margin + (contentHeight - finalHeight) / 2
+            }
+            
+            pdf.addImage(pageImgData, 'JPEG', xOffset, yOffset, finalWidth, finalHeight)
             
             currentY += pageCanvasHeight
             pageNumber++
