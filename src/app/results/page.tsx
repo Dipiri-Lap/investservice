@@ -199,7 +199,7 @@ export default function ResultsPage() {
             document.body.appendChild(tempDiv)
             
             const canvas = await html2canvas(tempDiv, {
-              scale: 2,
+              scale: 1.2,
               backgroundColor: '#ffffff',
               useCORS: true,
               width: 1200,
@@ -208,8 +208,8 @@ export default function ResultsPage() {
             
             document.body.removeChild(tempDiv)
             
-            const imgData = canvas.toDataURL('image/png')
-            pdf.addImage(imgData, 'PNG', margin, margin, contentWidth, contentHeight)
+            const imgData = canvas.toDataURL('image/jpeg', 0.85)
+            pdf.addImage(imgData, 'JPEG', margin, margin, contentWidth, contentHeight)
           }
         }
         
@@ -297,7 +297,7 @@ export default function ResultsPage() {
           
           // 전체 섹션을 하나의 캔버스로 캡처
           const allSectionsCanvas = await html2canvas(allSectionsDiv, {
-            scale: 1.5,
+            scale: 1.2,
             backgroundColor: '#ffffff',
             useCORS: true,
             width: 1200,
@@ -351,8 +351,8 @@ export default function ResultsPage() {
               pdf.addPage()
             }
             
-            const pageImgData = pageCanvas.toDataURL('image/png')
-            pdf.addImage(pageImgData, 'PNG', margin, margin, contentWidth, contentHeight)
+            const pageImgData = pageCanvas.toDataURL('image/jpeg', 0.85)
+            pdf.addImage(pageImgData, 'JPEG', margin, margin, contentWidth, contentHeight)
             
             currentY += pageCanvasHeight
             pageNumber++
@@ -424,7 +424,7 @@ export default function ResultsPage() {
           document.body.appendChild(tempDiv)
           
           const canvas = await html2canvas(tempDiv, {
-            scale: 2,
+            scale: 1.2,
             backgroundColor: '#ffffff',
             useCORS: true,
             width: 1200,
@@ -433,7 +433,7 @@ export default function ResultsPage() {
           
           document.body.removeChild(tempDiv)
           
-          const imgData = canvas.toDataURL('image/png')
+          const imgData = canvas.toDataURL('image/jpeg', 0.85)
           // 이미지 비율을 유지하면서 PDF 페이지에 맞게 조정
           const imgAspectRatio = canvas.width / canvas.height
           const pageAspectRatio = contentWidth / contentHeight
@@ -447,14 +447,14 @@ export default function ResultsPage() {
             finalWidth = contentHeight * imgAspectRatio
             // 중앙 정렬을 위해 X 위치 조정
             const xOffset = margin + (contentWidth - finalWidth) / 2
-            pdf.addImage(imgData, 'PNG', xOffset, margin, finalWidth, finalHeight)
+            pdf.addImage(imgData, 'JPEG', xOffset, margin, finalWidth, finalHeight)
           } else {
             // 이미지가 더 높으면 너비에 맞춤
             finalWidth = contentWidth
             finalHeight = contentWidth / imgAspectRatio
             // 중앙 정렬을 위해 Y 위치 조정
             const yOffset = margin + (contentHeight - finalHeight) / 2
-            pdf.addImage(imgData, 'PNG', margin, yOffset, finalWidth, finalHeight)
+            pdf.addImage(imgData, 'JPEG', margin, yOffset, finalWidth, finalHeight)
           }
         }
         
@@ -522,7 +522,7 @@ export default function ResultsPage() {
           document.body.appendChild(tempDiv)
           
           const canvas = await html2canvas(tempDiv, {
-            scale: 2,
+            scale: 1.2,
             backgroundColor: '#ffffff',
             useCORS: true,
             width: 1200,
@@ -530,7 +530,7 @@ export default function ResultsPage() {
           })
           
           document.body.removeChild(tempDiv)
-          const imgData = canvas.toDataURL('image/png')
+          const imgData = canvas.toDataURL('image/jpeg', 0.85)
           
           // 이미지 비율을 유지하면서 PDF 페이지에 맞게 조정
           const imgAspectRatio = canvas.width / canvas.height
@@ -545,14 +545,14 @@ export default function ResultsPage() {
             finalWidth = contentHeight * imgAspectRatio
             // 중앙 정렬을 위해 X 위치 조정
             const xOffset = margin + (contentWidth - finalWidth) / 2
-            pdf.addImage(imgData, 'PNG', xOffset, margin, finalWidth, finalHeight)
+            pdf.addImage(imgData, 'JPEG', xOffset, margin, finalWidth, finalHeight)
           } else {
             // 이미지가 더 높으면 너비에 맞춤
             finalWidth = contentWidth
             finalHeight = contentWidth / imgAspectRatio
             // 중앙 정렬을 위해 Y 위치 조정
             const yOffset = margin + (contentHeight - finalHeight) / 2
-            pdf.addImage(imgData, 'PNG', margin, yOffset, finalWidth, finalHeight)
+            pdf.addImage(imgData, 'JPEG', margin, yOffset, finalWidth, finalHeight)
           }
         }
         
