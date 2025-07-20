@@ -213,7 +213,7 @@ export default function ResultsPage() {
           }
         }
         
-        // 투자 전략 가이드 페이지 생성 함수
+                  // 투자 전략 가이드 페이지 생성 함수
         const createInvestmentGuidePages = async (profileType: string) => {
           // 투자 성향에 따른 가이드 키 매핑 (9개 성향 모두 포함)
           const guideKeyMap: Record<string, string> = {
@@ -267,16 +267,14 @@ export default function ResultsPage() {
           const titleImgData = titleCanvas.toDataURL('image/png')
           pdf.addImage(titleImgData, 'PNG', margin, margin, contentWidth, contentHeight)
           
-          // 모든 섹션을 하나의 연속된 문서로 생성
-          pdf.addPage()
-          const allSectionsDiv = document.createElement('div')
-          allSectionsDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:40px;width:1200px;max-width:1200px;min-width:1200px;'
-          
-          let allSectionsHTML = ''
-          guide.sections.forEach((section, index) => {
-            console.log(`📝 섹션 ${index + 1}/${guide.sections.length}: ${section.title}`)
-            console.log(`📝 섹션 내용 길이: ${section.content.length}자`)
-            console.log(`📝 섹션 내용 미리보기: ${section.content.substring(0, 100)}...`)
+          // 각 섹션을 개별 페이지로 생성 (압축 방지)
+          for (let i = 0; i < guide.sections.length; i++) {
+            const section = guide.sections[i]
+            console.log(`📝 섹션 ${i + 1}/${guide.sections.length}: ${section.title}`)
+            
+            pdf.addPage()
+            const sectionDiv = document.createElement('div')
+            sectionDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:50px;width:1200px;max-width:1200px;min-width:1200px;min-height:1500px;'
             
             // HTML 특수문자 이스케이프
             const escapedContent = section.content
@@ -286,95 +284,63 @@ export default function ResultsPage() {
               .replace(/"/g, '&quot;')
               .replace(/'/g, '&#39;')
             
-            allSectionsHTML += `
-              <div style="margin-bottom: ${index < guide.sections.length - 1 ? '60px' : '40px'}; page-break-inside: avoid;">
-                <h2 style="font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 25px; border-bottom: 2px solid #3b82f6; padding-bottom: 10px;">
-                  ${index + 1}. ${section.title}
-                </h2>
-                <div style="font-size: 14px; line-height: 1.8; color: #374151; padding: 15px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #3b82f6; word-wrap: break-word; overflow-wrap: break-word;">
-                  ${escapedContent.replace(/\n/g, '<br>')}
+            const sectionHTML = `
+              <div style="min-height: 1400px; display: flex; flex-direction: column;">
+                <div style="margin-bottom: 40px;">
+                  <h1 style="font-size: 36px; font-weight: bold; color: #1f2937; margin-bottom: 20px; text-align: center;">
+                    ${guide.title}
+                  </h1>
+                  <div style="width: 80px; height: 3px; background: linear-gradient(to right, #3b82f6, #6366f1); margin: 0 auto 30px auto;"></div>
+                </div>
+                
+                <div style="flex: 1;">
+                  <h2 style="font-size: 32px; font-weight: bold; color: #1f2937; margin-bottom: 30px; border-bottom: 3px solid #3b82f6; padding-bottom: 15px;">
+                    ${section.title}
+                  </h2>
+                  <div style="font-size: 16px; line-height: 2.0; color: #374151; padding: 30px; background: #f8fafc; border-radius: 12px; border-left: 5px solid #3b82f6; word-wrap: break-word; overflow-wrap: break-word; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                    ${escapedContent.replace(/\n/g, '<br><br>')}
+                  </div>
+                </div>
+                
+                <div style="margin-top: 40px; text-align: center; color: #9ca3af; font-size: 14px;">
+                  섹션 ${i + 1} / ${guide.sections.length}
                 </div>
               </div>
             `
-          })
-          
-          allSectionsDiv.innerHTML = allSectionsHTML
-          document.body.appendChild(allSectionsDiv)
-          
-          // 실제 높이 측정 - 더 정확한 방법 사용
-          const actualHeight = Math.max(allSectionsDiv.scrollHeight, allSectionsDiv.offsetHeight, allSectionsDiv.clientHeight)
-          const pageHeight = 1400 // A4 기준 높이를 약간 줄여서 여유 확보
-          const totalPages = Math.max(1, Math.ceil(actualHeight / pageHeight))
-          
-          console.log(`📄 투자 전략 가이드 상세 정보:`)
-          console.log(`   - 총 섹션 수: ${guide.sections.length}`)
-          console.log(`   - scrollHeight: ${allSectionsDiv.scrollHeight}px`)
-          console.log(`   - offsetHeight: ${allSectionsDiv.offsetHeight}px`)
-          console.log(`   - clientHeight: ${allSectionsDiv.clientHeight}px`)
-          console.log(`   - 실제 높이: ${actualHeight}px`)
-          console.log(`   - 페이지 높이: ${pageHeight}px`)
-          console.log(`   - 예상 페이지 수: ${totalPages}`)
-          
-          // 전체 문서를 한 번에 캡처 - 높이 제한 해제
-          const allSectionsCanvas = await html2canvas(allSectionsDiv, {
-            scale: 1.2, // scale을 더 줄여서 안정성 확보
-            backgroundColor: '#ffffff',
-            useCORS: true,
-            width: 1200,
-            height: actualHeight,
-            scrollX: 0,
-            scrollY: 0,
-            allowTaint: false,
-            foreignObjectRendering: false,
-            logging: true, // 디버깅을 위한 로깅 활성화
-            onclone: function(clonedDoc) {
-              console.log('📄 문서 클론 완료, 폰트 로딩 확인 중...')
-              // 폰트가 제대로 로드되었는지 확인
-              const clonedDiv = clonedDoc.querySelector('div')
-              if (clonedDiv) {
-                clonedDiv.style.fontFamily = 'Arial, sans-serif, "맑은 고딕", "Malgun Gothic"'
+            
+            sectionDiv.innerHTML = sectionHTML
+            document.body.appendChild(sectionDiv)
+            
+            // 각 섹션을 개별적으로 캡처
+            const sectionCanvas = await html2canvas(sectionDiv, {
+              scale: 1.5, // 더 높은 품질로 설정
+              backgroundColor: '#ffffff',
+              useCORS: true,
+              width: 1200,
+              height: 1500, // 고정 높이로 설정하여 압축 방지
+              scrollX: 0,
+              scrollY: 0,
+              allowTaint: false,
+              foreignObjectRendering: false,
+              logging: false,
+              onclone: function(clonedDoc) {
+                const clonedDiv = clonedDoc.querySelector('div')
+                if (clonedDiv) {
+                  clonedDiv.style.fontFamily = 'Arial, sans-serif, "맑은 고딕", "Malgun Gothic"'
+                }
               }
-            }
-          })
-          
-          console.log(`🖼️ 캔버스 생성 완료: ${allSectionsCanvas.width}x${allSectionsCanvas.height}`)
-          
-          document.body.removeChild(allSectionsDiv)
-          
-          // 캡처된 이미지를 페이지 단위로 나누어 PDF에 추가
-          const canvas = document.createElement('canvas')
-          const ctx = canvas.getContext('2d')
-          if (!ctx) {
-            console.error('Canvas context를 생성할 수 없습니다.')
-            return
-          }
-          canvas.width = allSectionsCanvas.width
-          canvas.height = Math.min(pageHeight * 1.2, allSectionsCanvas.height) // scale: 1.2 적용
-          
-          for (let page = 0; page < totalPages; page++) {
-            if (page > 0) pdf.addPage()
+            })
             
-            const sourceY = page * pageHeight * 1.2
-            const sourceHeight = Math.min(pageHeight * 1.2, allSectionsCanvas.height - sourceY)
+            console.log(`🖼️ 섹션 ${i + 1} 캔버스 생성 완료: ${sectionCanvas.width}x${sectionCanvas.height}`)
             
-            console.log(`📄 페이지 ${page + 1}/${totalPages}: sourceY=${sourceY}, sourceHeight=${sourceHeight}`)
+            document.body.removeChild(sectionDiv)
             
-            // 현재 페이지에 해당하는 부분만 잘라내기
-            canvas.height = sourceHeight
-            ctx.clearRect(0, 0, canvas.width, canvas.height)
-            ctx.drawImage(
-              allSectionsCanvas,
-              0, sourceY, // 소스 시작점
-              canvas.width, sourceHeight, // 소스 크기
-              0, 0, // 대상 시작점
-              canvas.width, sourceHeight // 대상 크기
-            )
-            
-            const pageImgData = canvas.toDataURL('image/png')
-            pdf.addImage(pageImgData, 'PNG', margin, margin, contentWidth, (sourceHeight / 1.2) * (contentWidth / canvas.width))
+            // PDF에 추가 - 전체 페이지 크기 사용
+            const sectionImgData = sectionCanvas.toDataURL('image/png')
+            pdf.addImage(sectionImgData, 'PNG', margin, margin, contentWidth, contentHeight)
           }
           
-          console.log(`✅ 투자 전략 가이드 PDF 생성 완료 (${totalPages}페이지)`)
+          console.log(`✅ 투자 전략 가이드 PDF 생성 완료 (${guide.sections.length}개 섹션, ${guide.sections.length + 1}페이지)`)
         }
         
         // 1페이지: 헤더 + 요약
