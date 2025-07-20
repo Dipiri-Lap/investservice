@@ -274,14 +274,28 @@ export default function ResultsPage() {
           const titleImgData = titleCanvas.toDataURL('image/png')
           pdf.addImage(titleImgData, 'PNG', margin, margin, contentWidth, contentHeight)
           
-          // 각 섹션을 개별 페이지로 생성 (압축 방지)
+          // 모든 섹션을 하나의 연속된 페이지로 생성
+          pdf.addPage()
+          const allSectionsDiv = document.createElement('div')
+          allSectionsDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:40px;width:1200px;max-width:1200px;min-width:1200px;'
+          
+          // 가이드 제목 추가
+          const guideHeaderHTML = `
+            <div style="text-align: center; margin-bottom: 50px;">
+              <h1 style="font-size: 42px; font-weight: bold; color: #1f2937; margin-bottom: 20px;">
+                ${guide.title}
+              </h1>
+              <div style="width: 100px; height: 4px; background: linear-gradient(to right, #3b82f6, #6366f1); margin: 0 auto;"></div>
+              <p style="font-size: 16px; color: #6b7280; margin-top: 20px;">상세한 투자 전략과 실용적인 가이드라인</p>
+            </div>
+          `
+          
+          // 모든 섹션을 하나의 HTML로 결합
+          let allSectionsHTML = guideHeaderHTML
+          
           for (let i = 0; i < guide.sections.length; i++) {
             const section = guide.sections[i]
             console.log(`📝 섹션 ${i + 1}/${guide.sections.length}: ${section.title}`)
-            
-            pdf.addPage()
-            const sectionDiv = document.createElement('div')
-            sectionDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:50px;width:1200px;max-width:1200px;min-width:1200px;min-height:1800px;'
             
             // HTML 특수문자 이스케이프
             const escapedContent = section.content
@@ -292,59 +306,84 @@ export default function ResultsPage() {
               .replace(/'/g, '&#39;')
             
             const sectionHTML = `
-              <div style="min-height: 1700px; display: flex; flex-direction: column;">
-                <div style="margin-bottom: 40px;">
-                  <h1 style="font-size: 36px; font-weight: bold; color: #1f2937; margin-bottom: 20px; text-align: center;">
-                    ${guide.title}
-                  </h1>
-                  <div style="width: 80px; height: 3px; background: linear-gradient(to right, #3b82f6, #6366f1); margin: 0 auto 30px auto;"></div>
-                </div>
-                
-                <div style="flex: 1;">
-                  <h2 style="font-size: 32px; font-weight: bold; color: #1f2937; margin-bottom: 30px; border-bottom: 3px solid #3b82f6; padding-bottom: 15px;">
-                    ${section.title}
-                  </h2>
-                  <div style="font-size: 16px; line-height: 2.0; color: #374151; padding: 30px; background: #f8fafc; border-radius: 12px; border-left: 5px solid #3b82f6; word-wrap: break-word; overflow-wrap: break-word; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                    ${escapedContent.replace(/\n/g, '<br><br>')}
-                  </div>
-                </div>
-                
-                <div style="margin-top: 40px; text-align: center; color: #9ca3af; font-size: 14px;">
-                  섹션 ${i + 1} / ${guide.sections.length}
+              <div style="margin-bottom: 45px; ${i === guide.sections.length - 1 ? '' : 'border-bottom: 2px solid #e5e7eb; padding-bottom: 40px;'}">
+                <h2 style="font-size: 28px; font-weight: bold; color: #1f2937; margin-bottom: 25px; display: flex; align-items: center;">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; width: 35px; height: 35px; background: linear-gradient(135deg, #3b82f6, #6366f1); color: white; border-radius: 50%; font-size: 16px; font-weight: bold; margin-right: 15px;">${i + 1}</span>
+                  ${section.title}
+                </h2>
+                <div style="font-size: 15px; line-height: 1.8; color: #374151; padding: 25px; background: #f8fafc; border-radius: 12px; border-left: 5px solid #3b82f6; word-wrap: break-word; overflow-wrap: break-word; box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);">
+                  ${escapedContent.replace(/\n/g, '<br><br>')}
                 </div>
               </div>
             `
             
-            sectionDiv.innerHTML = sectionHTML
-            document.body.appendChild(sectionDiv)
-            
-            // 각 섹션을 개별적으로 캡처
-            const sectionCanvas = await html2canvas(sectionDiv, {
-              scale: 1.5, // 더 높은 품질로 설정
-              backgroundColor: '#ffffff',
-              useCORS: true,
-              width: 1200,
-              height: 1800, // 높이 증가로 압축 방지
-              scrollX: 0,
-              scrollY: 0,
-              allowTaint: false,
-              foreignObjectRendering: false,
-              logging: false,
-              onclone: function(clonedDoc) {
-                const clonedDiv = clonedDoc.querySelector('div')
-                if (clonedDiv) {
-                  clonedDiv.style.fontFamily = 'Arial, sans-serif, "맑은 고딕", "Malgun Gothic"'
-                }
+            allSectionsHTML += sectionHTML
+          }
+          
+          allSectionsDiv.innerHTML = allSectionsHTML
+          document.body.appendChild(allSectionsDiv)
+          
+          // 전체 섹션을 하나의 캔버스로 캡처
+          const allSectionsCanvas = await html2canvas(allSectionsDiv, {
+            scale: 1.5,
+            backgroundColor: '#ffffff',
+            useCORS: true,
+            width: 1200,
+            scrollX: 0,
+            scrollY: 0,
+            allowTaint: false,
+            foreignObjectRendering: false,
+            logging: false,
+            onclone: function(clonedDoc) {
+              const clonedDiv = clonedDoc.querySelector('div')
+              if (clonedDiv) {
+                clonedDiv.style.fontFamily = 'Arial, sans-serif, "맑은 고딕", "Malgun Gothic"'
               }
-            })
+            }
+          })
+          
+          console.log(`🖼️ 전체 섹션 캔버스 생성 완료: ${allSectionsCanvas.width}x${allSectionsCanvas.height}`)
+          
+          document.body.removeChild(allSectionsDiv)
+          
+          // 캔버스를 여러 페이지로 분할하여 PDF에 추가
+          const canvasHeight = allSectionsCanvas.height
+          const pageCanvasHeight = (contentHeight / contentWidth) * allSectionsCanvas.width // 페이지 비율에 맞는 높이
+          let currentY = 0
+          let pageNumber = 1
+          
+          while (currentY < canvasHeight) {
+            const remainingHeight = canvasHeight - currentY
+            const currentPageHeight = Math.min(pageCanvasHeight, remainingHeight)
             
-            console.log(`🖼️ 섹션 ${i + 1} 캔버스 생성 완료: ${sectionCanvas.width}x${sectionCanvas.height}`)
+            // 새 캔버스 생성하여 현재 페이지 부분만 추출
+            const pageCanvas = document.createElement('canvas')
+            const pageCtx = pageCanvas.getContext('2d')
             
-            document.body.removeChild(sectionDiv)
+            pageCanvas.width = allSectionsCanvas.width
+            pageCanvas.height = currentPageHeight
             
-            // PDF에 추가 - 전체 페이지 크기 사용
-            const sectionImgData = sectionCanvas.toDataURL('image/png')
-            pdf.addImage(sectionImgData, 'PNG', margin, margin, contentWidth, contentHeight)
+            if (pageCtx) {
+              pageCtx.fillStyle = '#ffffff'
+              pageCtx.fillRect(0, 0, pageCanvas.width, pageCanvas.height)
+              
+              pageCtx.drawImage(
+                allSectionsCanvas,
+                0, currentY, allSectionsCanvas.width, currentPageHeight,
+                0, 0, allSectionsCanvas.width, currentPageHeight
+              )
+            }
+            
+            // 첫 번째 페이지가 아니면 새 페이지 추가
+            if (pageNumber > 1) {
+              pdf.addPage()
+            }
+            
+            const pageImgData = pageCanvas.toDataURL('image/png')
+            pdf.addImage(pageImgData, 'PNG', margin, margin, contentWidth, contentHeight)
+            
+            currentY += pageCanvasHeight
+            pageNumber++
           }
           
           console.log(`✅ 투자 전략 가이드 PDF 생성 완료 (${guide.sections.length}개 섹션, ${guide.sections.length + 1}페이지)`)
