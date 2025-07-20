@@ -274,6 +274,7 @@ export default function ResultsPage() {
           
           let allSectionsHTML = ''
           guide.sections.forEach((section, index) => {
+            console.log(`📝 섹션 ${index + 1}/${guide.sections.length}: ${section.title}`)
             allSectionsHTML += `
               <div style="margin-bottom: ${index < guide.sections.length - 1 ? '60px' : '40px'};">
                 <h2 style="font-size: 32px; font-weight: bold; color: #1f2937; margin-bottom: 30px; border-bottom: 3px solid #3b82f6; padding-bottom: 15px; display: flex; align-items: center;">
@@ -288,23 +289,34 @@ export default function ResultsPage() {
           allSectionsDiv.innerHTML = allSectionsHTML
           document.body.appendChild(allSectionsDiv)
           
-          // 실제 높이 측정
-          const actualHeight = allSectionsDiv.scrollHeight
-          const pageHeight = 1600 // A4 기준 높이
-          const totalPages = Math.ceil(actualHeight / pageHeight)
+          // 실제 높이 측정 - 더 정확한 방법 사용
+          const actualHeight = Math.max(allSectionsDiv.scrollHeight, allSectionsDiv.offsetHeight, allSectionsDiv.clientHeight)
+          const pageHeight = 1400 // A4 기준 높이를 약간 줄여서 여유 확보
+          const totalPages = Math.max(1, Math.ceil(actualHeight / pageHeight))
           
-          console.log(`📄 투자 전략 가이드 총 높이: ${actualHeight}px, 예상 페이지 수: ${totalPages}`)
+          console.log(`📄 투자 전략 가이드 상세 정보:`)
+          console.log(`   - 총 섹션 수: ${guide.sections.length}`)
+          console.log(`   - scrollHeight: ${allSectionsDiv.scrollHeight}px`)
+          console.log(`   - offsetHeight: ${allSectionsDiv.offsetHeight}px`)
+          console.log(`   - clientHeight: ${allSectionsDiv.clientHeight}px`)
+          console.log(`   - 실제 높이: ${actualHeight}px`)
+          console.log(`   - 페이지 높이: ${pageHeight}px`)
+          console.log(`   - 예상 페이지 수: ${totalPages}`)
           
-          // 전체 문서를 한 번에 캡처
+          // 전체 문서를 한 번에 캡처 - 높이 제한 해제
           const allSectionsCanvas = await html2canvas(allSectionsDiv, {
-            scale: 2,
+            scale: 1.5, // scale을 줄여서 메모리 사용량 감소
             backgroundColor: '#ffffff',
             useCORS: true,
             width: 1200,
             height: actualHeight,
             scrollX: 0,
-            scrollY: 0
+            scrollY: 0,
+            allowTaint: true,
+            foreignObjectRendering: true
           })
+          
+          console.log(`🖼️ 캔버스 생성 완료: ${allSectionsCanvas.width}x${allSectionsCanvas.height}`)
           
           document.body.removeChild(allSectionsDiv)
           
@@ -316,24 +328,32 @@ export default function ResultsPage() {
             return
           }
           canvas.width = allSectionsCanvas.width
-          canvas.height = pageHeight * 2 // scale: 2 적용
+          canvas.height = Math.min(pageHeight * 1.5, allSectionsCanvas.height) // scale: 1.5 적용
           
           for (let page = 0; page < totalPages; page++) {
             if (page > 0) pdf.addPage()
             
+            const sourceY = page * pageHeight * 1.5
+            const sourceHeight = Math.min(pageHeight * 1.5, allSectionsCanvas.height - sourceY)
+            
+            console.log(`📄 페이지 ${page + 1}/${totalPages}: sourceY=${sourceY}, sourceHeight=${sourceHeight}`)
+            
             // 현재 페이지에 해당하는 부분만 잘라내기
+            canvas.height = sourceHeight
             ctx.clearRect(0, 0, canvas.width, canvas.height)
             ctx.drawImage(
               allSectionsCanvas,
-              0, page * pageHeight * 2, // 소스 시작점
-              canvas.width, Math.min(pageHeight * 2, allSectionsCanvas.height - page * pageHeight * 2), // 소스 크기
+              0, sourceY, // 소스 시작점
+              canvas.width, sourceHeight, // 소스 크기
               0, 0, // 대상 시작점
-              canvas.width, Math.min(pageHeight * 2, allSectionsCanvas.height - page * pageHeight * 2) // 대상 크기
+              canvas.width, sourceHeight // 대상 크기
             )
             
             const pageImgData = canvas.toDataURL('image/png')
-            pdf.addImage(pageImgData, 'PNG', margin, margin, contentWidth, contentHeight)
+            pdf.addImage(pageImgData, 'PNG', margin, margin, contentWidth, (sourceHeight / 1.5) * (contentWidth / canvas.width))
           }
+          
+          console.log(`✅ 투자 전략 가이드 PDF 생성 완료 (${totalPages}페이지)`)
         }
         
         // 1페이지: 헤더 + 요약
