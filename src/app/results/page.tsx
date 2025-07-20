@@ -358,7 +358,7 @@ export default function ResultsPage() {
         if (allFirstPageElements.length > 0) {
           // 임시 컨테이너로 통합 (PDF용 고정 가로 비율)
           const tempDiv = document.createElement('div')
-          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:15px;width:1200px;max-width:1200px;min-width:1200px;'
+          tempDiv.style.cssText = 'position:absolute;left:-9999px;background:white;padding:25px;width:1200px;max-width:1200px;min-width:1200px;'
           
           allFirstPageElements.forEach((el, index) => {
             const clone = el.cloneNode(true) as HTMLElement
@@ -398,11 +398,11 @@ export default function ResultsPage() {
               tempDiv.appendChild(titleEl)
             }
             
-            // 각 섹션 간격 최적화
+            // 각 섹션 간격 최적화 (더 넓은 간격)
             if (index < 2) {
-              clone.style.marginBottom = '20px' // 헤더, 요약 섹션
+              clone.style.marginBottom = '30px' // 헤더, 요약 섹션 간격 증가
             } else {
-              clone.style.marginBottom = '15px' // 분석 결과 섹션들
+              clone.style.marginBottom = '25px' // 분석 결과 섹션들 간격 증가
             }
             
             clone.style.width = '100%'
@@ -417,7 +417,7 @@ export default function ResultsPage() {
             backgroundColor: '#ffffff',
             useCORS: true,
             width: 1200,
-            height: 2400, // 높이 대폭 증가로 모든 내용 수용
+            height: 3200, // 높이 대폭 증가로 모든 내용이 압축되지 않도록
           })
           
           document.body.removeChild(tempDiv)
