@@ -434,13 +434,17 @@ export default function ResultsPage() {
             // 이미지가 더 넓으면 높이에 맞춤
             finalHeight = contentHeight
             finalWidth = contentHeight * imgAspectRatio
+            // 중앙 정렬을 위해 X 위치 조정
+            const xOffset = margin + (contentWidth - finalWidth) / 2
+            pdf.addImage(imgData, 'PNG', xOffset, margin, finalWidth, finalHeight)
           } else {
             // 이미지가 더 높으면 너비에 맞춤
             finalWidth = contentWidth
             finalHeight = contentWidth / imgAspectRatio
+            // 중앙 정렬을 위해 Y 위치 조정
+            const yOffset = margin + (contentHeight - finalHeight) / 2
+            pdf.addImage(imgData, 'PNG', margin, yOffset, finalWidth, finalHeight)
           }
-          
-          pdf.addImage(imgData, 'PNG', margin, margin, finalWidth, finalHeight)
         }
         
         // 2페이지: 추천 종목 - 배당 성장주
@@ -528,13 +532,17 @@ export default function ResultsPage() {
             // 이미지가 더 넓으면 높이에 맞춤
             finalHeight = contentHeight
             finalWidth = contentHeight * imgAspectRatio
+            // 중앙 정렬을 위해 X 위치 조정
+            const xOffset = margin + (contentWidth - finalWidth) / 2
+            pdf.addImage(imgData, 'PNG', xOffset, margin, finalWidth, finalHeight)
           } else {
             // 이미지가 더 높으면 너비에 맞춤
             finalWidth = contentWidth
             finalHeight = contentWidth / imgAspectRatio
+            // 중앙 정렬을 위해 Y 위치 조정
+            const yOffset = margin + (contentHeight - finalHeight) / 2
+            pdf.addImage(imgData, 'PNG', margin, yOffset, finalWidth, finalHeight)
           }
-          
-          pdf.addImage(imgData, 'PNG', margin, margin, finalWidth, finalHeight)
         }
         
         // 투자 전략 가이드 페이지 추가
