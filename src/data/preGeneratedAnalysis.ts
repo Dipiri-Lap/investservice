@@ -1820,9 +1820,9 @@ export const preGeneratedAnalysis = {
         "crypto": 5,
         "reason": "성장지향형 투자자는 주식 비중을 높여 장기적인 성장 기회를 최대한 활용합니다. 채권과 현금은 변동성 완화와 유동성 확보를 위해 배분하며, 리츠와 암호화폐는 대체자산으로서 성장성과 포트폴리오 분산 효과를 제공합니다. 이 구성은 높은 수익률을 목표로 하면서도 일정 부분 안정성을 유지하는데 최적화되어 있습니다.",
         "stockAllocation": {
-        "dividendStocks": 10,
-        "growthStocks": 50,
-        "themeStocks": 10,
+        "dividendStocks": 15,
+        "growthStocks": 65,
+        "themeStocks": 15,
         "valueStocks": 5,
         "reason": "성장지향형 포트폴리오에서는 성장주에 가장 큰 비중을 두어 자본 이득을 극대화하며, 배당주는 안정성을 보완합니다. 테마주는 미래 성장 트렌드를 반영하고, 가치주는 저평가 기회를 활용해 리스크를 일부 분산합니다."
         }
